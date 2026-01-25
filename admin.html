@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Admin - Bachelor Party Showdown
+title: Admin - Dird Plesk Memorial
 ---
 
 <div class="hero">
@@ -12,8 +12,8 @@ title: Admin - Bachelor Party Showdown
     <div class="admin-section">
         <h2>Manage Players</h2>
         <p>Add or remove players from the competition:</p>
-        <div style="margin-top: 15px;">
-            <input type="text" id="newPlayerName" placeholder="Enter player name" style="padding: 10px; border-radius: 5px; border: none; width: 200px;">
+        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="newPlayerName" placeholder="Enter player name" style="padding: 12px; border-radius: 5px; border: none; flex: 1; min-width: 150px;">
             <button class="btn" onclick="addPlayer()">Add Player</button>
         </div>
         <div id="playerList" style="margin-top: 20px;">
@@ -26,7 +26,7 @@ title: Admin - Bachelor Party Showdown
         <div class="event-links">
             <a href="#" onclick="openGolfAdmin(); return false;" class="event-link">
                 <h3>Golf</h3>
-                <p>Assign teams & enter scores</p>
+                <p>Teams, scoring controls & bonuses</p>
             </a>
             <a href="#" onclick="openBeerOlympicsAdmin(); return false;" class="event-link">
                 <h3>Beer Olympics</h3>
@@ -36,16 +36,20 @@ title: Admin - Bachelor Party Showdown
                 <h3>Go-Karting</h3>
                 <p>Set points & results</p>
             </a>
+            <a href="/trivia" class="event-link">
+                <h3>Trivia</h3>
+                <p>Set points & results</p>
+            </a>
         </div>
     </div>
 
     <!-- Golf Admin Section -->
     <div class="admin-section" id="golfAdminSection" style="display: none;">
         <h2>Golf - Team Assignment</h2>
-        <p>Assign players to teams (up to 12 teams available):</p>
+        <p>Assign players to teams (tap players to select):</p>
         <div style="margin: 15px 0;">
             <label>Number of teams: </label>
-            <select id="golfTeamCount" onchange="updateGolfTeamInputs()">
+            <select id="golfTeamCount" onchange="updateGolfTeamInputs()" style="padding: 10px; border-radius: 5px; border: none;">
                 <option value="2">2</option>
                 <option value="3" selected>3</option>
                 <option value="4">4</option>
@@ -58,12 +62,15 @@ title: Admin - Bachelor Party Showdown
         </div>
         <button class="btn btn-gold" onclick="saveGolfTeams()" style="margin-top: 15px;">Save Teams</button>
 
-        <h3 style="margin-top: 30px; color: #ffd700;">Enter Scores</h3>
-        <div id="golfScoreInputs">
-            <!-- Score inputs appear after teams are saved -->
+        <div id="golfScoringControls" style="margin-top: 25px;">
+            <!-- Scoring controls populated by JavaScript -->
         </div>
-        <button class="btn btn-gold" onclick="saveGolfScores()" style="margin-top: 15px;">Save Scores</button>
-        <button class="btn" onclick="closeGolfAdmin()">Close</button>
+
+        <div id="golfBonusInputs" style="margin-top: 25px;">
+            <!-- Bonus inputs populated by JavaScript -->
+        </div>
+
+        <button class="btn" onclick="closeGolfAdmin()" style="margin-top: 20px;">Close Golf Admin</button>
     </div>
 
     <!-- Beer Olympics Admin Section -->
@@ -71,7 +78,7 @@ title: Admin - Bachelor Party Showdown
         <h2>Beer Olympics - Game Management</h2>
         <div style="margin: 15px 0;">
             <label>Select Game: </label>
-            <select id="beerGameSelect" onchange="loadBeerGameAdmin()">
+            <select id="beerGameSelect" onchange="loadBeerGameAdmin()" style="padding: 10px; border-radius: 5px; border: none;">
                 <option value="1">Game 1</option>
                 <option value="2">Game 2</option>
                 <option value="3">Game 3</option>
@@ -80,10 +87,11 @@ title: Admin - Bachelor Party Showdown
             </select>
         </div>
 
-        <h3 style="color: #ffd700;">Team Assignment for <span id="currentGameLabel">Game 1</span></h3>
+        <h3 style="color: var(--gold);">Team Assignment for <span id="currentGameLabel">Game 1</span></h3>
+        <p>Tap players to add to team:</p>
         <div style="margin: 15px 0;">
             <label>Number of teams: </label>
-            <select id="beerTeamCount" onchange="updateBeerTeamInputs()">
+            <select id="beerTeamCount" onchange="updateBeerTeamInputs()" style="padding: 10px; border-radius: 5px; border: none;">
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
@@ -96,25 +104,25 @@ title: Admin - Bachelor Party Showdown
         </div>
         <button class="btn btn-gold" onclick="saveBeerTeams()" style="margin-top: 15px;">Save Teams</button>
 
-        <h3 style="margin-top: 30px; color: #ffd700;">Enter Scores for <span id="currentGameScoreLabel">Game 1</span></h3>
+        <h3 style="margin-top: 30px; color: var(--gold);">Enter Scores for <span id="currentGameScoreLabel">Game 1</span></h3>
         <div id="beerScoreInputs">
             <!-- Score inputs appear after teams are saved -->
         </div>
         <button class="btn btn-gold" onclick="saveBeerScores()" style="margin-top: 15px;">Save Scores</button>
-        <button class="btn" onclick="closeBeerOlympicsAdmin()">Close</button>
+        <button class="btn" onclick="closeBeerOlympicsAdmin()" style="margin-top: 15px;">Close</button>
     </div>
 
     <div class="admin-section">
         <h2>Data Management</h2>
         <button class="btn" onclick="exportData()">Export All Data</button>
-        <button class="btn" onclick="confirmResetData()" style="background: #e74c3c;">Reset All Data</button>
+        <button class="btn" onclick="confirmResetData()" style="background: #c8102e;">Reset All Data</button>
     </div>
 </div>
 
 <div id="notAdminMessage" style="display: none;">
     <div class="section-card" style="text-align: center;">
         <h2>Access Denied</h2>
-        <p>You must be logged in as admin to access this page.</p>
+        <p>You must be logged in as Stephen (Admin) to access this page.</p>
         <a href="/" class="btn">Go to Home</a>
     </div>
 </div>
