@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Leaderboard - Bachelor Party Showdown
+title: Leaderboard - Dird Plesk Memorial
 ---
 
 <div class="hero">
@@ -10,77 +10,126 @@ title: Leaderboard - Bachelor Party Showdown
 
 <div class="section-card">
     <h2>Overall Standings</h2>
-    <table class="leaderboard-table" id="overallLeaderboard">
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Golf</th>
-                <th>Beer Olympics</th>
-                <th>Go-Karting</th>
-                <th>Total Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Populated by JavaScript -->
-        </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table class="leaderboard-table" id="overallLeaderboard">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Golf</th>
+                    <th>Beer</th>
+                    <th>Karts</th>
+                    <th>Trivia</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" style="text-align: center; opacity: 0.7;">
+                        Loading standings...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="section-card">
+    <div id="cumulativeChart">
+        <!-- Cumulative score progression chart rendered by JavaScript -->
+    </div>
 </div>
 
 <div class="section-card">
     <h2>Golf Results</h2>
-    <table class="leaderboard-table" id="golfLeaderboard">
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Team</th>
-                <th>Players</th>
-                <th>Stableford Score</th>
-                <th>Points Earned</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Populated by JavaScript -->
-        </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table class="leaderboard-table" id="golfLeaderboard">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th>Players</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4" style="text-align: center; opacity: 0.7;">
+                        No golf results yet
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="section-card">
     <h2>Beer Olympics Results</h2>
-    <div id="beerOlympicsResults">
-        <!-- Sub-event results populated by JavaScript -->
+    <div style="overflow-x: auto;">
+        <table class="leaderboard-table" id="beerOlympicsLeaderboard">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>G1</th>
+                    <th>G2</th>
+                    <th>G3</th>
+                    <th>G4</th>
+                    <th>G5</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="8" style="text-align: center; opacity: 0.7;">
+                        No beer olympics results yet
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <table class="leaderboard-table" id="beerOlympicsLeaderboard">
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Game 1</th>
-                <th>Game 2</th>
-                <th>Game 3</th>
-                <th>Game 4</th>
-                <th>Game 5</th>
-                <th>Total Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Populated by JavaScript -->
-        </tbody>
-    </table>
 </div>
 
 <div class="section-card">
     <h2>Go-Karting Results</h2>
-    <table class="leaderboard-table" id="gokartingLeaderboard">
-        <thead>
-            <tr>
-                <th>Finish Position</th>
-                <th>Player</th>
-                <th>Points Earned</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Populated by JavaScript -->
-        </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table class="leaderboard-table" id="gokartingLeaderboard">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Driver</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" style="text-align: center; opacity: 0.7;">
+                        No go-kart results yet
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="section-card">
+    <h2>Trivia Results</h2>
+    <div style="overflow-x: auto;">
+        <table class="leaderboard-table" id="triviaLeaderboard">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Player</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" style="text-align: center; opacity: 0.7;">
+                        No trivia results yet
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

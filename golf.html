@@ -1,48 +1,44 @@
 ---
 layout: default
-title: Golf - Bachelor Party Showdown
+title: Golf - Dird Plesk Memorial
 ---
 
 <div class="hero">
-    <h1>Golf</h1>
-    <p>Scramble with Stableford Scoring</p>
+    <h1>Golf @ Lions</h1>
+    <p>Three Team Scramble - Stableford Scoring</p>
 </div>
 
 <div class="section-card">
-    <h2>Format</h2>
-    <div class="placeholder-box">
-        <p>Team scramble format - details TBD</p>
-        <p>12 players divided into 3-4 teams</p>
+    <h2>Scoring Guide</h2>
+    <div style="overflow-x: auto;">
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Score</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Albatross (3 under)</td><td>5 pts</td></tr>
+                <tr><td>Eagle (2 under)</td><td>4 pts</td></tr>
+                <tr><td>Birdie (1 under)</td><td>3 pts</td></tr>
+                <tr><td>Par</td><td>2 pts</td></tr>
+                <tr><td>Bogey (1 over)</td><td>1 pt</td></tr>
+                <tr><td>Oh Shit, not great (2+ over)</td><td>0 pts</td></tr>
+            </tbody>
+        </table>
     </div>
+    <p style="margin-top: 15px; opacity: 0.8;">
+        <strong>Bonus Points:</strong> Best Front 9, Best Back 9, and Overall Winner receive bonus points!<br>
+        <strong>Team Shotguns:</strong> Each full team shotgun = bonus point!
+    </p>
 </div>
 
 <div class="section-card">
-    <h2>Stableford Scoring</h2>
-    <div class="placeholder-box">
-        <p>Stableford scoring rules to be added...</p>
-        <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
-            <li>Double Bogey or worse: 0 points</li>
-            <li>Bogey: 1 point</li>
-            <li>Par: 2 points</li>
-            <li>Birdie: 3 points</li>
-            <li>Eagle: 4 points</li>
-            <li>Albatross: 5 points</li>
-        </ul>
-    </div>
-</div>
-
-<div class="section-card">
-    <h2>Teams</h2>
-    <div id="golfTeams">
+    <h2>Team Scorecard</h2>
+    <div id="golfScorecard">
         <div class="placeholder-box">
-            <p>Teams will be assigned by the admin before the event</p>
+            <p>Log in to view and enter your team's scores</p>
         </div>
-    </div>
-</div>
-
-<div class="section-card admin-only">
-    <h2>Admin: Enter Scores</h2>
-    <div id="golfScoringAdmin">
-        <!-- Scoring inputs populated by JavaScript -->
     </div>
 </div>

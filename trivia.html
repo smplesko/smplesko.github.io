@@ -1,17 +1,17 @@
 ---
 layout: default
-title: Go-Karting - Dird Plesk Memorial
+title: Trivia - Dird Plesk Memorial
 ---
 
 <div class="hero">
-    <h1>Go-Karting</h1>
-    <p>Individual Race - 12 Drivers</p>
+    <h1>Trivia</h1>
+    <p>Individual Competition</p>
 </div>
 
 <div class="section-card">
     <h2>Format</h2>
     <div class="placeholder-box">
-        <p>Individual competition - every man for himself!</p>
+        <p>Individual trivia competition</p>
         <p>Points awarded based on finishing position</p>
     </div>
 </div>
@@ -19,25 +19,25 @@ title: Go-Karting - Dird Plesk Memorial
 <div class="section-card">
     <h2>Point Values</h2>
     <p>Points awarded for each finishing position:</p>
-    <div class="point-config" id="gokartPointDisplay">
+    <div class="point-config" id="triviaPointDisplay">
         <!-- Point values displayed here by JavaScript -->
     </div>
 </div>
 
 <div class="section-card">
     <h2>Current Results</h2>
-    <table class="leaderboard-table" id="gokartResults">
+    <table class="leaderboard-table" id="triviaResults">
         <thead>
             <tr>
                 <th>Position</th>
-                <th>Driver</th>
+                <th>Player</th>
                 <th>Points</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td colspan="3" style="text-align: center; opacity: 0.7;">
-                    Results will appear after the race
+                    Results will appear after trivia
                 </td>
             </tr>
         </tbody>
@@ -47,17 +47,17 @@ title: Go-Karting - Dird Plesk Memorial
 <div class="section-card admin-only">
     <h2>Admin: Configure Points</h2>
     <p>Set point values for each finishing position:</p>
-    <div class="point-config" id="gokartPointConfig">
+    <div class="point-config" id="triviaPointConfig">
         <!-- Point configuration inputs populated by JavaScript -->
     </div>
-    <button class="btn btn-gold" onclick="saveGokartPoints()" style="margin-top: 15px;">Save Point Values</button>
+    <button class="btn btn-gold" onclick="saveTriviaPoints()" style="margin-top: 15px;">Save Point Values</button>
 </div>
 
 <div class="section-card admin-only">
     <h2>Admin: Enter Results</h2>
-    <p>Assign finishing positions to each driver:</p>
-    <div id="gokartScoringAdmin">
+    <p>Assign finishing positions to each player:</p>
+    <div id="triviaScoringAdmin">
         <!-- Scoring inputs populated by JavaScript -->
     </div>
-    <button class="btn btn-gold" onclick="saveGokartResults()" style="margin-top: 15px;">Save Results</button>
+    <button class="btn btn-gold" onclick="saveTriviaResults()" style="margin-top: 15px;">Save Results</button>
 </div>
