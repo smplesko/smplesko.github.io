@@ -1,0 +1,120 @@
+---
+layout: default
+title: Admin - Bachelor Party Showdown
+---
+
+<div class="hero">
+    <h1>Admin Panel</h1>
+    <p>Manage Teams & Scores</p>
+</div>
+
+<div id="adminContent">
+    <div class="admin-section">
+        <h2>Manage Players</h2>
+        <p>Add or remove players from the competition:</p>
+        <div style="margin-top: 15px;">
+            <input type="text" id="newPlayerName" placeholder="Enter player name" style="padding: 10px; border-radius: 5px; border: none; width: 200px;">
+            <button class="btn" onclick="addPlayer()">Add Player</button>
+        </div>
+        <div id="playerList" style="margin-top: 20px;">
+            <!-- Player list populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h2>Event Management</h2>
+        <div class="event-links">
+            <a href="#" onclick="openGolfAdmin(); return false;" class="event-link">
+                <h3>Golf</h3>
+                <p>Assign teams & enter scores</p>
+            </a>
+            <a href="#" onclick="openBeerOlympicsAdmin(); return false;" class="event-link">
+                <h3>Beer Olympics</h3>
+                <p>Manage all 5 games</p>
+            </a>
+            <a href="/gokarting" class="event-link">
+                <h3>Go-Karting</h3>
+                <p>Set points & results</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Golf Admin Section -->
+    <div class="admin-section" id="golfAdminSection" style="display: none;">
+        <h2>Golf - Team Assignment</h2>
+        <p>Assign players to teams (up to 12 teams available):</p>
+        <div style="margin: 15px 0;">
+            <label>Number of teams: </label>
+            <select id="golfTeamCount" onchange="updateGolfTeamInputs()">
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="12">12</option>
+            </select>
+        </div>
+        <div id="golfTeamAssignments" class="team-assignment">
+            <!-- Team assignment inputs populated by JavaScript -->
+        </div>
+        <button class="btn btn-gold" onclick="saveGolfTeams()" style="margin-top: 15px;">Save Teams</button>
+
+        <h3 style="margin-top: 30px; color: #ffd700;">Enter Scores</h3>
+        <div id="golfScoreInputs">
+            <!-- Score inputs appear after teams are saved -->
+        </div>
+        <button class="btn btn-gold" onclick="saveGolfScores()" style="margin-top: 15px;">Save Scores</button>
+        <button class="btn" onclick="closeGolfAdmin()">Close</button>
+    </div>
+
+    <!-- Beer Olympics Admin Section -->
+    <div class="admin-section" id="beerOlympicsAdminSection" style="display: none;">
+        <h2>Beer Olympics - Game Management</h2>
+        <div style="margin: 15px 0;">
+            <label>Select Game: </label>
+            <select id="beerGameSelect" onchange="loadBeerGameAdmin()">
+                <option value="1">Game 1</option>
+                <option value="2">Game 2</option>
+                <option value="3">Game 3</option>
+                <option value="4">Game 4</option>
+                <option value="5">Game 5</option>
+            </select>
+        </div>
+
+        <h3 style="color: #ffd700;">Team Assignment for <span id="currentGameLabel">Game 1</span></h3>
+        <div style="margin: 15px 0;">
+            <label>Number of teams: </label>
+            <select id="beerTeamCount" onchange="updateBeerTeamInputs()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="6" selected>6</option>
+                <option value="12">12</option>
+            </select>
+        </div>
+        <div id="beerTeamAssignments" class="team-assignment">
+            <!-- Team assignment inputs populated by JavaScript -->
+        </div>
+        <button class="btn btn-gold" onclick="saveBeerTeams()" style="margin-top: 15px;">Save Teams</button>
+
+        <h3 style="margin-top: 30px; color: #ffd700;">Enter Scores for <span id="currentGameScoreLabel">Game 1</span></h3>
+        <div id="beerScoreInputs">
+            <!-- Score inputs appear after teams are saved -->
+        </div>
+        <button class="btn btn-gold" onclick="saveBeerScores()" style="margin-top: 15px;">Save Scores</button>
+        <button class="btn" onclick="closeBeerOlympicsAdmin()">Close</button>
+    </div>
+
+    <div class="admin-section">
+        <h2>Data Management</h2>
+        <button class="btn" onclick="exportData()">Export All Data</button>
+        <button class="btn" onclick="confirmResetData()" style="background: #e74c3c;">Reset All Data</button>
+    </div>
+</div>
+
+<div id="notAdminMessage" style="display: none;">
+    <div class="section-card" style="text-align: center;">
+        <h2>Access Denied</h2>
+        <p>You must be logged in as admin to access this page.</p>
+        <a href="/" class="btn">Go to Home</a>
+    </div>
+</div>
