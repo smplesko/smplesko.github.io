@@ -1,0 +1,63 @@
+---
+layout: default
+title: Go-Karting - Bachelor Party Showdown
+---
+
+<div class="hero">
+    <h1>Go-Karting</h1>
+    <p>Individual Race - 12 Drivers</p>
+</div>
+
+<div class="section-card">
+    <h2>Format</h2>
+    <div class="placeholder-box">
+        <p>Individual competition - every man for himself!</p>
+        <p>Points awarded based on finishing position</p>
+    </div>
+</div>
+
+<div class="section-card">
+    <h2>Point Values</h2>
+    <p>Points awarded for each finishing position:</p>
+    <div class="point-config" id="gokartPointDisplay">
+        <!-- Point values displayed here by JavaScript -->
+    </div>
+</div>
+
+<div class="section-card">
+    <h2>Current Results</h2>
+    <table class="leaderboard-table" id="gokartResults">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Driver</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="3" style="text-align: center; opacity: 0.7;">
+                    Results will appear after the race
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="section-card admin-only">
+    <h2>Admin: Configure Points</h2>
+    <p>Set point values for each finishing position:</p>
+    <div class="point-config" id="gokartPointConfig">
+        <!-- Point configuration inputs populated by JavaScript -->
+    </div>
+    <button class="btn btn-gold" onclick="saveGokartPoints()" style="margin-top: 15px;">Save Point Values</button>
+</div>
+
+<div class="section-card admin-only">
+    <h2>Admin: Enter Results</h2>
+    <p>Assign finishing positions to each driver:</p>
+    <div id="gokartScoringAdmin">
+        <!-- Scoring inputs populated by JavaScript -->
+    </div>
+    <button class="btn btn-gold" onclick="saveGokartResults()" style="margin-top: 15px;">Save Results</button>
+</div>
