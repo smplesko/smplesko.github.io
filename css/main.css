@@ -44,7 +44,7 @@
 }
 
 body {
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
     background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     min-height: 100vh;
     color: var(--text-primary);
@@ -115,32 +115,62 @@ nav ul li a:hover, nav ul li a.active {
 .hero {
     text-align: center;
     padding: 30px 20px;
-    background: linear-gradient(135deg, var(--accent-red) 0%, var(--primary-navy) 100%);
+    background: var(--accent-red);
     border-radius: 15px;
-    margin-bottom: 25px;
-    border: 2px solid var(--silver);
+    margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(200, 16, 46, 0.3);
 }
 
 .hero h1 {
     font-size: 1.8em;
     margin-bottom: 8px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     color: var(--white);
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 .hero p {
     font-size: 1.1em;
     opacity: 0.9;
-    color: var(--silver-light);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Notes Section */
+.notes-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--gold);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.notes-section .notes-content {
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 0.95em;
+}
+
+.notes-section .notes-content a {
+    color: var(--gold);
+    text-decoration: underline;
+}
+
+.notes-section .notes-content a:hover {
+    color: var(--accent-red);
 }
 
 /* Login Section */
 .login-section {
     background: var(--card-bg);
-    border-radius: 15px;
+    border-radius: 0 0 15px 15px;
     padding: 25px;
     margin-bottom: 25px;
-    border: 1px solid var(--card-border);
+    border: none;
+    border-top: 3px solid var(--accent-red);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
 .login-section h2 {
@@ -158,14 +188,16 @@ nav ul li a:hover, nav ul li a.active {
 
 .player-btn {
     background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
-    border: 2px solid var(--accent-red);
+    border: none;
+    border-bottom: 3px solid var(--accent-red);
     color: var(--white);
     padding: 14px 8px;
-    border-radius: 10px;
+    border-radius: 10px 10px 6px 6px;
     cursor: pointer;
     font-size: 0.9em;
     font-weight: bold;
     transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .player-btn:hover {
@@ -175,7 +207,7 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .player-btn.admin-btn {
-    border-color: var(--gold);
+    border-bottom-color: var(--gold);
     color: var(--gold);
 }
 
@@ -251,10 +283,12 @@ nav ul li a:hover, nav ul li a.active {
 /* Section Cards */
 .section-card {
     background: var(--card-bg);
-    border-radius: 15px;
+    border-radius: 0 0 15px 15px;
     padding: 20px;
     margin-bottom: 20px;
-    border: 1px solid var(--card-border);
+    border: none;
+    border-top: 3px solid var(--accent-red);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
 .section-card h2 {
@@ -396,6 +430,7 @@ nav ul li a:hover, nav ul li a.active {
     transition: all 0.3s;
     margin: 5px;
     font-size: 0.95em;
+    box-shadow: 0 2px 8px rgba(200, 16, 46, 0.4);
 }
 
 .btn:hover {
@@ -433,13 +468,15 @@ nav ul li a:hover, nav ul li a.active {
 
 .event-link {
     background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
-    border: 2px solid var(--accent-red);
-    border-radius: 15px;
+    border: none;
+    border-left: 4px solid var(--accent-red);
+    border-radius: 0 15px 15px 0;
     padding: 20px;
     text-align: center;
     text-decoration: none;
     color: var(--white);
     transition: all 0.3s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .event-link:hover {
@@ -1071,7 +1108,12 @@ body.is-admin nav .admin-only {
 }
 
 [data-theme="light"] .hero {
-    border-color: var(--accent-red);
+    box-shadow: 0 4px 20px rgba(200, 16, 46, 0.25);
+}
+
+[data-theme="light"] .notes-section {
+    background: var(--card-bg);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="light"] .player-btn {
