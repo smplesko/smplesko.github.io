@@ -1,10 +1,21 @@
 // Dird Plesk Memorial Open Invitational of Champions - Main Application
 
-// Default players (alphabetically sorted)
-const DEFAULT_PLAYERS = [
-    'Alex', 'Brad', 'Bryant', 'Cody', 'Evan',
-    'Jack', 'Joe', 'Kevin', 'Matt', 'Pete', 'Will'
-];
+// Player structure: 12 players with slot numbers and display names
+// Stephen (admin) is Player 1
+const DEFAULT_PLAYERS = {
+    1: { name: 'Stephen', isAdmin: true },
+    2: { name: 'Alex', isAdmin: false },
+    3: { name: 'Brad', isAdmin: false },
+    4: { name: 'Bryant', isAdmin: false },
+    5: { name: 'Cody', isAdmin: false },
+    6: { name: 'Evan', isAdmin: false },
+    7: { name: 'Jack', isAdmin: false },
+    8: { name: 'Joe', isAdmin: false },
+    9: { name: 'Kevin', isAdmin: false },
+    10: { name: 'Matt', isAdmin: false },
+    11: { name: 'Pete', isAdmin: false },
+    12: { name: 'Will', isAdmin: false }
+};
 
 // Golf scoring options with point values
 const GOLF_SCORES = {
@@ -35,20 +46,14 @@ const DEFAULT_BONUS_POINTS = {
     shotgun: 1
 };
 
-// Event order for cumulative scoring
-const EVENT_ORDER = ['golf', 'beer', 'gokart', 'trivia'];
-const EVENT_NAMES = {
-    golf: 'Golf',
-    beer: 'Beer Olympics',
-    gokart: 'Go-Karting',
-    trivia: 'Trivia'
-};
-
 // Initialize data
 function initData() {
-    if (!localStorage.getItem('players')) {
+    // Force update players to new structure if old format detected
+    const existingPlayers = localStorage.getItem('players');
+    if (!existingPlayers || Array.isArray(JSON.parse(existingPlayers))) {
         localStorage.setItem('players', JSON.stringify(DEFAULT_PLAYERS));
     }
+
     if (!localStorage.getItem('gokartPoints')) {
         localStorage.setItem('gokartPoints', JSON.stringify(DEFAULT_GOKART_POINTS));
     }
@@ -85,12 +90,40 @@ function initData() {
     if (!localStorage.getItem('triviaResults')) {
         localStorage.setItem('triviaResults', JSON.stringify({}));
     }
+
+    // Initialize theme
+    if (!localStorage.getItem('theme')) {
+        localStorage.setItem('theme', 'dark');
+    }
+    applyTheme();
 }
 
 // Get data helpers
 function getPlayers() {
     const players = JSON.parse(localStorage.getItem('players')) || DEFAULT_PLAYERS;
-    return players.sort((a, b) => a.localeCompare(b));
+    return players;
+}
+
+function getPlayerList() {
+    const players = getPlayers();
+    // Return array of player names sorted alphabetically, excluding empty slots
+    return Object.values(players)
+        .map(p => p.name)
+        .filter(name => name && name.trim() !== '')
+        .sort((a, b) => a.localeCompare(b));
+}
+
+function getPlayerBySlot(slot) {
+    const players = getPlayers();
+    return players[slot] || { name: `Player ${slot}`, isAdmin: false };
+}
+
+function updatePlayerName(slot, newName) {
+    const players = getPlayers();
+    if (players[slot]) {
+        players[slot].name = newName;
+        localStorage.setItem('players', JSON.stringify(players));
+    }
 }
 
 function getGokartPoints() {
@@ -141,6 +174,32 @@ function getTriviaResults() {
     return JSON.parse(localStorage.getItem('triviaResults')) || {};
 }
 
+// Theme management
+function getTheme() {
+    return localStorage.getItem('theme') || 'dark';
+}
+
+function setTheme(theme) {
+    localStorage.setItem('theme', theme);
+    applyTheme();
+}
+
+function toggleTheme() {
+    const current = getTheme();
+    setTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+function applyTheme() {
+    const theme = getTheme();
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Update toggle button text if exists
+    const toggleBtn = document.getElementById('themeToggle');
+    if (toggleBtn) {
+        toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+}
+
 // Calculate golf team total from hole scores
 function calculateGolfTeamTotal(teamNum) {
     const holeScores = getGolfHoleScores();
@@ -168,27 +227,34 @@ function getCurrentUser() {
     return localStorage.getItem('currentUser');
 }
 
+function getCurrentUserSlot() {
+    return localStorage.getItem('currentUserSlot');
+}
+
 function isAdmin() {
     return localStorage.getItem('isAdmin') === 'true';
 }
 
-function setCurrentUser(username, admin = false) {
-    localStorage.setItem('currentUser', username);
+function setCurrentUser(playerName, slot, admin = false) {
+    localStorage.setItem('currentUser', playerName);
+    localStorage.setItem('currentUserSlot', slot);
     localStorage.setItem('isAdmin', admin.toString());
     updateUI();
 }
 
 function logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentUserSlot');
     localStorage.removeItem('isAdmin');
     updateUI();
     window.location.href = '/';
 }
 
 // Password modal
-function openModal() {
+function openModal(slot) {
     document.getElementById('passwordModal').classList.add('active');
     document.getElementById('adminPassword').focus();
+    document.getElementById('passwordModal').dataset.slot = slot;
 }
 
 function closeModal() {
@@ -198,8 +264,10 @@ function closeModal() {
 
 function submitPassword() {
     const password = document.getElementById('adminPassword').value;
+    const slot = document.getElementById('passwordModal').dataset.slot;
     if (password === '1816') {
-        setCurrentUser('Stephen', true);
+        const player = getPlayerBySlot(slot);
+        setCurrentUser(player.name, slot, true);
         closeModal();
     } else {
         alert('Incorrect password');
@@ -207,11 +275,12 @@ function submitPassword() {
 }
 
 // Login as player
-function loginAsPlayer(playerName) {
-    if (playerName === 'Stephen') {
-        openModal();
+function loginAsPlayer(slot) {
+    const player = getPlayerBySlot(slot);
+    if (player.isAdmin) {
+        openModal(slot);
     } else {
-        setCurrentUser(playerName, false);
+        setCurrentUser(player.name, slot, false);
     }
 }
 
@@ -256,7 +325,7 @@ function updateUI() {
     }
 }
 
-// Render player grid on homepage (alphabetically sorted)
+// Render player grid on homepage (sorted alphabetically by display name)
 function renderPlayerGrid() {
     const grid = document.getElementById('playerGrid');
     if (!grid) return;
@@ -264,70 +333,62 @@ function renderPlayerGrid() {
     const players = getPlayers();
     grid.innerHTML = '';
 
-    // Add Stephen (admin) button first with special styling
-    const stephenBtn = document.createElement('button');
-    stephenBtn.className = 'player-btn admin-btn';
-    stephenBtn.textContent = 'Stephen';
-    stephenBtn.onclick = () => loginAsPlayer('Stephen');
-    grid.appendChild(stephenBtn);
+    // Convert to array and sort alphabetically by name
+    const playerArray = Object.entries(players)
+        .map(([slot, data]) => ({ slot: parseInt(slot), ...data }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-    // Add other players alphabetically
-    players.forEach(player => {
+    playerArray.forEach(player => {
         const btn = document.createElement('button');
-        btn.className = 'player-btn';
-        btn.textContent = player;
-        btn.onclick = () => loginAsPlayer(player);
+        btn.className = player.isAdmin ? 'player-btn admin-btn' : 'player-btn';
+        btn.textContent = player.name;
+        btn.onclick = () => loginAsPlayer(player.slot);
         grid.appendChild(btn);
     });
 }
 
-// Player management (Admin)
+// Player management (Admin) - with editable names
 function renderPlayerList() {
     const container = document.getElementById('playerList');
     if (!container) return;
 
     const players = getPlayers();
-    container.innerHTML = '<h4 style="margin-bottom: 10px;">Current Players:</h4>';
+    container.innerHTML = '<h4 style="margin-bottom: 15px;">Player Names:</h4>';
 
     const list = document.createElement('div');
-    list.className = 'player-grid';
+    list.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;';
 
-    players.forEach((player, index) => {
+    for (let slot = 1; slot <= 12; slot++) {
+        const player = players[slot] || { name: '', isAdmin: false };
         const item = document.createElement('div');
-        item.style.cssText = 'background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;';
+        item.style.cssText = 'background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;';
         item.innerHTML = `
-            <span>${player}</span>
-            <button onclick="removePlayer(${index})" style="background: #c8102e; border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
+            <label style="display: block; font-size: 0.8em; color: var(--silver); margin-bottom: 5px;">
+                Player ${slot}${slot === 1 ? ' (Admin)' : ''}
+            </label>
+            <input type="text"
+                   id="playerName${slot}"
+                   value="${player.name}"
+                   placeholder="Enter name"
+                   onchange="savePlayerName(${slot})"
+                   style="width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 1em;">
         `;
         list.appendChild(item);
-    });
+    }
 
     container.appendChild(list);
 }
 
-function addPlayer() {
-    const input = document.getElementById('newPlayerName');
-    const name = input.value.trim();
-    if (!name) return;
+function savePlayerName(slot) {
+    const input = document.getElementById(`playerName${slot}`);
+    if (input) {
+        updatePlayerName(slot, input.value.trim());
 
-    const players = getPlayers();
-    if (players.includes(name)) {
-        alert('Player already exists');
-        return;
-    }
-
-    players.push(name);
-    localStorage.setItem('players', JSON.stringify(players));
-    input.value = '';
-    renderPlayerList();
-}
-
-function removePlayer(index) {
-    const players = getPlayers();
-    if (confirm(`Remove ${players[index]}?`)) {
-        players.splice(index, 1);
-        localStorage.setItem('players', JSON.stringify(players));
-        renderPlayerList();
+        // If this is the current user, update their display name
+        if (getCurrentUserSlot() == slot) {
+            localStorage.setItem('currentUser', input.value.trim());
+            updateUI();
+        }
     }
 }
 
@@ -336,16 +397,16 @@ function createCheckboxGroup(containerId, teamNum, prefix, existingMembers = [])
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const players = getPlayers();
+    const playerList = getPlayerList();
     let html = '<div class="checkbox-group">';
 
-    players.forEach(player => {
-        const checked = existingMembers.includes(player) ? 'checked' : '';
-        const selectedClass = existingMembers.includes(player) ? 'selected' : '';
+    playerList.forEach(playerName => {
+        const checked = existingMembers.includes(playerName) ? 'checked' : '';
+        const selectedClass = existingMembers.includes(playerName) ? 'selected' : '';
         html += `
             <label class="${selectedClass}" onclick="toggleCheckboxLabel(this)">
-                <input type="checkbox" name="${prefix}Team${teamNum}" value="${player}" ${checked}>
-                ${player}
+                <input type="checkbox" name="${prefix}Team${teamNum}" value="${playerName}" ${checked}>
+                ${playerName}
             </label>
         `;
     });
@@ -552,7 +613,7 @@ function renderGolfScorecard() {
     // Find user's team
     let userTeam = null;
     Object.keys(teams).forEach(teamNum => {
-        if (teams[teamNum].includes(user) || (user === 'Stephen' && isAdmin())) {
+        if (teams[teamNum].includes(user)) {
             userTeam = teamNum;
         }
     });
@@ -565,9 +626,15 @@ function renderGolfScorecard() {
     // If admin, show all teams
     const teamsToShow = isAdmin() ? Object.keys(teams) : [userTeam];
 
+    if (teamsToShow.length === 0 || (teamsToShow.length === 1 && !teamsToShow[0])) {
+        container.innerHTML = '<div class="placeholder-box"><p>No teams have been assigned yet.</p></div>';
+        return;
+    }
+
     container.innerHTML = '';
 
     teamsToShow.forEach(teamNum => {
+        if (!teamNum) return;
         const enabled = scoringEnabled[teamNum] !== false;
         const teamScores = holeScores[teamNum] || {};
         const teamShotgunCount = shotguns[teamNum] || 0;
@@ -598,10 +665,10 @@ function renderGolfScorecard() {
 
             // Shotguns
             html += `
-                <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <label style="color: var(--silver);">Team Shotguns:</label>
                     <input type="number" id="shotguns${teamNum}" value="${teamShotgunCount}"
-                           min="0" style="width: 60px; padding: 8px; border-radius: 5px; border: none;"
+                           min="0" style="width: 70px; padding: 10px; border-radius: 5px; border: none;"
                            onchange="saveGolfShotguns(${teamNum})" ${!enabled && !isAdmin() ? 'disabled' : ''}>
                 </div>
             `;
@@ -734,7 +801,7 @@ function loadBeerScoreInputs() {
             div.className = 'score-input';
             div.innerHTML = `
                 <label>Team ${teamNum}</label>
-                <small style="display: block; opacity: 0.7; margin-bottom: 5px;">${teams[teamNum].join(', ')}</small>
+                <small style="display: block; opacity: 0.7; margin-bottom: 5px; font-size: 0.8em;">${teams[teamNum].join(', ')}</small>
                 <input type="number" id="beerScore${teamNum}" placeholder="Points" value="${scores[teamNum] || ''}">
             `;
             grid.appendChild(div);
@@ -774,7 +841,7 @@ function renderGokartPointConfig() {
         const div = document.createElement('div');
         div.className = 'point-config-item';
         div.innerHTML = `
-            <label>${getOrdinal(i)} Place</label>
+            <label>${getOrdinal(i)}</label>
             <input type="number" id="gokartPts${i}" value="${points[i] || 0}">
         `;
         container.appendChild(div);
@@ -792,8 +859,8 @@ function renderGokartPointDisplay() {
         const div = document.createElement('div');
         div.className = 'point-config-item';
         div.innerHTML = `
-            <label>${getOrdinal(i)} Place</label>
-            <span style="font-size: 1.5em; font-weight: bold; color: var(--accent-red);">${points[i] || 0}</span>
+            <label>${getOrdinal(i)}</label>
+            <span style="font-size: 1.3em; font-weight: bold; color: var(--accent-red);">${points[i] || 0}</span>
         `;
         container.appendChild(div);
     }
@@ -814,20 +881,20 @@ function renderGokartScoringAdmin() {
     const container = document.getElementById('gokartScoringAdmin');
     if (!container) return;
 
-    const players = getPlayers();
+    const playerList = getPlayerList();
     const results = getGokartResults();
 
     container.innerHTML = '';
     const grid = document.createElement('div');
     grid.className = 'scoring-grid';
 
-    players.forEach(player => {
+    playerList.forEach(player => {
         const div = document.createElement('div');
         div.className = 'score-input';
         div.innerHTML = `
             <label>${player}</label>
             <select id="gokartPos_${player.replace(/\s/g, '_')}">
-                <option value="">-- Position --</option>
+                <option value="">-- Pos --</option>
                 ${[1,2,3,4,5,6,7,8,9,10,11,12].map(p =>
                     `<option value="${p}" ${results[player] === p ? 'selected' : ''}>${getOrdinal(p)}</option>`
                 ).join('')}
@@ -840,10 +907,10 @@ function renderGokartScoringAdmin() {
 }
 
 function saveGokartResults() {
-    const players = getPlayers();
+    const playerList = getPlayerList();
     const results = {};
 
-    players.forEach(player => {
+    playerList.forEach(player => {
         const select = document.getElementById(`gokartPos_${player.replace(/\s/g, '_')}`);
         if (select && select.value) {
             results[player] = parseInt(select.value);
@@ -894,7 +961,7 @@ function renderTriviaPointConfig() {
         const div = document.createElement('div');
         div.className = 'point-config-item';
         div.innerHTML = `
-            <label>${getOrdinal(i)} Place</label>
+            <label>${getOrdinal(i)}</label>
             <input type="number" id="triviaPts${i}" value="${points[i] || 0}">
         `;
         container.appendChild(div);
@@ -912,8 +979,8 @@ function renderTriviaPointDisplay() {
         const div = document.createElement('div');
         div.className = 'point-config-item';
         div.innerHTML = `
-            <label>${getOrdinal(i)} Place</label>
-            <span style="font-size: 1.5em; font-weight: bold; color: var(--accent-red);">${points[i] || 0}</span>
+            <label>${getOrdinal(i)}</label>
+            <span style="font-size: 1.3em; font-weight: bold; color: var(--accent-red);">${points[i] || 0}</span>
         `;
         container.appendChild(div);
     }
@@ -934,20 +1001,20 @@ function renderTriviaScoringAdmin() {
     const container = document.getElementById('triviaScoringAdmin');
     if (!container) return;
 
-    const players = getPlayers();
+    const playerList = getPlayerList();
     const results = getTriviaResults();
 
     container.innerHTML = '';
     const grid = document.createElement('div');
     grid.className = 'scoring-grid';
 
-    players.forEach(player => {
+    playerList.forEach(player => {
         const div = document.createElement('div');
         div.className = 'score-input';
         div.innerHTML = `
             <label>${player}</label>
             <select id="triviaPos_${player.replace(/\s/g, '_')}">
-                <option value="">-- Position --</option>
+                <option value="">-- Pos --</option>
                 ${[1,2,3,4,5,6,7,8,9,10,11,12].map(p =>
                     `<option value="${p}" ${results[player] === p ? 'selected' : ''}>${getOrdinal(p)}</option>`
                 ).join('')}
@@ -960,10 +1027,10 @@ function renderTriviaScoringAdmin() {
 }
 
 function saveTriviaResults() {
-    const players = getPlayers();
+    const playerList = getPlayerList();
     const results = {};
 
-    players.forEach(player => {
+    playerList.forEach(player => {
         const select = document.getElementById(`triviaPos_${player.replace(/\s/g, '_')}`);
         if (select && select.value) {
             results[player] = parseInt(select.value);
@@ -1004,10 +1071,10 @@ function renderTriviaResultsTable() {
 
 // Calculate all player points
 function calculatePlayerPoints() {
-    const players = getPlayers();
+    const playerList = getPlayerList();
     const playerPoints = {};
 
-    players.forEach(player => {
+    playerList.forEach(player => {
         playerPoints[player] = { golf: 0, beer: 0, gokart: 0, trivia: 0, total: 0 };
     });
 
@@ -1149,40 +1216,101 @@ function renderCumulativeChart() {
     const playerPoints = calculatePlayerPoints();
     const players = Object.keys(playerPoints);
 
+    if (players.length === 0) {
+        container.innerHTML = '<p style="text-align: center; opacity: 0.7;">No data to display</p>';
+        return;
+    }
+
     // Calculate cumulative scores after each event
     const chartData = players.map(player => {
         const pts = playerPoints[player];
         return {
             name: player,
-            afterGolf: pts.golf,
-            afterBeer: pts.golf + pts.beer,
-            afterGokart: pts.golf + pts.beer + pts.gokart,
-            afterTrivia: pts.total
+            scores: [0, pts.golf, pts.golf + pts.beer, pts.golf + pts.beer + pts.gokart, pts.total]
         };
     });
 
     // Sort by final total
-    chartData.sort((a, b) => b.afterTrivia - a.afterTrivia);
+    chartData.sort((a, b) => b.scores[4] - a.scores[4]);
 
-    // Create simple bar chart visualization
-    let html = '<h3 style="color: var(--gold); margin-bottom: 15px;">Cumulative Score Progression</h3>';
-    html += '<div style="overflow-x: auto;">';
-    html += '<table class="leaderboard-table"><thead><tr>';
-    html += '<th>Player</th><th>After Golf</th><th>After Beer Olympics</th><th>After Go-Karts</th><th>Final</th>';
-    html += '</tr></thead><tbody>';
+    // Chart dimensions
+    const width = 700;
+    const height = 350;
+    const padding = { top: 30, right: 120, bottom: 50, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
 
-    chartData.forEach((data, idx) => {
-        const rankClass = idx < 3 ? `rank-${idx + 1}` : '';
-        html += `<tr>
-            <td class="${rankClass}">${data.name}</td>
-            <td>${data.afterGolf}</td>
-            <td>${data.afterBeer}</td>
-            <td>${data.afterGokart}</td>
-            <td style="font-weight: bold;">${data.afterTrivia}</td>
-        </tr>`;
+    // Find max score for scaling
+    const maxScore = Math.max(...chartData.map(d => Math.max(...d.scores)), 1);
+    const events = ['Start', 'Golf', 'Beer', 'Karts', 'Trivia'];
+
+    // Generate distinct colors for players
+    const colors = [
+        '#c8102e', '#c9a227', '#3498db', '#2ecc71', '#9b59b6',
+        '#e67e22', '#1abc9c', '#e74c3c', '#f39c12', '#8e44ad',
+        '#16a085', '#d35400', '#27ae60', '#2980b9', '#c0392b', '#7f8c8d'
+    ];
+
+    // Build SVG
+    let svg = `<svg viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: ${width}px; height: auto;">`;
+
+    // Background
+    svg += `<rect x="0" y="0" width="${width}" height="${height}" fill="transparent"/>`;
+
+    // Grid lines
+    const yGridLines = 5;
+    for (let i = 0; i <= yGridLines; i++) {
+        const y = padding.top + (chartHeight / yGridLines) * i;
+        const value = Math.round(maxScore - (maxScore / yGridLines) * i);
+        svg += `<line x1="${padding.left}" y1="${y}" x2="${padding.left + chartWidth}" y2="${y}" stroke="var(--silver)" stroke-opacity="0.2" stroke-dasharray="3,3"/>`;
+        svg += `<text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" fill="var(--silver)" font-size="11">${value}</text>`;
+    }
+
+    // X axis labels
+    events.forEach((event, i) => {
+        const x = padding.left + (chartWidth / (events.length - 1)) * i;
+        svg += `<text x="${x}" y="${height - padding.bottom + 25}" text-anchor="middle" fill="var(--silver)" font-size="11">${event}</text>`;
     });
 
-    html += '</tbody></table></div>';
+    // Draw lines for each player
+    chartData.forEach((player, playerIdx) => {
+        const color = colors[playerIdx % colors.length];
+        let pathD = '';
+
+        player.scores.forEach((score, i) => {
+            const x = padding.left + (chartWidth / (events.length - 1)) * i;
+            const y = padding.top + chartHeight - (score / maxScore) * chartHeight;
+
+            if (i === 0) {
+                pathD += `M ${x} ${y}`;
+            } else {
+                pathD += ` L ${x} ${y}`;
+            }
+        });
+
+        // Draw line
+        svg += `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+        // Draw points
+        player.scores.forEach((score, i) => {
+            const x = padding.left + (chartWidth / (events.length - 1)) * i;
+            const y = padding.top + chartHeight - (score / maxScore) * chartHeight;
+            svg += `<circle cx="${x}" cy="${y}" r="4" fill="${color}"/>`;
+        });
+
+        // Player label at end
+        const lastX = padding.left + chartWidth + 8;
+        const lastY = padding.top + chartHeight - (player.scores[4] / maxScore) * chartHeight;
+        svg += `<text x="${lastX}" y="${lastY + 4}" fill="${color}" font-size="11" font-weight="bold">${player.name}</text>`;
+    });
+
+    svg += '</svg>';
+
+    let html = '<h3 style="color: var(--gold); margin-bottom: 15px;">Cumulative Score Progression</h3>';
+    html += '<div class="chart-container" style="overflow-x: auto;">';
+    html += svg;
+    html += '</div>';
+
     container.innerHTML = html;
 }
 
@@ -1225,12 +1353,12 @@ function renderBeerOlympicsLeaderboard() {
     const tbody = document.querySelector('#beerOlympicsLeaderboard tbody');
     if (!tbody) return;
 
-    const players = getPlayers();
+    const playerList = getPlayerList();
     const beerTeams = getBeerTeams();
     const beerScores = getBeerScores();
 
     const playerGamePoints = {};
-    players.forEach(player => {
+    playerList.forEach(player => {
         playerGamePoints[player] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, total: 0 };
     });
 
@@ -1331,6 +1459,7 @@ function renderProfile() {
     if (!container) return;
 
     const user = getCurrentUser();
+    const userSlot = getCurrentUserSlot();
     if (!user) {
         container.innerHTML = '<div class="placeholder-box"><p>Please log in to view your profile</p></div>';
         return;
@@ -1350,22 +1479,35 @@ function renderProfile() {
         }
     });
 
-    let html = `<h2 style="color: var(--accent-red); margin-bottom: 20px;">${user}'s Profile</h2>`;
+    let html = `
+        <div class="section-card">
+            <h2 style="color: var(--accent-red);">Edit Your Name</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <input type="text" id="profileNameInput" value="${user}"
+                       style="flex: 1; min-width: 150px; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                <button class="btn" onclick="saveProfileName()">Save Name</button>
+            </div>
+            <p style="margin-top: 10px; opacity: 0.7; font-size: 0.85em;">Player Slot: #${userSlot}</p>
+        </div>
+    `;
 
     // Overall stats
-    html += '<div class="profile-stats">';
-    html += `<div class="stat-card"><h4>Total Points</h4><div class="value">${userPoints.total}</div></div>`;
+    html += '<div class="section-card"><h2>Your Scores</h2><div class="profile-stats">';
+    html += `<div class="stat-card"><h4>Total</h4><div class="value">${userPoints.total}</div></div>`;
     html += `<div class="stat-card"><h4>Golf</h4><div class="value">${userPoints.golf}</div>${golfTeamNum ? `<div class="team">Team ${golfTeamNum}</div>` : ''}</div>`;
-    html += `<div class="stat-card"><h4>Beer Olympics</h4><div class="value">${userPoints.beer}</div></div>`;
-    html += `<div class="stat-card"><h4>Go-Karting</h4><div class="value">${userPoints.gokart}</div></div>`;
+    html += `<div class="stat-card"><h4>Beer</h4><div class="value">${userPoints.beer}</div></div>`;
+    html += `<div class="stat-card"><h4>Karts</h4><div class="value">${userPoints.gokart}</div></div>`;
     html += `<div class="stat-card"><h4>Trivia</h4><div class="value">${userPoints.trivia}</div></div>`;
-    html += '</div>';
+    html += '</div></div>';
 
     // Team assignments
-    html += '<div class="section-card" style="margin-top: 20px;"><h2>Your Team Assignments</h2>';
+    html += '<div class="section-card"><h2>Your Team Assignments</h2>';
+
+    let hasAssignments = false;
 
     // Golf team
     if (golfTeamNum) {
+        hasAssignments = true;
         html += `<div class="schedule-item"><h4>Golf - Team ${golfTeamNum}</h4><p>${golfTeams[golfTeamNum].join(', ')}</p></div>`;
     }
 
@@ -1374,14 +1516,34 @@ function renderProfile() {
         const teams = beerTeams[game] || {};
         Object.keys(teams).forEach(teamNum => {
             if (teams[teamNum].includes(user)) {
+                hasAssignments = true;
                 html += `<div class="schedule-item"><h4>Beer Olympics Game ${game} - Team ${teamNum}</h4><p>${teams[teamNum].join(', ')}</p></div>`;
             }
         });
     }
 
+    if (!hasAssignments) {
+        html += '<p style="opacity: 0.7;">No team assignments yet.</p>';
+    }
+
     html += '</div>';
 
     container.innerHTML = html;
+}
+
+function saveProfileName() {
+    const input = document.getElementById('profileNameInput');
+    const slot = getCurrentUserSlot();
+    if (input && slot) {
+        const newName = input.value.trim();
+        if (newName) {
+            updatePlayerName(slot, newName);
+            localStorage.setItem('currentUser', newName);
+            updateUI();
+            alert('Name updated!');
+            renderProfile();
+        }
+    }
 }
 
 // Data management

@@ -14,13 +14,41 @@
     --silver-light: #d4dce4;
     --gold: #c9a227;
     --white: #ffffff;
+    --bg-gradient-start: #0a1628;
+    --bg-gradient-end: #0d2137;
+    --text-primary: #ffffff;
+    --text-secondary: #d4dce4;
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: #1a3a5c;
+    --overlay-bg: rgba(0, 0, 0, 0.3);
+    --input-bg: #ffffff;
+    --input-text: #333333;
+}
+
+/* Light Mode */
+[data-theme="light"] {
+    --primary-dark: #e8eef5;
+    --primary-navy: #d0dae7;
+    --secondary-navy: #b8c8d9;
+    --silver: #5a6a7a;
+    --silver-light: #4a5a6a;
+    --bg-gradient-start: #e8eef5;
+    --bg-gradient-end: #d0dae7;
+    --text-primary: #1a2a3a;
+    --text-secondary: #3a4a5a;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: #b8c8d9;
+    --overlay-bg: rgba(255, 255, 255, 0.5);
+    --input-bg: #ffffff;
+    --input-text: #1a2a3a;
 }
 
 body {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-navy) 100%);
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     min-height: 100vh;
-    color: var(--white);
+    color: var(--text-primary);
+    transition: background 0.3s, color 0.3s;
 }
 
 .container {
@@ -65,6 +93,24 @@ nav ul li a:hover, nav ul li a.active {
     color: var(--white);
 }
 
+/* Theme Toggle Button */
+.theme-toggle {
+    background: transparent;
+    border: 2px solid var(--silver-light);
+    color: var(--silver-light);
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s;
+    line-height: 1;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+}
+
 /* Hero Section */
 .hero {
     text-align: center;
@@ -90,11 +136,11 @@ nav ul li a:hover, nav ul li a.active {
 
 /* Login Section */
 .login-section {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--card-bg);
     border-radius: 15px;
     padding: 25px;
     margin-bottom: 25px;
-    border: 1px solid var(--secondary-navy);
+    border: 1px solid var(--card-border);
 }
 
 .login-section h2 {
@@ -158,13 +204,18 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .modal-content {
-    background: var(--primary-navy);
+    background: var(--bg-gradient-end);
     padding: 25px;
     border-radius: 15px;
     text-align: center;
     border: 2px solid var(--accent-red);
     width: 100%;
     max-width: 320px;
+}
+
+[data-theme="light"] .modal-content {
+    background: var(--white);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 
 .modal-content h3 {
@@ -199,11 +250,11 @@ nav ul li a:hover, nav ul li a.active {
 
 /* Section Cards */
 .section-card {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--card-bg);
     border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
-    border: 1px solid var(--secondary-navy);
+    border: 1px solid var(--card-border);
 }
 
 .section-card h2 {
@@ -275,7 +326,7 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .team-card {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--overlay-bg);
     border-radius: 10px;
     padding: 15px;
 }
@@ -416,7 +467,7 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .score-input {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--overlay-bg);
     padding: 12px;
     border-radius: 8px;
 }
@@ -492,7 +543,7 @@ footer {
 
 /* Schedule */
 .schedule-item {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--overlay-bg);
     border-left: 4px solid var(--accent-red);
     padding: 15px;
     margin-bottom: 12px;
@@ -517,7 +568,7 @@ footer {
 
 /* Golf Scorecard */
 .scorecard {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--overlay-bg);
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
@@ -576,7 +627,7 @@ footer {
 }
 
 .stat-card {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--overlay-bg);
     border-radius: 10px;
     padding: 15px;
     text-align: center;
@@ -603,7 +654,7 @@ footer {
 
 /* Chart Container */
 .chart-container {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--overlay-bg);
     border-radius: 10px;
     padding: 15px;
     margin-top: 20px;
@@ -704,39 +755,169 @@ input:checked + .toggle-slider:before {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .hero {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+    }
+
     .hero h1 {
-        font-size: 1.4em;
+        font-size: 1.3em;
+        line-height: 1.3;
+    }
+
+    .hero p {
+        font-size: 0.95em;
     }
 
     nav ul {
-        gap: 5px 10px;
+        gap: 4px 8px;
+        padding: 0 10px;
     }
 
     nav ul li a {
         padding: 6px 10px;
-        font-size: 0.8em;
+        font-size: 0.75em;
+    }
+
+    .theme-toggle {
+        padding: 4px 8px;
+        font-size: 0.9em;
+    }
+
+    .section-card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .section-card h2 {
+        font-size: 1.15em;
     }
 
     .player-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
     }
 
-    .leaderboard-table {
+    .player-btn {
+        padding: 12px 6px;
         font-size: 0.8em;
     }
 
+    .event-links {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .event-link {
+        padding: 15px;
+    }
+
+    .event-link h3 {
+        font-size: 1em;
+    }
+
+    .event-link p {
+        font-size: 0.75em;
+    }
+
+    .leaderboard-table {
+        font-size: 0.75em;
+    }
+
     .leaderboard-table th, .leaderboard-table td {
-        padding: 8px 5px;
+        padding: 8px 4px;
     }
 
     .hole-grid {
         grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
+    }
+
+    .hole-input select {
+        font-size: 0.75em;
+        padding: 6px 2px;
+    }
+
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-card .value {
+        font-size: 1.6em;
+    }
+
+    .scoring-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bonus-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .user-header {
+        padding: 8px 12px;
+    }
+
+    .user-header span {
+        font-size: 0.8em;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+
+    .schedule-item {
+        padding: 12px;
+    }
+
+    .schedule-item h4 {
+        font-size: 0.95em;
+    }
+
+    .schedule-item p {
+        font-size: 0.8em;
+    }
+
+    .chart-container {
+        padding: 10px;
     }
 }
 
 @media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.1em;
+    }
+
+    nav ul {
+        gap: 3px 5px;
+    }
+
+    nav ul li a {
+        padding: 5px 7px;
+        font-size: 0.7em;
+    }
+
+    .theme-toggle {
+        padding: 3px 6px;
+        font-size: 0.85em;
+    }
+
     .player-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .event-links {
+        grid-template-columns: 1fr;
     }
 
     .hole-grid {
@@ -746,11 +927,50 @@ input:checked + .toggle-slider:before {
     .team-assignment {
         grid-template-columns: 1fr;
     }
+
+    .profile-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .scoring-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bonus-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-table {
+        font-size: 0.7em;
+    }
+
+    .leaderboard-table th, .leaderboard-table td {
+        padding: 6px 3px;
+    }
+
+    .point-config {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Table horizontal scroll wrapper */
+.table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -15px;
+    padding: 0 15px;
+}
+
+@media (max-width: 480px) {
+    .table-scroll-wrapper {
+        margin: 0 -10px;
+        padding: 0 10px;
+    }
 }
 
 /* Sub-events for Beer Olympics */
 .sub-event {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--overlay-bg);
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
@@ -771,7 +991,7 @@ input:checked + .toggle-slider:before {
 }
 
 .point-config-item {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--overlay-bg);
     padding: 10px;
     border-radius: 8px;
     text-align: center;
@@ -843,4 +1063,70 @@ body.is-admin nav .admin-only {
 .scoring-locked p {
     color: var(--accent-red);
     font-weight: bold;
+}
+
+/* Light Mode Specific Overrides */
+[data-theme="light"] nav {
+    background: rgba(26, 58, 92, 0.95);
+}
+
+[data-theme="light"] .hero {
+    border-color: var(--accent-red);
+}
+
+[data-theme="light"] .player-btn {
+    background: linear-gradient(135deg, #b8c8d9 0%, #d0dae7 100%);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .player-btn:hover {
+    background: var(--accent-red);
+    color: var(--white);
+}
+
+[data-theme="light"] .player-btn.admin-btn {
+    color: #8a7210;
+}
+
+[data-theme="light"] .event-link {
+    background: linear-gradient(135deg, #d0dae7 0%, #e8eef5 100%);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .leaderboard-table tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .leaderboard-table tr:hover {
+    background: rgba(200, 16, 46, 0.1);
+}
+
+[data-theme="light"] footer {
+    border-top-color: var(--card-border);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .placeholder-box {
+    border-color: var(--card-border);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .hole-input label {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .stat-card h4 {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .schedule-item p {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .toggle-slider {
+    background-color: var(--card-border);
+}
+
+[data-theme="light"] .modal {
+    background: rgba(0, 0, 0, 0.5);
 }
