@@ -8,56 +8,29 @@ title: Trivia - Dird Plesk Memorial
     <p>Individual Competition</p>
 </div>
 
+<!-- Player View -->
 <div class="section-card">
-    <h2>Format</h2>
-    <div class="placeholder-box">
-        <p>Individual trivia competition</p>
-        <p>Points awarded based on finishing position</p>
+    <div id="triviaPlayerView">
+        <!-- Trivia player interface populated by JavaScript -->
+        <div style="text-align: center; padding: 40px 20px;">
+            <p style="opacity: 0.7;">Loading trivia...</p>
+        </div>
     </div>
 </div>
 
-<div class="section-card">
-    <h2>Point Values</h2>
-    <p>Points awarded for each finishing position:</p>
-    <div class="point-config" id="triviaPointDisplay">
-        <!-- Point values displayed here by JavaScript -->
+<!-- Admin Controls (hidden for non-admins) -->
+<div class="section-card admin-only">
+    <h2>Admin: Question Setup</h2>
+    <p>Create up to 16 trivia questions with custom point values:</p>
+    <div id="triviaQuestionAdmin">
+        <!-- Question management populated by JavaScript -->
     </div>
-</div>
-
-<div class="section-card">
-    <h2>Current Results</h2>
-    <table class="leaderboard-table" id="triviaResults">
-        <thead>
-            <tr>
-                <th>Position</th>
-                <th>Player</th>
-                <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="3" style="text-align: center; opacity: 0.7;">
-                    Results will appear after trivia
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </div>
 
 <div class="section-card admin-only">
-    <h2>Admin: Configure Points</h2>
-    <p>Set point values for each finishing position:</p>
-    <div class="point-config" id="triviaPointConfig">
-        <!-- Point configuration inputs populated by JavaScript -->
+    <h2>Admin: Game Controls</h2>
+    <div id="triviaGameControls">
+        <!-- Game controls populated by JavaScript -->
     </div>
-    <button class="btn btn-gold" onclick="saveTriviaPoints()" style="margin-top: 15px;">Save Point Values</button>
-</div>
-
-<div class="section-card admin-only">
-    <h2>Admin: Enter Results</h2>
-    <p>Assign finishing positions to each player:</p>
-    <div id="triviaScoringAdmin">
-        <!-- Scoring inputs populated by JavaScript -->
-    </div>
-    <button class="btn btn-gold" onclick="saveTriviaResults()" style="margin-top: 15px;">Save Results</button>
+    <button class="btn" onclick="resetTriviaGame()" style="margin-top: 15px; background: #e67e22;">Reset Trivia</button>
 </div>

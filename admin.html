@@ -10,12 +10,15 @@ title: Admin - Dird Plesk Memorial
 
 <div id="adminContent">
     <div class="admin-section">
-        <h2>Manage Players</h2>
-        <p>Add or remove players from the competition:</p>
-        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <input type="text" id="newPlayerName" placeholder="Enter player name" style="padding: 12px; border-radius: 5px; border: none; flex: 1; min-width: 150px;">
-            <button class="btn" onclick="addPlayer()">Add Player</button>
+        <h2>Site Settings</h2>
+        <div id="siteSettingsContainer">
+            <!-- Site settings populated by JavaScript -->
         </div>
+    </div>
+
+    <div class="admin-section">
+        <h2>Manage Players</h2>
+        <p>Edit player names (12 player slots):</p>
         <div id="playerList" style="margin-top: 20px;">
             <!-- Player list populated by JavaScript -->
         </div>
@@ -110,6 +113,18 @@ title: Admin - Dird Plesk Memorial
         </div>
         <button class="btn btn-gold" onclick="saveBeerScores()" style="margin-top: 15px;">Save Scores</button>
         <button class="btn" onclick="closeBeerOlympicsAdmin()" style="margin-top: 15px;">Close</button>
+    </div>
+
+    <!-- Trivia Admin Section -->
+    <div class="admin-section">
+        <h2>Trivia Management</h2>
+        <div id="triviaQuestionAdmin">
+            <!-- Trivia questions populated by JavaScript -->
+        </div>
+        <div id="triviaGameControls" style="margin-top: 25px;">
+            <!-- Game controls populated by JavaScript -->
+        </div>
+        <button class="btn" onclick="resetTriviaGame()" style="margin-top: 15px; background: #e67e22;">Reset Trivia Only</button>
     </div>
 
     <div class="admin-section">
