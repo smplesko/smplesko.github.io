@@ -1,4 +1,41 @@
 // Dird Plesk Memorial Open Invitational of Champions - Main Application
+// With Firebase Realtime Database for cross-device sync
+
+// ===== FIREBASE INITIALIZATION =====
+const firebaseConfig = {
+    apiKey: "AIzaSyD-bbGBqC58dvjqJhdFLHaTBfp1FGpuPHM",
+    authDomain: "bp-games-tracker.firebaseapp.com",
+    databaseURL: "https://bp-games-tracker-default-rtdb.firebaseio.com",
+    projectId: "bp-games-tracker",
+    storageBucket: "bp-games-tracker.firebasestorage.app",
+    messagingSenderId: "983654017455",
+    appId: "1:983654017455:web:81ff968449c7320d1fe75a"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ===== LOCAL DATA CACHE =====
+// This cache is synced with Firebase in real-time
+let dataCache = {
+    players: null,
+    gokartPoints: null,
+    triviaPoints: null,
+    bonusPoints: null,
+    golfTeams: null,
+    golfHoleScores: null,
+    golfShotguns: null,
+    golfBonuses: null,
+    golfScoringEnabled: null,
+    beerTeams: null,
+    beerScores: null,
+    gokartResults: null,
+    triviaGame: null,
+    siteSettings: null
+};
+
+let firebaseReady = false;
 
 // Player structure: 12 players with slot numbers and display names
 // Stephen (admin) is Player 1
@@ -54,79 +91,117 @@ const DEFAULT_SITE_SETTINGS = {
 
 // Default trivia game settings
 const DEFAULT_TRIVIA_GAME = {
-    questions: [], // Array of { text: '', pointValue: 1 }
-    currentQuestion: 0, // 0 = not started, 1-16 = active question
-    status: 'waiting', // waiting, active, reviewing, complete
-    responses: {}, // { questionNum: { playerName: { answer: '', approved: false, bonus: false } } }
+    questions: [],
+    currentQuestion: 0,
+    status: 'waiting',
+    responses: {},
     maxQuestions: 16
 };
 
-// Initialize data
+// ===== FIREBASE DATA SYNC =====
+function setupFirebaseListeners() {
+    const paths = [
+        { path: 'players', default: DEFAULT_PLAYERS },
+        { path: 'gokartPoints', default: DEFAULT_GOKART_POINTS },
+        { path: 'triviaPoints', default: DEFAULT_TRIVIA_POINTS },
+        { path: 'bonusPoints', default: DEFAULT_BONUS_POINTS },
+        { path: 'golfTeams', default: {} },
+        { path: 'golfHoleScores', default: {} },
+        { path: 'golfShotguns', default: {} },
+        { path: 'golfBonuses', default: { bestFront: '', bestBack: '', overallWinner: '' } },
+        { path: 'golfScoringEnabled', default: {} },
+        { path: 'beerTeams', default: {1: {}, 2: {}, 3: {}, 4: {}, 5: {}} },
+        { path: 'beerScores', default: {1: {}, 2: {}, 3: {}, 4: {}, 5: {}} },
+        { path: 'gokartResults', default: {} },
+        { path: 'triviaGame', default: DEFAULT_TRIVIA_GAME },
+        { path: 'siteSettings', default: DEFAULT_SITE_SETTINGS }
+    ];
+
+    paths.forEach(({ path, default: defaultVal }) => {
+        db.ref(path).on('value', (snapshot) => {
+            const val = snapshot.val();
+            dataCache[path] = val !== null ? val : defaultVal;
+
+            // If this is initial load and we got null, set the default
+            if (val === null) {
+                db.ref(path).set(defaultVal);
+            }
+
+            // Trigger UI updates when data changes
+            onDataChange(path);
+        });
+    });
+
+    firebaseReady = true;
+}
+
+// Called when Firebase data changes - refresh relevant UI
+function onDataChange(path) {
+    const currentPath = window.location.pathname;
+
+    // Always update hero settings
+    if (path === 'siteSettings') {
+        applyHeroSettings();
+    }
+
+    // Update player grid on home
+    if (path === 'players' && (currentPath === '/' || currentPath === '/index.html')) {
+        renderPlayerGrid();
+    }
+
+    // Update leaderboards
+    if (currentPath === '/leaderboard' || currentPath === '/leaderboard.html') {
+        renderLeaderboards();
+    }
+
+    // Update golf scorecard
+    if (path.startsWith('golf') && (currentPath === '/golf' || currentPath === '/golf.html')) {
+        renderGolfScorecard();
+    }
+
+    // Update trivia page
+    if (path === 'triviaGame' && (currentPath === '/trivia' || currentPath === '/trivia.html')) {
+        renderTriviaPage();
+        if (isAdmin()) {
+            renderTriviaGameControls();
+        }
+    }
+
+    // Update admin page
+    if (currentPath === '/admin' || currentPath === '/admin.html') {
+        if (path === 'players') renderPlayerList();
+        if (path === 'siteSettings') renderSiteSettings();
+        if (path === 'triviaGame') {
+            renderTriviaQuestionAdmin();
+            renderTriviaGameControls();
+        }
+    }
+
+    // Update profile
+    if (currentPath === '/profile' || currentPath === '/profile.html') {
+        renderProfile();
+    }
+}
+
+// Write data to Firebase
+function writeToFirebase(path, data) {
+    db.ref(path).set(data);
+}
+
+// Initialize data - now uses Firebase
 function initData() {
-    // Force update players to new structure if old format detected
-    const existingPlayers = localStorage.getItem('players');
-    if (!existingPlayers || Array.isArray(JSON.parse(existingPlayers))) {
-        localStorage.setItem('players', JSON.stringify(DEFAULT_PLAYERS));
-    }
-
-    if (!localStorage.getItem('gokartPoints')) {
-        localStorage.setItem('gokartPoints', JSON.stringify(DEFAULT_GOKART_POINTS));
-    }
-    if (!localStorage.getItem('triviaPoints')) {
-        localStorage.setItem('triviaPoints', JSON.stringify(DEFAULT_TRIVIA_POINTS));
-    }
-    if (!localStorage.getItem('bonusPoints')) {
-        localStorage.setItem('bonusPoints', JSON.stringify(DEFAULT_BONUS_POINTS));
-    }
-    if (!localStorage.getItem('golfTeams')) {
-        localStorage.setItem('golfTeams', JSON.stringify({}));
-    }
-    if (!localStorage.getItem('golfHoleScores')) {
-        localStorage.setItem('golfHoleScores', JSON.stringify({}));
-    }
-    if (!localStorage.getItem('golfShotguns')) {
-        localStorage.setItem('golfShotguns', JSON.stringify({}));
-    }
-    if (!localStorage.getItem('golfBonuses')) {
-        localStorage.setItem('golfBonuses', JSON.stringify({ bestFront: '', bestBack: '', overallWinner: '' }));
-    }
-    if (!localStorage.getItem('golfScoringEnabled')) {
-        localStorage.setItem('golfScoringEnabled', JSON.stringify({}));
-    }
-    if (!localStorage.getItem('beerTeams')) {
-        localStorage.setItem('beerTeams', JSON.stringify({1: {}, 2: {}, 3: {}, 4: {}, 5: {}}));
-    }
-    if (!localStorage.getItem('beerScores')) {
-        localStorage.setItem('beerScores', JSON.stringify({1: {}, 2: {}, 3: {}, 4: {}, 5: {}}));
-    }
-    if (!localStorage.getItem('gokartResults')) {
-        localStorage.setItem('gokartResults', JSON.stringify({}));
-    }
-    if (!localStorage.getItem('triviaResults')) {
-        localStorage.setItem('triviaResults', JSON.stringify({}));
-    }
-
-    // Initialize site settings
-    if (!localStorage.getItem('siteSettings')) {
-        localStorage.setItem('siteSettings', JSON.stringify(DEFAULT_SITE_SETTINGS));
-    }
-
-    // Initialize trivia game
-    if (!localStorage.getItem('triviaGame')) {
-        localStorage.setItem('triviaGame', JSON.stringify(DEFAULT_TRIVIA_GAME));
-    }
-
-    // Initialize theme
+    // Set up Firebase listeners
+    setupFirebaseListeners();
+    // Initialize theme (stays in localStorage - device specific)
     if (!localStorage.getItem('theme')) {
         localStorage.setItem('theme', 'dark');
     }
     applyTheme();
 }
 
-// Get data helpers
+// Get data helpers (now read from Firebase cache)
 function getPlayers() {
-    const players = JSON.parse(localStorage.getItem('players')) || DEFAULT_PLAYERS;
-    return players;
+    return dataCache.players || DEFAULT_PLAYERS;
 }
 
 function getPlayerList() {
@@ -147,72 +222,68 @@ function updatePlayerName(slot, newName) {
     const players = getPlayers();
     if (players[slot]) {
         players[slot].name = newName;
-        localStorage.setItem('players', JSON.stringify(players));
+        writeToFirebase('players', players);
     }
 }
 
 function getGokartPoints() {
-    return JSON.parse(localStorage.getItem('gokartPoints')) || DEFAULT_GOKART_POINTS;
+    return dataCache.gokartPoints || DEFAULT_GOKART_POINTS;
 }
 
 function getTriviaPoints() {
-    return JSON.parse(localStorage.getItem('triviaPoints')) || DEFAULT_TRIVIA_POINTS;
+    return dataCache.triviaPoints || DEFAULT_TRIVIA_POINTS;
 }
 
 function getBonusPoints() {
-    return JSON.parse(localStorage.getItem('bonusPoints')) || DEFAULT_BONUS_POINTS;
+    return dataCache.bonusPoints || DEFAULT_BONUS_POINTS;
 }
 
 function getGolfTeams() {
-    return JSON.parse(localStorage.getItem('golfTeams')) || {};
+    return dataCache.golfTeams || {};
 }
 
 function getGolfHoleScores() {
-    return JSON.parse(localStorage.getItem('golfHoleScores')) || {};
+    return dataCache.golfHoleScores || {};
 }
 
 function getGolfShotguns() {
-    return JSON.parse(localStorage.getItem('golfShotguns')) || {};
+    return dataCache.golfShotguns || {};
 }
 
 function getGolfBonuses() {
-    return JSON.parse(localStorage.getItem('golfBonuses')) || { bestFront: '', bestBack: '', overallWinner: '' };
+    return dataCache.golfBonuses || { bestFront: '', bestBack: '', overallWinner: '' };
 }
 
 function getGolfScoringEnabled() {
-    return JSON.parse(localStorage.getItem('golfScoringEnabled')) || {};
+    return dataCache.golfScoringEnabled || {};
 }
 
 function getBeerTeams() {
-    return JSON.parse(localStorage.getItem('beerTeams')) || {1: {}, 2: {}, 3: {}, 4: {}, 5: {}};
+    return dataCache.beerTeams || {1: {}, 2: {}, 3: {}, 4: {}, 5: {}};
 }
 
 function getBeerScores() {
-    return JSON.parse(localStorage.getItem('beerScores')) || {1: {}, 2: {}, 3: {}, 4: {}, 5: {}};
+    return dataCache.beerScores || {1: {}, 2: {}, 3: {}, 4: {}, 5: {}};
 }
 
 function getGokartResults() {
-    return JSON.parse(localStorage.getItem('gokartResults')) || {};
-}
-
-function getTriviaResults() {
-    return JSON.parse(localStorage.getItem('triviaResults')) || {};
+    return dataCache.gokartResults || {};
 }
 
 function getSiteSettings() {
-    return JSON.parse(localStorage.getItem('siteSettings')) || DEFAULT_SITE_SETTINGS;
+    return dataCache.siteSettings || DEFAULT_SITE_SETTINGS;
 }
 
 function saveSiteSettings(settings) {
-    localStorage.setItem('siteSettings', JSON.stringify(settings));
+    writeToFirebase('siteSettings', settings);
 }
 
 function getTriviaGame() {
-    return JSON.parse(localStorage.getItem('triviaGame')) || DEFAULT_TRIVIA_GAME;
+    return dataCache.triviaGame || DEFAULT_TRIVIA_GAME;
 }
 
 function saveTriviaGame(game) {
-    localStorage.setItem('triviaGame', JSON.stringify(game));
+    writeToFirebase('triviaGame', game);
 }
 
 // Determine which events have data (completed)
@@ -598,7 +669,7 @@ function saveGolfTeams() {
         teams[i] = getSelectedFromCheckboxGroup('golf', i);
     }
 
-    localStorage.setItem('golfTeams', JSON.stringify(teams));
+    writeToFirebase('golfTeams', teams);
     alert('Golf teams saved!');
     loadGolfScoringControls();
 }
@@ -636,7 +707,7 @@ function toggleTeamScoring(teamNum) {
     const checkbox = document.getElementById(`scoringToggle${teamNum}`);
     const scoringEnabled = getGolfScoringEnabled();
     scoringEnabled[teamNum] = checkbox.checked;
-    localStorage.setItem('golfScoringEnabled', JSON.stringify(scoringEnabled));
+    writeToFirebase('golfScoringEnabled', scoringEnabled);
     loadGolfScoringControls();
 }
 
@@ -715,7 +786,7 @@ function saveBonusPointValues() {
         overallWinner: parseInt(document.getElementById('bonusPtsOverall').value) || 0,
         shotgun: parseInt(document.getElementById('bonusPtsShotgun').value) || 0
     };
-    localStorage.setItem('bonusPoints', JSON.stringify(bonusPoints));
+    writeToFirebase('bonusPoints', bonusPoints);
 }
 
 function saveGolfBonuses() {
@@ -724,7 +795,7 @@ function saveGolfBonuses() {
         bestBack: document.getElementById('bonusBestBack').value,
         overallWinner: document.getElementById('bonusOverallWinner').value
     };
-    localStorage.setItem('golfBonuses', JSON.stringify(bonuses));
+    writeToFirebase('golfBonuses', bonuses);
 }
 
 // Golf Scorecard (for players)
@@ -836,18 +907,14 @@ function saveHoleScore(teamNum, hole) {
     }
 
     holeScores[teamNum][hole] = select.value;
-    localStorage.setItem('golfHoleScores', JSON.stringify(holeScores));
-
-    // Update total display
-    renderGolfScorecard();
+    writeToFirebase('golfHoleScores', holeScores);
 }
 
 function saveGolfShotguns(teamNum) {
     const input = document.getElementById(`shotguns${teamNum}`);
     const shotguns = getGolfShotguns();
     shotguns[teamNum] = parseInt(input.value) || 0;
-    localStorage.setItem('golfShotguns', JSON.stringify(shotguns));
-    renderGolfScorecard();
+    writeToFirebase('golfShotguns', shotguns);
 }
 
 // Beer Olympics Admin
@@ -899,7 +966,7 @@ function saveBeerTeams() {
         allBeerTeams[gameNum][i] = getSelectedFromCheckboxGroup('beer', i);
     }
 
-    localStorage.setItem('beerTeams', JSON.stringify(allBeerTeams));
+    writeToFirebase('beerTeams', allBeerTeams);
     alert(`Beer Olympics Game ${gameNum} teams saved!`);
     loadBeerScoreInputs();
 }
@@ -953,7 +1020,7 @@ function saveBeerScores() {
         }
     });
 
-    localStorage.setItem('beerScores', JSON.stringify(allBeerScores));
+    writeToFirebase('beerScores', allBeerScores);
     alert(`Beer Olympics Game ${gameNum} scores saved!`);
 }
 
@@ -1000,7 +1067,7 @@ function saveGokartPoints() {
         const input = document.getElementById(`gokartPts${i}`);
         points[i] = parseInt(input.value) || 0;
     }
-    localStorage.setItem('gokartPoints', JSON.stringify(points));
+    writeToFirebase('gokartPoints', points);
     alert('Go-kart point values saved!');
     renderGokartPointDisplay();
 }
@@ -1045,7 +1112,7 @@ function saveGokartResults() {
         }
     });
 
-    localStorage.setItem('gokartResults', JSON.stringify(results));
+    writeToFirebase('gokartResults', results);
     alert('Go-kart results saved!');
     renderGokartResultsTable();
 }
@@ -2063,8 +2130,8 @@ function exportData() {
         beerScores: getBeerScores(),
         gokartPoints: getGokartPoints(),
         gokartResults: getGokartResults(),
-        triviaPoints: getTriviaPoints(),
-        triviaResults: getTriviaResults()
+        triviaGame: getTriviaGame(),
+        siteSettings: getSiteSettings()
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2078,8 +2145,22 @@ function exportData() {
 function confirmResetData() {
     if (confirm('Are you sure you want to reset ALL data? This cannot be undone!')) {
         if (confirm('Really? All scores and teams will be deleted!')) {
-            localStorage.clear();
-            initData();
+            // Reset Firebase data to defaults
+            writeToFirebase('players', DEFAULT_PLAYERS);
+            writeToFirebase('gokartPoints', DEFAULT_GOKART_POINTS);
+            writeToFirebase('triviaPoints', DEFAULT_TRIVIA_POINTS);
+            writeToFirebase('bonusPoints', DEFAULT_BONUS_POINTS);
+            writeToFirebase('golfTeams', {});
+            writeToFirebase('golfHoleScores', {});
+            writeToFirebase('golfShotguns', {});
+            writeToFirebase('golfBonuses', { bestFront: '', bestBack: '', overallWinner: '' });
+            writeToFirebase('golfScoringEnabled', {});
+            writeToFirebase('beerTeams', {1: {}, 2: {}, 3: {}, 4: {}, 5: {}});
+            writeToFirebase('beerScores', {1: {}, 2: {}, 3: {}, 4: {}, 5: {}});
+            writeToFirebase('gokartResults', {});
+            writeToFirebase('triviaGame', DEFAULT_TRIVIA_GAME);
+            writeToFirebase('siteSettings', DEFAULT_SITE_SETTINGS);
+
             alert('All data has been reset');
             window.location.reload();
         }
@@ -2151,16 +2232,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Auto-refresh trivia page every 3 seconds when game is active
-    if (path === '/trivia' || path === '/trivia.html') {
-        setInterval(() => {
-            const game = getTriviaGame();
-            if (game.status === 'active' || game.status === 'reviewing') {
-                renderTriviaPage();
-                if (isAdmin()) {
-                    renderTriviaGameControls();
-                }
-            }
-        }, 3000);
-    }
+    // Firebase handles real-time updates automatically via listeners
 });
