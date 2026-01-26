@@ -86,7 +86,9 @@ const DEFAULT_BONUS_POINTS = {
 // Default site settings
 const DEFAULT_SITE_SETTINGS = {
     heroTitle: 'Dird Plesk Memorial Open Invitational of Champions',
-    heroSubtitle: 'The event no one asked for.'
+    heroSubtitle: 'The event no one asked for.',
+    notesVisible: true,
+    notesContent: 'Notes go here'
 };
 
 // Default trivia game settings
@@ -560,17 +562,35 @@ function renderSiteSettings() {
     if (!container) return;
 
     const settings = getSiteSettings();
+    const notesVisible = settings.notesVisible !== false;
+    const notesContent = settings.notesContent || 'Notes go here';
+
     container.innerHTML = `
         <div style="display: grid; gap: 15px;">
             <div>
                 <label style="display: block; margin-bottom: 5px; color: var(--silver);">Homepage Title (H1)</label>
-                <input type="text" id="heroTitleInput" value="${settings.heroTitle}"
+                <input type="text" id="heroTitleInput" value="${settings.heroTitle || ''}"
                        style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
             </div>
             <div>
                 <label style="display: block; margin-bottom: 5px; color: var(--silver);">Homepage Subtitle</label>
-                <input type="text" id="heroSubtitleInput" value="${settings.heroSubtitle}"
+                <input type="text" id="heroSubtitleInput" value="${settings.heroSubtitle || ''}"
                        style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+            </div>
+            <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 5px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notesVisibleToggle" ${notesVisible ? 'checked' : ''}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span style="color: var(--silver);">Show Notes Section on Homepage</span>
+                </div>
+                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Notes Content (HTML supported for links)</label>
+                <textarea id="notesContentInput" placeholder="Enter notes here... Use &lt;a href='url'&gt;link text&lt;/a&gt; for hyperlinks"
+                          style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em; min-height: 120px; resize: vertical; font-family: inherit;">${notesContent}</textarea>
+                <p style="font-size: 0.8em; color: var(--silver); margin-top: 5px; opacity: 0.7;">
+                    Tip: Use &lt;br&gt; for line breaks, &lt;a href="url"&gt;text&lt;/a&gt; for links
+                </p>
             </div>
             <button class="btn btn-gold" onclick="saveSiteSettingsForm()">Save Site Settings</button>
         </div>
@@ -580,10 +600,14 @@ function renderSiteSettings() {
 function saveSiteSettingsForm() {
     const title = document.getElementById('heroTitleInput').value.trim();
     const subtitle = document.getElementById('heroSubtitleInput').value.trim();
+    const notesVisible = document.getElementById('notesVisibleToggle').checked;
+    const notesContent = document.getElementById('notesContentInput').value;
 
     const settings = getSiteSettings();
     settings.heroTitle = title || DEFAULT_SITE_SETTINGS.heroTitle;
     settings.heroSubtitle = subtitle || DEFAULT_SITE_SETTINGS.heroSubtitle;
+    settings.notesVisible = notesVisible;
+    settings.notesContent = notesContent;
 
     saveSiteSettings(settings);
     alert('Site settings saved!');
@@ -597,8 +621,22 @@ function applyHeroSettings() {
     const heroH1 = document.querySelector('.hero h1');
     const heroP = document.querySelector('.hero p');
 
-    if (heroH1) heroH1.textContent = settings.heroTitle;
-    if (heroP) heroP.textContent = settings.heroSubtitle;
+    if (heroH1) heroH1.textContent = settings.heroTitle || DEFAULT_SITE_SETTINGS.heroTitle;
+    if (heroP) heroP.textContent = settings.heroSubtitle || DEFAULT_SITE_SETTINGS.heroSubtitle;
+
+    // Update notes section
+    const notesSection = document.getElementById('notesSection');
+    if (notesSection) {
+        const notesVisible = settings.notesVisible !== false;
+        const notesContent = settings.notesContent || 'Notes go here';
+
+        if (notesVisible) {
+            notesSection.style.display = 'block';
+            notesSection.querySelector('.notes-content').innerHTML = notesContent;
+        } else {
+            notesSection.style.display = 'none';
+        }
+    }
 }
 
 // Mobile-friendly checkbox group for team selection
