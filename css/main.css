@@ -165,11 +165,10 @@ nav ul li a:hover, nav ul li a.active {
 /* Login Section */
 .login-section {
     background: var(--card-bg);
-    border-radius: 0 0 15px 15px;
+    border-radius: 15px;
     padding: 25px;
     margin-bottom: 25px;
-    border: none;
-    border-top: 3px solid var(--accent-red);
+    border: 1px solid var(--card-border);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
@@ -188,11 +187,10 @@ nav ul li a:hover, nav ul li a.active {
 
 .player-btn {
     background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
-    border: none;
-    border-bottom: 3px solid var(--accent-red);
+    border: 2px solid var(--accent-red);
     color: var(--white);
     padding: 14px 8px;
-    border-radius: 10px 10px 6px 6px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 0.9em;
     font-weight: bold;
@@ -207,7 +205,7 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .player-btn.admin-btn {
-    border-bottom-color: var(--gold);
+    border-color: var(--gold);
     color: var(--gold);
 }
 
@@ -283,11 +281,10 @@ nav ul li a:hover, nav ul li a.active {
 /* Section Cards */
 .section-card {
     background: var(--card-bg);
-    border-radius: 0 0 15px 15px;
+    border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
-    border: none;
-    border-top: 3px solid var(--accent-red);
+    border: 1px solid var(--card-border);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
@@ -468,9 +465,8 @@ nav ul li a:hover, nav ul li a.active {
 
 .event-link {
     background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
-    border: none;
-    border-left: 4px solid var(--accent-red);
-    border-radius: 0 15px 15px 0;
+    border: 2px solid var(--accent-red);
+    border-radius: 15px;
     padding: 20px;
     text-align: center;
     text-decoration: none;
