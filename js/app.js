@@ -95,6 +95,7 @@ const DEFAULT_TRIVIA_GAME = {
     currentQuestion: 0,
     status: 'waiting',
     responses: {},
+    joinedPlayers: {},  // Track who has joined the trivia lobby
     maxQuestions: 16
 };
 
@@ -279,7 +280,16 @@ function saveSiteSettings(settings) {
 }
 
 function getTriviaGame() {
-    return dataCache.triviaGame || DEFAULT_TRIVIA_GAME;
+    const game = dataCache.triviaGame || {};
+    // Ensure all required fields exist (Firebase may omit empty objects)
+    return {
+        questions: game.questions || [],
+        currentQuestion: game.currentQuestion || 0,
+        status: game.status || 'waiting',
+        responses: game.responses || {},
+        joinedPlayers: game.joinedPlayers || {},
+        maxQuestions: game.maxQuestions || 16
+    };
 }
 
 function saveTriviaGame(game) {
@@ -1253,6 +1263,8 @@ function renderTriviaGameControls() {
 
     const game = getTriviaGame();
     const totalQuestions = game.questions.length;
+    const joinedPlayers = Object.keys(game.joinedPlayers || {});
+    const playerList = getPlayerList();
 
     let html = '<h4 style="color: var(--gold); margin-bottom: 15px;">Game Controls</h4>';
 
@@ -1265,10 +1277,54 @@ function renderTriviaGameControls() {
     html += `<p>Total Questions: ${totalQuestions} | Current: ${game.currentQuestion} | Status: <strong>${game.status}</strong></p>`;
 
     if (game.status === 'waiting') {
-        html += `<button class="btn btn-gold" onclick="triviaShowQuestion(1)">Start Trivia - Show Q1</button>`;
+        // Show waiting room status
+        html += `<div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin: 15px 0;">`;
+        html += `<h5 style="color: var(--gold); margin-bottom: 10px;">Waiting Room (${joinedPlayers.length}/${playerList.length} players)</h5>`;
+
+        if (joinedPlayers.length === 0) {
+            html += `<p style="opacity: 0.7;">No players have joined yet. Players can join from the Trivia page.</p>`;
+        } else {
+            html += `<div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
+            joinedPlayers.forEach(player => {
+                html += `<span style="background: rgba(46, 204, 113, 0.3); padding: 5px 12px; border-radius: 20px; font-size: 0.9em;">${player}</span>`;
+            });
+            html += `</div>`;
+
+            // Show who hasn't joined
+            const notJoined = playerList.filter(p => !joinedPlayers.includes(p));
+            if (notJoined.length > 0) {
+                html += `<p style="margin-top: 10px; font-size: 0.85em; opacity: 0.7;">Not joined: ${notJoined.join(', ')}</p>`;
+            }
+        }
+        html += `</div>`;
+
+        html += `<button class="btn btn-gold" onclick="triviaShowQuestion(1)" ${joinedPlayers.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>Start Trivia - Show Q1</button>`;
+        if (joinedPlayers.length === 0) {
+            html += `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">At least one player must join to start</p>`;
+        }
     } else if (game.status === 'active') {
-        html += `<p style="margin: 10px 0;">Waiting for player responses...</p>`;
+        const qNum = game.currentQuestion;
+        const responses = game.responses[qNum] || {};
+        const responseCount = Object.keys(responses).length;
+        const joinedCount = joinedPlayers.length;
+
+        html += `<div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin: 15px 0;">`;
+        html += `<p style="margin-bottom: 10px;">Responses received: <strong>${responseCount}/${joinedCount}</strong></p>`;
+
+        // Show who has responded
+        if (responseCount > 0) {
+            html += `<p style="font-size: 0.85em; color: var(--silver);">Answered: ${Object.keys(responses).join(', ')}</p>`;
+        }
+
+        // Show who hasn't responded yet
+        const notResponded = joinedPlayers.filter(p => !responses[p]);
+        if (notResponded.length > 0) {
+            html += `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">Waiting on: ${notResponded.join(', ')}</p>`;
+        }
+        html += `</div>`;
+
         html += `<button class="btn btn-gold" onclick="triviaRevealResponses()">Reveal Responses for Q${game.currentQuestion}</button>`;
+        html += `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">You can reveal responses even if not everyone has answered</p>`;
     } else if (game.status === 'reviewing') {
         html += renderTriviaResponseReview();
         if (game.currentQuestion < totalQuestions) {
@@ -1379,16 +1435,33 @@ function triviaComplete() {
 }
 
 function resetTriviaGame() {
-    if (confirm('Are you sure you want to reset trivia? All responses will be cleared but questions will be kept.')) {
+    if (confirm('Are you sure you want to reset trivia? All responses and joined players will be cleared but questions will be kept.')) {
         const game = getTriviaGame();
         game.currentQuestion = 0;
         game.status = 'waiting';
         game.responses = {};
+        game.joinedPlayers = {};
         saveTriviaGame(game);
         alert('Trivia has been reset!');
         renderTriviaGameControls();
         renderTriviaPage();
     }
+}
+
+// Player joins trivia lobby
+function joinTriviaLobby() {
+    const user = getCurrentUser();
+    if (!user) {
+        alert('Please log in first');
+        return;
+    }
+
+    const game = getTriviaGame();
+    if (!game.joinedPlayers) {
+        game.joinedPlayers = {};
+    }
+    game.joinedPlayers[user] = { joinedAt: Date.now() };
+    saveTriviaGame(game);
 }
 
 // Player trivia view
@@ -1439,13 +1512,45 @@ function renderTriviaPage() {
 
     // Game state display
     if (game.status === 'waiting') {
+        const joinedPlayers = Object.keys(game.joinedPlayers || {});
+        const hasJoined = user && joinedPlayers.includes(user);
+
         html += `
             <div class="trivia-waiting" style="text-align: center; padding: 40px 20px;">
                 <h2 style="color: var(--gold);">Welcome to Trivia!</h2>
-                <p style="margin-top: 15px; opacity: 0.8;">Waiting for the game to begin...</p>
-                <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.6;">The admin will start when everyone is ready.</p>
-            </div>
         `;
+
+        if (!user) {
+            html += `<p style="margin-top: 15px; color: var(--accent-red);">Please log in to join trivia.</p>`;
+        } else if (hasJoined) {
+            html += `
+                <div style="margin: 20px 0; padding: 15px; background: rgba(46, 204, 113, 0.2); border-radius: 10px; border: 2px solid #2ecc71;">
+                    <p style="font-size: 1.2em; color: #2ecc71;">You're in!</p>
+                    <p style="margin-top: 10px; opacity: 0.8;">Waiting for the admin to start the game...</p>
+                </div>
+            `;
+        } else {
+            html += `
+                <p style="margin-top: 15px; opacity: 0.8;">Join the game to participate!</p>
+                <button class="btn btn-gold" onclick="joinTriviaLobby()" style="margin-top: 15px; font-size: 1.1em; padding: 15px 40px;">Join Trivia</button>
+            `;
+        }
+
+        // Show who's in the lobby
+        if (joinedPlayers.length > 0) {
+            html += `
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--silver);">
+                    <p style="font-size: 0.9em; color: var(--silver); margin-bottom: 10px;">Players in lobby (${joinedPlayers.length}):</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+            `;
+            joinedPlayers.forEach(player => {
+                const isMe = player === user;
+                html += `<span style="background: ${isMe ? 'var(--gold)' : 'var(--overlay-bg)'}; color: ${isMe ? 'var(--primary-dark)' : 'inherit'}; padding: 5px 12px; border-radius: 20px; font-size: 0.9em;">${player}${isMe ? ' (You)' : ''}</span>`;
+            });
+            html += `</div></div>`;
+        }
+
+        html += `</div>`;
     } else if (game.status === 'active') {
         const qNum = game.currentQuestion;
         const question = game.questions[qNum - 1];
