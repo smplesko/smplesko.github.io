@@ -5,9 +5,85 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <style>
+            /* Site password gate styles */
+            .site-gate {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--primary-dark, #0a1628);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            }
+            .site-gate-content {
+                background: linear-gradient(135deg, var(--accent-red, #c8102e) 0%, #8b0000 100%);
+                padding: 40px;
+                border-radius: 15px;
+                text-align: center;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            }
+            .site-gate h2 {
+                color: white;
+                margin-bottom: 10px;
+                font-size: 1.5em;
+            }
+            .site-gate p {
+                color: rgba(255,255,255,0.8);
+                margin-bottom: 25px;
+                font-size: 0.95em;
+            }
+            .site-gate input {
+                width: 100%;
+                padding: 15px;
+                font-size: 1.1em;
+                border: none;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+            .site-gate button {
+                width: 100%;
+                padding: 15px;
+                font-size: 1.1em;
+                background: var(--gold, #c9a227);
+                color: var(--primary-dark, #0a1628);
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .site-gate button:hover {
+                background: #d4af37;
+            }
+            .site-gate .error {
+                color: #ffcccc;
+                margin-top: 10px;
+                display: none;
+            }
+            .site-content-hidden {
+                display: none !important;
+            }
+        </style>
     </head>
     <body>
-        <nav>
+        <!-- Site Password Gate -->
+        <div class="site-gate" id="siteGate">
+            <div class="site-gate-content">
+                <h2>Welcome</h2>
+                <p>Enter the password to access the site</p>
+                <input type="password" id="sitePassword" placeholder="Password" autocomplete="off">
+                <button onclick="checkSitePassword()">Enter</button>
+                <p class="error" id="siteGateError">Incorrect password</p>
+            </div>
+        </div>
+
+        <nav class="site-content-hidden" id="mainNav">
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/profile">Profile</a></li>
@@ -21,7 +97,7 @@
             </ul>
         </nav>
 
-        <div class="container">
+        <div class="container site-content-hidden" id="mainContainer">
             <div class="user-header" id="userHeader" style="display: none;">
                 <span>Logged in as: <span id="currentUser"></span></span>
                 <button class="logout-btn" onclick="logout()">Logout</button>
@@ -42,9 +118,53 @@
             </div>
         </div>
 
-        <footer>
+        <footer class="site-content-hidden" id="mainFooter">
             Dird Plesk Memorial Open Invitational of Champions 2025
         </footer>
+
+        <!-- Site Password Gate Script -->
+        <script>
+            (function() {
+                const SITE_PASSWORD = 'austin';
+                const STORAGE_KEY = 'siteAccessGranted';
+
+                function showContent() {
+                    document.getElementById('siteGate').style.display = 'none';
+                    document.getElementById('mainNav').classList.remove('site-content-hidden');
+                    document.getElementById('mainContainer').classList.remove('site-content-hidden');
+                    document.getElementById('mainFooter').classList.remove('site-content-hidden');
+                }
+
+                // Check if already authenticated
+                if (localStorage.getItem(STORAGE_KEY) === 'true') {
+                    showContent();
+                }
+
+                // Make check function global
+                window.checkSitePassword = function() {
+                    const input = document.getElementById('sitePassword');
+                    const error = document.getElementById('siteGateError');
+
+                    if (input.value.toLowerCase() === SITE_PASSWORD) {
+                        // Correct password - remember and show content
+                        localStorage.setItem(STORAGE_KEY, 'true');
+                        showContent();
+                    } else {
+                        // Wrong password
+                        error.style.display = 'block';
+                        input.value = '';
+                        input.focus();
+                    }
+                };
+
+                // Allow Enter key to submit
+                document.getElementById('sitePassword').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkSitePassword();
+                    }
+                });
+            })();
+        </script>
 
         <!-- Firebase SDK -->
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
