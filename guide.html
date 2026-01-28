@@ -1,0 +1,488 @@
+---
+layout: default
+title: User Guide - Dird Plesk Memorial
+---
+
+<div class="hero">
+    <h1>User Guide</h1>
+    <p>Everything you need to know</p>
+</div>
+
+<div class="section-card guide-toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#player-login">Player Login & Profiles</a></li>
+        <li><a href="#events">Events Overview</a>
+            <ul>
+                <li><a href="#golf">Golf</a></li>
+                <li><a href="#beer-olympics">Beer Olympics</a></li>
+                <li><a href="#go-karting">Go-Karting</a></li>
+                <li><a href="#trivia">Trivia</a></li>
+                <li><a href="#predictions">Predictions</a></li>
+            </ul>
+        </li>
+        <li><a href="#leaderboard">Leaderboard</a></li>
+        <li><a href="#admin-guide">Admin Guide</a>
+            <ul>
+                <li><a href="#admin-players">Managing Players</a></li>
+                <li><a href="#admin-events">Event Management</a></li>
+                <li><a href="#admin-locks">Event Locks</a></li>
+                <li><a href="#admin-trivia">Trivia Setup & CSV Upload</a></li>
+                <li><a href="#admin-predictions">Predictions Management</a></li>
+                <li><a href="#admin-competition">Closing the Competition</a></li>
+                <li><a href="#admin-data">Data Management</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<div class="section-card" id="getting-started">
+    <h2>Getting Started</h2>
+    <p>Welcome to the Dird Plesk Memorial Open Invitational of Champions tracker! This site helps manage scores, teams, and standings across multiple events.</p>
+
+    <h3>For Players</h3>
+    <ol>
+        <li>Enter the site password when prompted (provided by your event organizer)</li>
+        <li>Select your name from the login screen on the home page</li>
+        <li>View your profile, check standings, and make predictions</li>
+        <li>Follow along as scores are updated in real-time</li>
+    </ol>
+
+    <h3>For Admins (First-Time Setup)</h3>
+    <ol>
+        <li>Log in as the admin user (requires admin password)</li>
+        <li>Go to the Admin page from the footer</li>
+        <li>Set up player names (up to 12 players)</li>
+        <li>Configure events and scoring as needed</li>
+        <li>Add trivia questions (manually or via CSV upload)</li>
+        <li>Create predictions for bonus points</li>
+    </ol>
+</div>
+
+<div class="section-card" id="player-login">
+    <h2>Player Login & Profiles</h2>
+    <p>On the home page, you'll see a grid of player buttons. Tap your name to log in.</p>
+
+    <h3>Profile Features</h3>
+    <ul>
+        <li><strong>Point Breakdown:</strong> See your points from each event</li>
+        <li><strong>Current Rank:</strong> Your position in the overall standings</li>
+        <li><strong>Team Assignments:</strong> View which teams you're on for each event</li>
+        <li><strong>Event History:</strong> Detailed breakdown of your performance</li>
+    </ul>
+
+    <p>To log out, click the "Logout" button in the header bar.</p>
+</div>
+
+<div class="section-card" id="events">
+    <h2>Events Overview</h2>
+    <p>The competition features five ways to earn points:</p>
+</div>
+
+<div class="section-card" id="golf">
+    <h2>Golf</h2>
+    <p>Team-based golf scoring with flexible team configurations.</p>
+
+    <h3>How It Works</h3>
+    <ul>
+        <li>Players are assigned to teams (2, 3, 4, 6, or 12 teams)</li>
+        <li>Teams compete, and finishing positions determine points</li>
+        <li>All team members receive the same points based on team placement</li>
+    </ul>
+
+    <h3>Bonus Points</h3>
+    <ul>
+        <li><strong>Best Dressed:</strong> Awarded to the snazziest golfer</li>
+        <li><strong>Longest Drive:</strong> Furthest drive on designated hole</li>
+        <li><strong>Closest to Pin:</strong> Nearest to the pin on par 3</li>
+        <li><strong>Most Honest:</strong> Best sportsmanship award</li>
+    </ul>
+</div>
+
+<div class="section-card" id="beer-olympics">
+    <h2>Beer Olympics</h2>
+    <p>Five separate games with individual scoring per game.</p>
+
+    <h3>How It Works</h3>
+    <ul>
+        <li>Each game can have different team configurations</li>
+        <li>Points are awarded based on team finishing position in each game</li>
+        <li>Individual players earn points based on their team's performance</li>
+        <li>All 5 game scores combine for total Beer Olympics points</li>
+    </ul>
+
+    <h3>Scoring</h3>
+    <p>Points are distributed based on placement (1st, 2nd, 3rd, etc.). The exact point values can be configured by the admin.</p>
+</div>
+
+<div class="section-card" id="go-karting">
+    <h2>Go-Karting</h2>
+    <p>Individual racing competition.</p>
+
+    <h3>How It Works</h3>
+    <ul>
+        <li>Each player competes individually</li>
+        <li>Finishing positions determine points</li>
+        <li>Admin enters final positions after racing</li>
+    </ul>
+
+    <h3>Point Structure</h3>
+    <p>Points decrease by position (e.g., 1st: 12 pts, 2nd: 10 pts, etc.). Configurable by admin.</p>
+</div>
+
+<div class="section-card" id="trivia">
+    <h2>Trivia</h2>
+    <p>Live interactive trivia with real-time scoring.</p>
+
+    <h3>How It Works</h3>
+    <ul>
+        <li>Admin starts the trivia game from the admin panel</li>
+        <li>Players join the waiting room</li>
+        <li>Questions appear one at a time on all screens</li>
+        <li>Players select answers before time runs out</li>
+        <li>Correct answers earn points</li>
+    </ul>
+
+    <h3>Question Types</h3>
+    <ul>
+        <li><strong>Multiple Choice:</strong> Select from predefined options (auto-graded instantly)</li>
+        <li><strong>Open-Ended:</strong> Type your answer (admin reviews and approves)</li>
+    </ul>
+
+    <h3>Features</h3>
+    <ul>
+        <li><strong>Categories:</strong> Questions can display a category badge (e.g., "History", "Sports")</li>
+        <li><strong>Auto-Grading:</strong> Multiple choice questions are automatically scored</li>
+        <li><strong>Real-time Sync:</strong> All players see questions simultaneously</li>
+        <li><strong>Live Scoring:</strong> Points update instantly</li>
+    </ul>
+</div>
+
+<div class="section-card" id="predictions">
+    <h2>Predictions</h2>
+    <p>Make picks on various outcomes for bonus points.</p>
+
+    <h3>How It Works</h3>
+    <ul>
+        <li>Predictions are created by the admin with multiple choice options</li>
+        <li>Players submit their picks before the prediction is locked</li>
+        <li>Once locked, no more answers can be submitted</li>
+        <li>Admin selects the correct answer when the outcome is known</li>
+        <li>Players who predicted correctly earn bonus points</li>
+    </ul>
+
+    <h3>Important Notes</h3>
+    <ul>
+        <li><strong>Double Confirmation:</strong> You'll be asked to confirm your pick to prevent accidental submissions</li>
+        <li><strong>No Changes:</strong> Once submitted, your answer cannot be changed</li>
+        <li><strong>Privacy:</strong> Other players' picks are hidden until you submit yours</li>
+        <li><strong>Banner Alerts:</strong> A notification will appear when you have unanswered predictions</li>
+    </ul>
+</div>
+
+<div class="section-card" id="leaderboard">
+    <h2>Leaderboard</h2>
+    <p>Track standings across all events in real-time.</p>
+
+    <h3>Overall Standings</h3>
+    <p>Shows total points from all events combined, with individual event columns.</p>
+
+    <h3>Event Breakdowns</h3>
+    <ul>
+        <li><strong>Golf Results:</strong> Team standings and player points</li>
+        <li><strong>Beer Olympics:</strong> Individual totals across all 5 games</li>
+        <li><strong>Go-Karting:</strong> Race finishing order and points</li>
+        <li><strong>Trivia:</strong> Individual scores from trivia questions</li>
+        <li><strong>Predictions:</strong> Bonus points from correct picks</li>
+    </ul>
+
+    <h3>Final Podium</h3>
+    <p>When the competition is closed by the admin, a podium display shows the top 3 finishers.</p>
+</div>
+
+<div class="section-card admin-section" id="admin-guide">
+    <h2>Admin Guide</h2>
+    <p>This section covers all admin functionality. You must be logged in as the admin user to access the Admin page.</p>
+</div>
+
+<div class="section-card admin-section" id="admin-players">
+    <h2>Managing Players</h2>
+    <p>The admin can configure up to 12 player slots.</p>
+
+    <h3>Setting Up Players</h3>
+    <ol>
+        <li>Navigate to the Admin page</li>
+        <li>Find the "Manage Players" section</li>
+        <li>Edit player names in the input fields</li>
+        <li>Click "Save Players" to update</li>
+    </ol>
+
+    <p><strong>Note:</strong> Player names are used across all events and the login screen.</p>
+</div>
+
+<div class="section-card admin-section" id="admin-events">
+    <h2>Event Management</h2>
+    <p>Each event has its own management section.</p>
+
+    <h3>Golf</h3>
+    <ol>
+        <li>Click "Golf" in Event Management</li>
+        <li>Select number of teams (2, 3, 4, 6, or 12)</li>
+        <li>Assign players to teams by tapping their names</li>
+        <li>Save teams, then enter finishing positions</li>
+        <li>Add bonus point winners (Best Dressed, Longest Drive, etc.)</li>
+    </ol>
+
+    <h3>Beer Olympics</h3>
+    <ol>
+        <li>Click "Beer Olympics" in Event Management</li>
+        <li>Select which game to manage (1-5)</li>
+        <li>Set number of teams for that game</li>
+        <li>Assign players to teams</li>
+        <li>Save teams, then enter team placements</li>
+        <li>Repeat for each game</li>
+    </ol>
+
+    <h3>Go-Karting</h3>
+    <ol>
+        <li>Navigate to the Go-Karting page</li>
+        <li>Enter finishing positions for each player</li>
+        <li>Save results</li>
+    </ol>
+</div>
+
+<div class="section-card admin-section" id="admin-locks">
+    <h2>Event Locks</h2>
+    <p>Lock events to preserve results and prevent accidental changes after completion.</p>
+
+    <h3>Available Locks</h3>
+    <ul>
+        <li><strong>Golf:</strong> Locks team assignments and hole scores</li>
+        <li><strong>Beer Olympics:</strong> Locks all 5 game results</li>
+        <li><strong>Go-Karts:</strong> Locks race finishing positions</li>
+        <li><strong>Trivia:</strong> Locks trivia game and responses</li>
+        <li><strong>Predictions:</strong> Locks prediction responses and finalization</li>
+    </ul>
+
+    <h3>How to Lock/Unlock</h3>
+    <ol>
+        <li>Go to Admin page</li>
+        <li>Find "Event Locks" in Site Settings</li>
+        <li>Toggle the switch for each event</li>
+        <li>Locked events show a "(Locked)" indicator</li>
+    </ol>
+
+    <p><strong>Tip:</strong> Lock events after completing them to prevent accidental changes. You can always unlock if needed.</p>
+</div>
+
+<div class="section-card admin-section" id="admin-trivia">
+    <h2>Trivia Setup & CSV Upload</h2>
+    <p>Trivia questions can be added manually or uploaded in bulk via CSV. Supports both multiple choice (auto-graded) and open-ended questions.</p>
+
+    <h3>Manual Entry</h3>
+    <ol>
+        <li>In the Admin panel, find Trivia Management</li>
+        <li>Enter the question text</li>
+        <li>Set point value (1-10 points)</li>
+        <li>Optionally add a category (displayed during trivia)</li>
+        <li>Click "+ Add Multiple Choice Options" for auto-graded questions</li>
+        <li>If multiple choice: enter options and select correct answer</li>
+        <li>Save the question</li>
+    </ol>
+
+    <h3>Question Types</h3>
+    <ul>
+        <li><strong>Open-Ended:</strong> Players type answers. Admin manually approves/denies each response.</li>
+        <li><strong>Multiple Choice:</strong> Players select from options. Automatically graded - correct answers are instantly approved.</li>
+    </ul>
+
+    <h3>CSV Upload (Bulk Import)</h3>
+    <p>For bulk import, prepare a CSV file. The format determines the question type:</p>
+
+    <div class="csv-template">
+        <h4>Multiple Choice Format (Auto-Graded)</h4>
+        <code>question,option1,option2,option3,option4,correct_answer,category</code>
+        <ul>
+            <li><strong>question:</strong> The trivia question text (required)</li>
+            <li><strong>option1-4:</strong> Answer choices (at least 2 required, up to 4)</li>
+            <li><strong>correct_answer:</strong> Number 1-4 indicating which option is correct (required)</li>
+            <li><strong>category:</strong> Question category displayed as a badge (optional)</li>
+        </ul>
+
+        <h4>Freeform Format (Admin Approves)</h4>
+        <code>question,category</code>
+        <ul>
+            <li><strong>question:</strong> The trivia question text (required)</li>
+            <li><strong>category:</strong> Question category (optional)</li>
+        </ul>
+        <p style="font-size: 0.9em; margin-top: 10px;">If no options or no correct_answer is provided, the question becomes freeform.</p>
+
+        <h4>Example CSV Content</h4>
+        <pre>"What is the capital of France?","London","Paris","Berlin","Madrid",2,"Geography"
+"Who wrote Romeo and Juliet?","Dickens","Shakespeare","Hemingway","Austen",2,"Literature"
+"Name three US presidents","History"
+"What's your favorite vacation spot?","Fun"</pre>
+
+        <h4>Tips</h4>
+        <ul>
+            <li>Wrap text containing commas in double quotes</li>
+            <li>Header row is optional (auto-detected and skipped)</li>
+            <li>Maximum 16 questions will be imported</li>
+            <li>All imported questions default to 1 point each</li>
+            <li>You can mix multiple choice and freeform in the same CSV</li>
+        </ul>
+    </div>
+
+    <h3>Running the Trivia Game</h3>
+    <ol>
+        <li>Ensure questions are added</li>
+        <li>Players join the waiting room from the Trivia page</li>
+        <li>Click "Start Trivia - Show Q1" when players are ready</li>
+        <li>Players answer, then click "Reveal Responses"</li>
+        <li>For multiple choice: correct answers are pre-approved</li>
+        <li>For open-ended: approve/deny each response manually</li>
+        <li>Advance to next question, repeat until complete</li>
+        <li>Click "Finish Trivia" to show final results</li>
+    </ol>
+</div>
+
+<div class="section-card admin-section" id="admin-predictions">
+    <h2>Predictions Management</h2>
+    <p>Create and manage prediction questions for bonus points.</p>
+
+    <h3>Creating a Prediction</h3>
+    <ol>
+        <li>In Admin, find the Predictions section</li>
+        <li>Enter the prediction question</li>
+        <li>Set the point value for correct answers</li>
+        <li>Add answer options</li>
+        <li>Save the prediction</li>
+    </ol>
+
+    <h3>Managing Predictions</h3>
+    <ul>
+        <li><strong>Lock:</strong> Prevents new answers from being submitted</li>
+        <li><strong>Finalize:</strong> Select the correct answer and award points</li>
+        <li><strong>Delete:</strong> Remove a prediction entirely</li>
+    </ul>
+
+    <p><strong>Tip:</strong> Lock predictions before the event occurs, then finalize once you know the outcome.</p>
+</div>
+
+<div class="section-card admin-section" id="admin-competition">
+    <h2>Closing the Competition</h2>
+    <p>When all events are complete, you can officially close the competition to reveal final standings.</p>
+
+    <h3>How to Close</h3>
+    <ol>
+        <li>Ensure all events are scored and locked</li>
+        <li>In Admin, find "Close Competition"</li>
+        <li>Confirm your decision</li>
+        <li>The final podium will display on the Leaderboard page</li>
+    </ol>
+
+    <p><strong>Note:</strong> This is separate from ending individual events. Closing the competition reveals the overall winners with a podium celebration.</p>
+</div>
+
+<div class="section-card admin-section" id="admin-data">
+    <h2>Data Management</h2>
+    <p>Tools for backing up and resetting competition data.</p>
+
+    <h3>Export Data</h3>
+    <p>Downloads a JSON file containing all competition data including:</p>
+    <ul>
+        <li>Player names and scores</li>
+        <li>All event results</li>
+        <li>Trivia questions and answers</li>
+        <li>Predictions and responses</li>
+    </ul>
+
+    <h3>Reset All Data</h3>
+    <p><strong>Warning:</strong> This permanently erases all competition data. Use only when starting fresh.</p>
+    <ol>
+        <li>Click "Reset All Data"</li>
+        <li>Confirm by typing the required phrase</li>
+        <li>All scores, teams, and results will be cleared</li>
+    </ol>
+</div>
+
+<style>
+    .guide-toc ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .guide-toc > ul > li {
+        margin: 10px 0;
+    }
+
+    .guide-toc ul ul {
+        padding-left: 20px;
+        margin-top: 5px;
+    }
+
+    .guide-toc a {
+        color: var(--gold);
+        text-decoration: none;
+    }
+
+    .guide-toc a:hover {
+        color: var(--accent-red);
+        text-decoration: underline;
+    }
+
+    .section-card h3 {
+        margin-top: 20px;
+    }
+
+    .section-card ol, .section-card ul {
+        margin: 10px 0 15px 20px;
+        line-height: 1.8;
+    }
+
+    .section-card li {
+        margin: 5px 0;
+    }
+
+    .csv-template {
+        background: var(--overlay-bg);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+
+    .csv-template h4 {
+        color: var(--gold);
+        margin: 15px 0 10px;
+    }
+
+    .csv-template h4:first-child {
+        margin-top: 0;
+    }
+
+    .csv-template code {
+        display: block;
+        background: rgba(0,0,0,0.3);
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+        overflow-x: auto;
+        color: var(--silver-light);
+    }
+
+    .csv-template pre {
+        background: rgba(0,0,0,0.3);
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+        overflow-x: auto;
+        font-size: 0.85em;
+        line-height: 1.6;
+        color: var(--silver-light);
+    }
+
+    .csv-template ul {
+        margin-left: 20px;
+    }
+</style>
