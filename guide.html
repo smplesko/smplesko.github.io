@@ -298,13 +298,11 @@ title: User Guide - Dird Plesk Memorial
     </ul>
 
     <h3>CSV Upload (Bulk Import)</h3>
-    <p>For bulk import of multiple choice questions, prepare a CSV file with the following columns:</p>
+    <p>For bulk import, prepare a CSV file. The format determines the question type:</p>
 
     <div class="csv-template">
-        <h4>CSV Template Format</h4>
+        <h4>Multiple Choice Format (Auto-Graded)</h4>
         <code>question,option1,option2,option3,option4,correct_answer,category</code>
-
-        <h4>Column Descriptions</h4>
         <ul>
             <li><strong>question:</strong> The trivia question text (required)</li>
             <li><strong>option1-4:</strong> Answer choices (at least 2 required, up to 4)</li>
@@ -312,10 +310,19 @@ title: User Guide - Dird Plesk Memorial
             <li><strong>category:</strong> Question category displayed as a badge (optional)</li>
         </ul>
 
+        <h4>Freeform Format (Admin Approves)</h4>
+        <code>question,category</code>
+        <ul>
+            <li><strong>question:</strong> The trivia question text (required)</li>
+            <li><strong>category:</strong> Question category (optional)</li>
+        </ul>
+        <p style="font-size: 0.9em; margin-top: 10px;">If no options or no correct_answer is provided, the question becomes freeform.</p>
+
         <h4>Example CSV Content</h4>
         <pre>"What is the capital of France?","London","Paris","Berlin","Madrid",2,"Geography"
 "Who wrote Romeo and Juliet?","Dickens","Shakespeare","Hemingway","Austen",2,"Literature"
-"What year did WWII end?","1943","1944","1945","1946",3,"History"</pre>
+"Name three US presidents","History"
+"What's your favorite vacation spot?","Fun"</pre>
 
         <h4>Tips</h4>
         <ul>
@@ -323,6 +330,7 @@ title: User Guide - Dird Plesk Memorial
             <li>Header row is optional (auto-detected and skipped)</li>
             <li>Maximum 16 questions will be imported</li>
             <li>All imported questions default to 1 point each</li>
+            <li>You can mix multiple choice and freeform in the same CSV</li>
         </ul>
     </div>
 

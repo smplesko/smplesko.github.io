@@ -1385,19 +1385,24 @@ function renderTriviaQuestionAdmin() {
         <div style="background: rgba(201, 162, 39, 0.1); border: 1px dashed var(--gold); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
             <h5 style="color: var(--gold); margin-bottom: 10px;">Bulk Import via CSV</h5>
             <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">
-                Upload a CSV file to import multiple questions at once.
+                Upload a CSV file to import multiple questions at once. Supports both question types.
             </p>
             <input type="file" id="triviaCsvUpload" accept=".csv" onchange="handleTriviaCsvUpload(event)"
                    style="margin-bottom: 10px;">
             <details style="margin-top: 10px;">
                 <summary style="cursor: pointer; color: var(--silver); font-size: 0.85em;">CSV Format Guide</summary>
                 <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 0.85em;">
-                    <p><strong>Columns:</strong> question, option1, option2, option3, option4, correct_answer, category</p>
-                    <p style="margin-top: 8px;"><strong>Required:</strong> question, at least 2 options, correct_answer (1-4)</p>
-                    <p style="margin-top: 8px;"><strong>Optional:</strong> category</p>
-                    <p style="margin-top: 8px;"><strong>Example:</strong></p>
-                    <code style="display: block; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; overflow-x: auto; white-space: nowrap;">
-"What is the capital of France?","London","Paris","Berlin","Madrid",2,"Geography"</code>
+                    <p><strong>Multiple Choice (auto-graded):</strong></p>
+                    <code style="display: block; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; overflow-x: auto; white-space: nowrap; margin: 5px 0;">
+question,option1,option2,option3,option4,correct_answer,category</code>
+                    <p style="margin-top: 5px; font-size: 0.9em;">Example: "Capital of France?","London","Paris","Berlin","Madrid",2,"Geography"</p>
+
+                    <p style="margin-top: 12px;"><strong>Freeform (admin approves):</strong></p>
+                    <code style="display: block; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; overflow-x: auto; white-space: nowrap; margin: 5px 0;">
+question,category</code>
+                    <p style="margin-top: 5px; font-size: 0.9em;">Example: "Name 3 US presidents","History"</p>
+
+                    <p style="margin-top: 12px; color: var(--silver);"><strong>Rules:</strong> If options + correct_answer provided = Multiple Choice. Otherwise = Freeform.</p>
                 </div>
             </details>
         </div>
@@ -1406,32 +1411,38 @@ function renderTriviaQuestionAdmin() {
     html += '<div style="display: grid; gap: 10px;">';
 
     for (let i = 0; i < 16; i++) {
-        const q = game.questions[i] || { text: '', pointValue: 1, options: [], correctAnswer: 0, category: '' };
-        const hasOptions = q.options && q.options.length > 0;
+        const q = game.questions[i] || { text: '', pointValue: 1, type: 'freeform', options: [], correctAnswer: 0, category: '' };
+        const questionType = q.type || (q.options && q.options.length > 0 ? 'multiple_choice' : 'freeform');
+        const isMultipleChoice = questionType === 'multiple_choice';
 
         html += `
             <div class="trivia-question-input" style="background: var(--overlay-bg); padding: 12px; border-radius: 8px;">
                 <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
                     <strong style="min-width: 25px;">Q${i + 1}</strong>
-                    <label style="font-size: 0.85em; color: var(--silver);">Points:</label>
+                    <select id="triviaQType${i}" onchange="changeQuestionType(${i})" style="padding: 6px; border: none; border-radius: 4px;">
+                        <option value="freeform" ${!isMultipleChoice ? 'selected' : ''}>Freeform (Admin Approves)</option>
+                        <option value="multiple_choice" ${isMultipleChoice ? 'selected' : ''}>Multiple Choice (Auto-Graded)</option>
+                    </select>
+                    <label style="font-size: 0.85em; color: var(--silver);">Pts:</label>
                     <input type="number" id="triviaQPts${i}" value="${q.pointValue}" min="1" max="10"
-                           style="width: 60px; padding: 6px; border: none; border-radius: 4px;">
+                           style="width: 50px; padding: 6px; border: none; border-radius: 4px;">
                     <label style="font-size: 0.85em; color: var(--silver);">Category:</label>
                     <input type="text" id="triviaQCat${i}" value="${q.category || ''}" placeholder="Optional"
-                           style="width: 120px; padding: 6px; border: none; border-radius: 4px;">
+                           style="width: 100px; padding: 6px; border: none; border-radius: 4px;">
                 </div>
                 <textarea id="triviaQ${i}" placeholder="Enter question ${i + 1}..."
                           style="width: 100%; padding: 10px; border: none; border-radius: 5px; min-height: 50px; resize: vertical;">${q.text}</textarea>
-                ${hasOptions ? `
-                    <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">
-                        <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 8px;">Multiple Choice Options:</p>
+                ${isMultipleChoice ? `
+                    <div style="margin-top: 10px; padding: 10px; background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); border-radius: 5px;">
+                        <p style="font-size: 0.85em; color: #2ecc71; margin-bottom: 8px;">Multiple Choice - Auto-Graded</p>
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                            ${q.options.map((opt, idx) => `
+                            ${[0,1,2,3].map(idx => `
                                 <div style="display: flex; align-items: center; gap: 5px;">
                                     <span style="color: ${idx + 1 === q.correctAnswer ? '#2ecc71' : 'var(--silver)'}; font-weight: ${idx + 1 === q.correctAnswer ? 'bold' : 'normal'};">
                                         ${idx + 1 === q.correctAnswer ? '✓' : ''} ${idx + 1}.
                                     </span>
-                                    <input type="text" id="triviaQOpt${i}_${idx}" value="${opt}"
+                                    <input type="text" id="triviaQOpt${i}_${idx}" value="${q.options && q.options[idx] ? q.options[idx] : ''}"
+                                           placeholder="Option ${idx + 1}${idx < 2 ? ' (required)' : ' (optional)'}"
                                            style="flex: 1; padding: 6px; border: none; border-radius: 4px; font-size: 0.9em;">
                                 </div>
                             `).join('')}
@@ -1439,14 +1450,17 @@ function renderTriviaQuestionAdmin() {
                         <div style="margin-top: 8px;">
                             <label style="font-size: 0.85em; color: var(--silver);">Correct Answer:</label>
                             <select id="triviaQCorrect${i}" style="padding: 6px; border: none; border-radius: 4px; margin-left: 5px;">
-                                ${q.options.map((_, idx) => `<option value="${idx + 1}" ${idx + 1 === q.correctAnswer ? 'selected' : ''}>Option ${idx + 1}</option>`).join('')}
+                                <option value="1" ${q.correctAnswer === 1 ? 'selected' : ''}>Option 1</option>
+                                <option value="2" ${q.correctAnswer === 2 ? 'selected' : ''}>Option 2</option>
+                                <option value="3" ${q.correctAnswer === 3 ? 'selected' : ''}>Option 3</option>
+                                <option value="4" ${q.correctAnswer === 4 ? 'selected' : ''}>Option 4</option>
                             </select>
                         </div>
                     </div>
                 ` : `
-                    <button class="btn btn-small" onclick="addOptionsToQuestion(${i})" style="margin-top: 8px; background: var(--silver); padding: 5px 10px; font-size: 0.8em;">
-                        + Add Multiple Choice Options
-                    </button>
+                    <div style="margin-top: 10px; padding: 10px; background: rgba(201, 162, 39, 0.1); border: 1px solid rgba(201, 162, 39, 0.3); border-radius: 5px;">
+                        <p style="font-size: 0.85em; color: var(--gold);">Freeform - Players type answers, admin approves/denies</p>
+                    </div>
                 `}
             </div>
         `;
@@ -1458,11 +1472,30 @@ function renderTriviaQuestionAdmin() {
     container.innerHTML = html;
 }
 
+function changeQuestionType(questionIndex) {
+    const typeSelect = document.getElementById(`triviaQType${questionIndex}`);
+    const newType = typeSelect ? typeSelect.value : 'freeform';
+
+    const game = getTriviaGame();
+    if (!game.questions[questionIndex]) {
+        game.questions[questionIndex] = { text: '', pointValue: 1, type: newType, options: [], correctAnswer: 1, category: '' };
+    } else {
+        game.questions[questionIndex].type = newType;
+        if (newType === 'multiple_choice' && (!game.questions[questionIndex].options || game.questions[questionIndex].options.length === 0)) {
+            game.questions[questionIndex].options = ['', '', '', ''];
+            game.questions[questionIndex].correctAnswer = 1;
+        }
+    }
+    saveTriviaGame(game);
+    renderTriviaQuestionAdmin();
+}
+
 function addOptionsToQuestion(questionIndex) {
     const game = getTriviaGame();
     if (!game.questions[questionIndex]) {
-        game.questions[questionIndex] = { text: '', pointValue: 1, options: [], correctAnswer: 1, category: '' };
+        game.questions[questionIndex] = { text: '', pointValue: 1, type: 'multiple_choice', options: [], correctAnswer: 1, category: '' };
     }
+    game.questions[questionIndex].type = 'multiple_choice';
     game.questions[questionIndex].options = ['', '', '', ''];
     game.questions[questionIndex].correctAnswer = 1;
     saveTriviaGame(game);
@@ -1513,16 +1546,18 @@ function parseTriviaCsv(csv) {
         const line = lines[i];
 
         // Skip header row if present
-        if (i === 0 && line.toLowerCase().includes('question') && line.toLowerCase().includes('option')) {
+        if (i === 0 && line.toLowerCase().includes('question') && (line.toLowerCase().includes('option') || line.toLowerCase().includes('type'))) {
             continue;
         }
 
         // Parse CSV line handling quoted fields
         const fields = parseCsvLine(line);
 
-        if (fields.length < 4) continue; // Need at least question + 2 options + correct answer
+        if (fields.length < 1) continue; // Need at least question
 
         const questionText = fields[0] || '';
+        if (!questionText) continue;
+
         const options = [];
 
         // Get options (fields 1-4)
@@ -1532,18 +1567,34 @@ function parseTriviaCsv(csv) {
             }
         }
 
-        if (!questionText || options.length < 2) continue; // Skip invalid rows
-
-        const correctAnswer = parseInt(fields[5]) || 1;
+        // Determine question type based on options
+        // If no options or less than 2, it's freeform
+        // If 2+ options and correct_answer provided, it's multiple choice
+        const correctAnswerField = fields[5] ? fields[5].trim() : '';
+        const correctAnswer = parseInt(correctAnswerField) || 0;
         const category = fields[6] ? fields[6].trim() : '';
 
-        questions.push({
-            text: questionText,
-            pointValue: 1,
-            options: options,
-            correctAnswer: Math.min(correctAnswer, options.length),
-            category: category
-        });
+        if (options.length >= 2 && correctAnswer > 0) {
+            // Multiple choice question
+            questions.push({
+                text: questionText,
+                pointValue: 1,
+                type: 'multiple_choice',
+                options: options,
+                correctAnswer: Math.min(correctAnswer, options.length),
+                category: category
+            });
+        } else {
+            // Freeform question (no options or no correct answer)
+            questions.push({
+                text: questionText,
+                pointValue: 1,
+                type: 'freeform',
+                options: [],
+                correctAnswer: 0,
+                category: category || (fields[1] ? fields[1].trim() : '') // Use field 1 as category if no options
+            });
+        }
     }
 
     return questions;
@@ -1587,18 +1638,19 @@ function saveTriviaQuestions() {
         const textInput = document.getElementById(`triviaQ${i}`);
         const ptsInput = document.getElementById(`triviaQPts${i}`);
         const catInput = document.getElementById(`triviaQCat${i}`);
+        const typeInput = document.getElementById(`triviaQType${i}`);
         const correctInput = document.getElementById(`triviaQCorrect${i}`);
 
         const text = textInput ? textInput.value.trim() : '';
         const pts = ptsInput ? parseInt(ptsInput.value) || 1 : 1;
         const category = catInput ? catInput.value.trim() : '';
+        const questionType = typeInput ? typeInput.value : 'freeform';
 
         if (text) {
-            const question = { text, pointValue: pts, category };
+            const question = { text, pointValue: pts, category, type: questionType };
 
-            // Check if this question has options
-            const opt0 = document.getElementById(`triviaQOpt${i}_0`);
-            if (opt0) {
+            if (questionType === 'multiple_choice') {
+                // Get options for multiple choice
                 const options = [];
                 for (let j = 0; j < 4; j++) {
                     const optInput = document.getElementById(`triviaQOpt${i}_${j}`);
@@ -1606,14 +1658,19 @@ function saveTriviaQuestions() {
                         options.push(optInput.value.trim());
                     }
                 }
-                if (options.length > 0) {
+                if (options.length >= 2) {
                     question.options = options;
                     question.correctAnswer = correctInput ? parseInt(correctInput.value) || 1 : 1;
+                } else {
+                    // Not enough options, convert to freeform
+                    question.type = 'freeform';
+                    question.options = [];
+                    question.correctAnswer = 0;
                 }
-            } else if (game.questions[i] && game.questions[i].options) {
-                // Preserve existing options if not shown in UI
-                question.options = game.questions[i].options;
-                question.correctAnswer = game.questions[i].correctAnswer;
+            } else {
+                // Freeform question
+                question.options = [];
+                question.correctAnswer = 0;
             }
 
             newQuestions.push(question);
