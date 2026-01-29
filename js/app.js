@@ -118,6 +118,8 @@ const DEFAULT_PREDICTIONS = {
 };
 
 // ===== FIREBASE DATA SYNC =====
+const firebaseListenerPaths = [];
+
 function setupFirebaseListeners() {
     const paths = [
         { path: 'players', default: DEFAULT_PLAYERS },
@@ -138,6 +140,7 @@ function setupFirebaseListeners() {
     ];
 
     paths.forEach(({ path, default: defaultVal }) => {
+        firebaseListenerPaths.push(path);
         db.ref(path).on('value', (snapshot) => {
             const val = snapshot.val();
             dataCache[path] = val !== null ? val : defaultVal;
@@ -154,6 +157,15 @@ function setupFirebaseListeners() {
 
     firebaseReady = true;
 }
+
+// Clean up Firebase listeners on page unload to prevent memory leaks
+function cleanupFirebaseListeners() {
+    firebaseListenerPaths.forEach(path => {
+        db.ref(path).off();
+    });
+}
+
+window.addEventListener('beforeunload', cleanupFirebaseListeners);
 
 // Called when Firebase data changes - refresh relevant UI
 function onDataChange(path) {
@@ -214,9 +226,24 @@ function onDataChange(path) {
     }
 }
 
-// Write data to Firebase
+// Write data to Firebase with error handling
 function writeToFirebase(path, data) {
-    db.ref(path).set(data);
+    db.ref(path).set(data).catch((error) => {
+        console.error(`Firebase write failed for ${path}:`, error);
+        showSaveError();
+    });
+}
+
+function showSaveError() {
+    // Avoid duplicate error banners
+    if (document.getElementById('saveErrorBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'saveErrorBanner';
+    banner.className = 'status-message error';
+    banner.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; max-width: 400px; width: 90%;';
+    banner.textContent = 'Failed to save. Check your connection and try again.';
+    document.body.appendChild(banner);
+    setTimeout(() => { if (banner.parentNode) banner.remove(); }, 5000);
 }
 
 // Initialize data - now uses Firebase
@@ -577,7 +604,7 @@ function savePlayerName(slot) {
         updatePlayerName(slot, input.value.trim());
 
         // If this is the current user, update their display name
-        if (getCurrentUserSlot() == slot) {
+        if (String(getCurrentUserSlot()) === String(slot)) {
             localStorage.setItem('currentUser', input.value.trim());
             updateUI();
         }
@@ -900,9 +927,9 @@ function loadGolfBonusInputs() {
         return;
     }
 
-    const teamOptions = Object.keys(teams).map(t => `<option value="${t}" ${bonuses.bestFront == t ? 'selected' : ''}>Team ${t}</option>`).join('');
-    const teamOptionsBack = Object.keys(teams).map(t => `<option value="${t}" ${bonuses.bestBack == t ? 'selected' : ''}>Team ${t}</option>`).join('');
-    const teamOptionsOverall = Object.keys(teams).map(t => `<option value="${t}" ${bonuses.overallWinner == t ? 'selected' : ''}>Team ${t}</option>`).join('');
+    const teamOptions = Object.keys(teams).map(t => `<option value="${t}" ${String(bonuses.bestFront) === String(t) ? 'selected' : ''}>Team ${t}</option>`).join('');
+    const teamOptionsBack = Object.keys(teams).map(t => `<option value="${t}" ${String(bonuses.bestBack) === String(t) ? 'selected' : ''}>Team ${t}</option>`).join('');
+    const teamOptionsOverall = Object.keys(teams).map(t => `<option value="${t}" ${String(bonuses.overallWinner) === String(t) ? 'selected' : ''}>Team ${t}</option>`).join('');
 
     container.innerHTML = `
         <div class="bonus-section">
@@ -956,20 +983,31 @@ function loadGolfBonusInputs() {
 }
 
 function saveBonusPointValues() {
+    const frontEl = document.getElementById('bonusPtsFront');
+    const backEl = document.getElementById('bonusPtsBack');
+    const overallEl = document.getElementById('bonusPtsOverall');
+    const shotgunEl = document.getElementById('bonusPtsShotgun');
+    if (!frontEl || !backEl || !overallEl || !shotgunEl) return;
+
     const bonusPoints = {
-        bestFront: parseInt(document.getElementById('bonusPtsFront').value) || 0,
-        bestBack: parseInt(document.getElementById('bonusPtsBack').value) || 0,
-        overallWinner: parseInt(document.getElementById('bonusPtsOverall').value) || 0,
-        shotgun: parseInt(document.getElementById('bonusPtsShotgun').value) || 0
+        bestFront: parseInt(frontEl.value) || 0,
+        bestBack: parseInt(backEl.value) || 0,
+        overallWinner: parseInt(overallEl.value) || 0,
+        shotgun: parseInt(shotgunEl.value) || 0
     };
     writeToFirebase('bonusPoints', bonusPoints);
 }
 
 function saveGolfBonuses() {
+    const frontEl = document.getElementById('bonusBestFront');
+    const backEl = document.getElementById('bonusBestBack');
+    const overallEl = document.getElementById('bonusOverallWinner');
+    if (!frontEl || !backEl || !overallEl) return;
+
     const bonuses = {
-        bestFront: document.getElementById('bonusBestFront').value,
-        bestBack: document.getElementById('bonusBestBack').value,
-        overallWinner: document.getElementById('bonusOverallWinner').value
+        bestFront: frontEl.value,
+        bestBack: backEl.value,
+        overallWinner: overallEl.value
     };
     writeToFirebase('golfBonuses', bonuses);
 }
@@ -2825,15 +2863,6 @@ function getUnansweredPredictions(userName) {
         const responses = p.responses || {};
         return !p.finalized && !responses[userName];
     });
-}
-
-// Check if user has answered a prediction
-function hasAnsweredPrediction(predictionId, userName) {
-    const predictions = getPredictions();
-    const prediction = predictions.items.find(p => p.id === predictionId);
-    if (!prediction) return false;
-    const responses = prediction.responses || {};
-    return responses.hasOwnProperty(userName);
 }
 
 // Submit prediction answer
