@@ -20,7 +20,6 @@ const db = firebase.database();
 // This cache is synced with Firebase in real-time
 let dataCache = {
     players: null,
-    gokartPoints: null,
     triviaPoints: null,
     bonusPoints: null,
     golfTeams: null,
@@ -28,9 +27,7 @@ let dataCache = {
     golfShotguns: null,
     golfBonuses: null,
     golfScoringEnabled: null,
-    beerTeams: null,
-    beerScores: null,
-    gokartResults: null,
+    customEvents: null,
     triviaGame: null,
     siteSettings: null,
     predictions: null
@@ -65,11 +62,10 @@ const GOLF_SCORES = {
     'ohshit': { label: 'Oh Shit', points: 0 }
 };
 
-// Default point values for individual events
-const DEFAULT_GOKART_POINTS = {
-    1: 25, 2: 20, 3: 16, 4: 13, 5: 11, 6: 10,
-    7: 9, 8: 8, 9: 7, 10: 6, 11: 5, 12: 4
-};
+// Default point values for ranking-based events (12 positions)
+function getDefaultPositionPoints() {
+    return { 1: 25, 2: 20, 3: 16, 4: 13, 5: 11, 6: 10, 7: 9, 8: 8, 9: 7, 10: 6, 11: 5, 12: 4 };
+}
 
 const DEFAULT_TRIVIA_POINTS = {
     1: 25, 2: 20, 3: 16, 4: 13, 5: 11, 6: 10,
@@ -93,10 +89,13 @@ const DEFAULT_SITE_SETTINGS = {
     competitionClosed: false,
     eventLocks: {
         golf: false,
-        beerOlympics: false,
-        goKarts: false,
         trivia: false,
         predictions: false
+    },
+    golfSettings: {
+        format: 'Scramble',
+        scoringType: 'Stableford',
+        description: ''
     }
 };
 
@@ -107,7 +106,8 @@ const DEFAULT_TRIVIA_GAME = {
     status: 'waiting',
     responses: {},
     joinedPlayers: {},  // Track who has joined the trivia lobby
-    maxQuestions: 16
+    maxQuestions: 16,
+    description: ''  // Optional sub-description shown on trivia page
 };
 
 // Default predictions settings
@@ -123,7 +123,6 @@ const firebaseListenerPaths = [];
 function setupFirebaseListeners() {
     const paths = [
         { path: 'players', default: DEFAULT_PLAYERS },
-        { path: 'gokartPoints', default: DEFAULT_GOKART_POINTS },
         { path: 'triviaPoints', default: DEFAULT_TRIVIA_POINTS },
         { path: 'bonusPoints', default: DEFAULT_BONUS_POINTS },
         { path: 'golfTeams', default: {} },
@@ -131,9 +130,7 @@ function setupFirebaseListeners() {
         { path: 'golfShotguns', default: {} },
         { path: 'golfBonuses', default: { bestFront: '', bestBack: '', overallWinner: '' } },
         { path: 'golfScoringEnabled', default: {} },
-        { path: 'beerTeams', default: {1: {}, 2: {}, 3: {}, 4: {}, 5: {}} },
-        { path: 'beerScores', default: {1: {}, 2: {}, 3: {}, 4: {}, 5: {}} },
-        { path: 'gokartResults', default: {} },
+        { path: 'customEvents', default: {} },
         { path: 'triviaGame', default: DEFAULT_TRIVIA_GAME },
         { path: 'siteSettings', default: DEFAULT_SITE_SETTINGS },
         { path: 'predictions', default: DEFAULT_PREDICTIONS }
@@ -191,6 +188,11 @@ function onDataChange(path) {
         renderGolfScorecard();
     }
 
+    // Update events page
+    if (path === 'customEvents' && (currentPath === '/events' || currentPath === '/events.html')) {
+        renderEventsPage();
+    }
+
     // Update trivia page
     if (path === 'triviaGame' && (currentPath === '/trivia' || currentPath === '/trivia.html')) {
         renderTriviaPage();
@@ -203,6 +205,7 @@ function onDataChange(path) {
     if (currentPath === '/admin' || currentPath === '/admin.html') {
         if (path === 'players') renderPlayerList();
         if (path === 'siteSettings') renderSiteSettings();
+        if (path === 'customEvents') renderCustomEventsAdmin();
         if (path === 'triviaGame') {
             renderTriviaQuestionAdmin();
             renderTriviaGameControls();
@@ -284,8 +287,12 @@ function updatePlayerName(slot, newName) {
     }
 }
 
-function getGokartPoints() {
-    return dataCache.gokartPoints || DEFAULT_GOKART_POINTS;
+function getCustomEvents() {
+    return dataCache.customEvents || {};
+}
+
+function saveCustomEvents(events) {
+    writeToFirebase('customEvents', events);
 }
 
 function getTriviaPoints() {
@@ -316,18 +323,6 @@ function getGolfScoringEnabled() {
     return dataCache.golfScoringEnabled || {};
 }
 
-function getBeerTeams() {
-    return dataCache.beerTeams || {1: {}, 2: {}, 3: {}, 4: {}, 5: {}};
-}
-
-function getBeerScores() {
-    return dataCache.beerScores || {1: {}, 2: {}, 3: {}, 4: {}, 5: {}};
-}
-
-function getGokartResults() {
-    return dataCache.gokartResults || {};
-}
-
 function getSiteSettings() {
     return dataCache.siteSettings || DEFAULT_SITE_SETTINGS;
 }
@@ -345,7 +340,8 @@ function getTriviaGame() {
         status: game.status || 'waiting',
         responses: game.responses || {},
         joinedPlayers: game.joinedPlayers || {},
-        maxQuestions: game.maxQuestions || 16
+        maxQuestions: game.maxQuestions || 16,
+        description: game.description || ''
     };
 }
 
@@ -353,9 +349,17 @@ function saveTriviaGame(game) {
     writeToFirebase('triviaGame', game);
 }
 
+function saveTriviaDescription() {
+    const input = document.getElementById('triviaDescriptionInput');
+    if (!input) return;
+    const game = getTriviaGame();
+    game.description = input.value.trim();
+    saveTriviaGame(game);
+}
+
 // Determine which events have data (completed)
 function getCompletedEvents() {
-    const completed = { golf: false, beer: false, gokart: false, trivia: false };
+    const completed = { golf: false, trivia: false };
 
     // Golf: Check if any team has hole scores
     const holeScores = getGolfHoleScores();
@@ -368,21 +372,16 @@ function getCompletedEvents() {
         }
     }
 
-    // Beer: Check if any game has scores
-    const beerScores = getBeerScores();
-    for (let game = 1; game <= 5; game++) {
-        const scores = beerScores[game] || {};
-        if (Object.values(scores).some(s => s > 0)) {
-            completed.beer = true;
-            break;
+    // Custom events: check each for any round results
+    const customEvents = getCustomEvents();
+    Object.values(customEvents).forEach(event => {
+        const hasResults = Object.values(event.rounds || {}).some(round =>
+            round.results && Object.keys(round.results).length > 0
+        );
+        if (hasResults) {
+            completed[event.id] = true;
         }
-    }
-
-    // Gokart: Check if any results exist
-    const gokartResults = getGokartResults();
-    if (Object.keys(gokartResults).length > 0) {
-        completed.gokart = true;
-    }
+    });
 
     // Trivia: Check if game is complete or has any points
     const triviaGame = getTriviaGame();
@@ -652,7 +651,7 @@ function renderSiteSettings() {
 
             <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px;">
                 <h4 style="color: var(--gold); margin-bottom: 15px;">Event Locks</h4>
-                <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Lock events to prevent accidental score changes after completion.</p>
+                <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Lock events to prevent accidental score changes. Custom event locks are managed in their own settings.</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <label class="toggle-switch">
@@ -660,20 +659,6 @@ function renderSiteSettings() {
                             <span class="toggle-slider"></span>
                         </label>
                         <span>Golf ${eventLocks.golf ? '(Locked)' : ''}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="lockBeerOlympics" ${eventLocks.beerOlympics ? 'checked' : ''} onchange="toggleEventLock('beerOlympics')">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span>Beer Olympics ${eventLocks.beerOlympics ? '(Locked)' : ''}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="lockGoKarts" ${eventLocks.goKarts ? 'checked' : ''} onchange="toggleEventLock('goKarts')">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span>Go-Karts ${eventLocks.goKarts ? '(Locked)' : ''}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <label class="toggle-switch">
@@ -713,12 +698,12 @@ function renderSiteSettings() {
 function toggleEventLock(eventName) {
     const settings = getSiteSettings();
     if (!settings.eventLocks) {
-        settings.eventLocks = { golf: false, beerOlympics: false, goKarts: false, trivia: false, predictions: false };
+        settings.eventLocks = { golf: false, trivia: false, predictions: false };
     }
     settings.eventLocks[eventName] = !settings.eventLocks[eventName];
     saveSiteSettings(settings);
 
-    const lockNames = { golf: 'Golf', beerOlympics: 'Beer Olympics', goKarts: 'Go-Karts', trivia: 'Trivia', predictions: 'Predictions' };
+    const lockNames = { golf: 'Golf', trivia: 'Trivia', predictions: 'Predictions' };
     const action = settings.eventLocks[eventName] ? 'locked' : 'unlocked';
     alert(`${lockNames[eventName]} is now ${action}.`);
 }
@@ -839,6 +824,54 @@ function openGolfAdmin() {
     updateGolfTeamInputs();
     loadGolfScoringControls();
     loadGolfBonusInputs();
+    loadGolfFormatSettings();
+}
+
+function loadGolfFormatSettings() {
+    const container = document.getElementById('golfFormatSettings');
+    if (!container) return;
+
+    const settings = getSiteSettings();
+    const golf = settings.golfSettings || { format: 'Scramble', scoringType: 'Stableford', description: '' };
+
+    container.innerHTML = `
+        <h4 style="color: var(--gold); margin-bottom: 15px;">Golf Format & Scoring</h4>
+        <div style="display: grid; gap: 12px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--silver); font-size: 0.9em;">Format</label>
+                <select id="golfFormatInput" style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
+                    <option value="Scramble" ${golf.format === 'Scramble' ? 'selected' : ''}>Scramble</option>
+                    <option value="Best Ball" ${golf.format === 'Best Ball' ? 'selected' : ''}>Best Ball</option>
+                    <option value="Alternate Shot" ${golf.format === 'Alternate Shot' ? 'selected' : ''}>Alternate Shot</option>
+                    <option value="Stroke Play" ${golf.format === 'Stroke Play' ? 'selected' : ''}>Stroke Play</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--silver); font-size: 0.9em;">Scoring Type</label>
+                <select id="golfScoringTypeInput" style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
+                    <option value="Stableford" ${golf.scoringType === 'Stableford' ? 'selected' : ''}>Stableford</option>
+                    <option value="Stroke" ${golf.scoringType === 'Stroke' ? 'selected' : ''}>Stroke (Low Score Wins)</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--silver); font-size: 0.9em;">Description / Rules</label>
+                <textarea id="golfDescriptionInput" placeholder="e.g., 18-hole scramble at XYZ Course"
+                          style="width: 100%; padding: 10px; border: none; border-radius: 5px; min-height: 60px; resize: vertical;">${golf.description || ''}</textarea>
+            </div>
+            <button class="btn btn-small btn-gold" onclick="saveGolfFormatSettings()">Save Golf Settings</button>
+        </div>
+    `;
+}
+
+function saveGolfFormatSettings() {
+    const settings = getSiteSettings();
+    settings.golfSettings = {
+        format: document.getElementById('golfFormatInput').value,
+        scoringType: document.getElementById('golfScoringTypeInput').value,
+        description: document.getElementById('golfDescriptionInput').value.trim()
+    };
+    saveSiteSettings(settings);
+    alert('Golf settings saved!');
 }
 
 function closeGolfAdmin() {
@@ -1017,6 +1050,23 @@ function renderGolfScorecard() {
     const container = document.getElementById('golfScorecard');
     if (!container) return;
 
+    // Apply golf settings to page
+    const settings = getSiteSettings();
+    const golf = settings.golfSettings || {};
+    const subtitle = document.getElementById('golfSubtitle');
+    if (subtitle && golf.format) {
+        subtitle.textContent = `${golf.format} - ${golf.scoringType || 'Stableford'} Scoring`;
+    }
+    const descEl = document.getElementById('golfDescription');
+    if (descEl) {
+        if (golf.description) {
+            descEl.style.display = 'block';
+            descEl.innerHTML = `<p style="opacity: 0.85;">${golf.description}</p>`;
+        } else {
+            descEl.style.display = 'none';
+        }
+    }
+
     const user = getCurrentUser();
     const teams = getGolfTeams();
     const holeScores = getGolfHoleScores();
@@ -1131,231 +1181,676 @@ function saveGolfShotguns(teamNum) {
     writeToFirebase('golfShotguns', shotguns);
 }
 
-// Beer Olympics Admin
-function openBeerOlympicsAdmin() {
-    document.getElementById('beerOlympicsAdminSection').style.display = 'block';
-    loadBeerGameAdmin();
+// ===== CUSTOM EVENTS SYSTEM =====
+
+function getCustomEvent(eventId) {
+    const events = getCustomEvents();
+    return events[eventId] || null;
 }
 
-function closeBeerOlympicsAdmin() {
-    document.getElementById('beerOlympicsAdminSection').style.display = 'none';
-}
+function createCustomEvent(name, description, scoringMode, roundCount) {
+    const events = getCustomEvents();
+    const id = 'evt_' + Date.now();
 
-function loadBeerGameAdmin() {
-    const gameNum = document.getElementById('beerGameSelect').value;
-    document.getElementById('currentGameLabel').textContent = `Game ${gameNum}`;
-    document.getElementById('currentGameScoreLabel').textContent = `Game ${gameNum}`;
-    updateBeerTeamInputs();
-    loadBeerScoreInputs();
-}
+    const newEvent = {
+        id: id,
+        name: name,
+        description: description || '',
+        scoringMode: scoringMode,
+        roundCount: parseInt(roundCount) || 1,
+        locked: false,
+        order: Object.keys(events).length + 1,
+        rounds: {}
+    };
 
-function updateBeerTeamInputs() {
-    const gameNum = document.getElementById('beerGameSelect').value;
-    const count = parseInt(document.getElementById('beerTeamCount').value);
-    const container = document.getElementById('beerTeamAssignments');
-    const allBeerTeams = getBeerTeams();
-    const existingTeams = allBeerTeams[gameNum] || {};
-
-    container.innerHTML = '';
-
-    for (let i = 1; i <= count; i++) {
-        const card = document.createElement('div');
-        card.className = 'team-card';
-        card.innerHTML = `<h4>Team ${i}</h4><div id="beerTeamCheckbox${i}"></div>`;
-        container.appendChild(card);
-
-        setTimeout(() => {
-            createCheckboxGroup(`beerTeamCheckbox${i}`, i, 'beer', existingTeams[i] || []);
-        }, 0);
-    }
-}
-
-function saveBeerTeams() {
-    const gameNum = document.getElementById('beerGameSelect').value;
-    const count = parseInt(document.getElementById('beerTeamCount').value);
-    const allBeerTeams = getBeerTeams();
-
-    allBeerTeams[gameNum] = {};
-    for (let i = 1; i <= count; i++) {
-        allBeerTeams[gameNum][i] = getSelectedFromCheckboxGroup('beer', i);
+    for (let i = 1; i <= newEvent.roundCount; i++) {
+        newEvent.rounds[i] = {
+            name: `Round ${i}`,
+            teamCount: 2,
+            pointValues: scoringMode === 'individual' ? getDefaultPositionPoints() : {},
+            teams: {},
+            results: {}
+        };
     }
 
-    writeToFirebase('beerTeams', allBeerTeams);
-    alert(`Beer Olympics Game ${gameNum} teams saved!`);
-    loadBeerScoreInputs();
+    events[id] = newEvent;
+    saveCustomEvents(events);
+    return id;
 }
 
-function loadBeerScoreInputs() {
-    const container = document.getElementById('beerScoreInputs');
-    if (!container) return;
+function deleteCustomEvent(eventId) {
+    if (!confirm('Are you sure you want to delete this event and all its data?')) return;
+    const events = getCustomEvents();
+    delete events[eventId];
+    saveCustomEvents(events);
+}
 
-    const gameNum = document.getElementById('beerGameSelect').value;
-    const allBeerTeams = getBeerTeams();
-    const teams = allBeerTeams[gameNum] || {};
-    const allBeerScores = getBeerScores();
-    const scores = allBeerScores[gameNum] || {};
+function updateCustomEventField(eventId, field, value) {
+    const events = getCustomEvents();
+    if (!events[eventId]) return;
+    events[eventId][field] = value;
+    saveCustomEvents(events);
+}
 
-    if (Object.keys(teams).length === 0) {
-        container.innerHTML = '<p style="opacity: 0.7;">Save teams first to enter scores</p>';
+function updateEventRound(eventId, roundNum, updates) {
+    const events = getCustomEvents();
+    if (!events[eventId]) return;
+    if (!events[eventId].rounds) events[eventId].rounds = {};
+    if (!events[eventId].rounds[roundNum]) {
+        events[eventId].rounds[roundNum] = {
+            name: `Round ${roundNum}`,
+            teamCount: 2,
+            pointValues: {},
+            teams: {},
+            results: {}
+        };
+    }
+    Object.assign(events[eventId].rounds[roundNum], updates);
+    saveCustomEvents(events);
+}
+
+function addEventRound(eventId) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event) return;
+
+    const roundKeys = Object.keys(event.rounds || {}).map(Number);
+    const nextRound = roundKeys.length > 0 ? Math.max(...roundKeys) + 1 : 1;
+
+    if (!event.rounds) event.rounds = {};
+    event.rounds[nextRound] = {
+        name: `Round ${nextRound}`,
+        teamCount: 2,
+        pointValues: event.scoringMode === 'individual' ? getDefaultPositionPoints() : {},
+        teams: {},
+        results: {}
+    };
+    event.roundCount = Object.keys(event.rounds).length;
+    saveCustomEvents(events);
+}
+
+function removeEventRound(eventId, roundNum) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event || !event.rounds) return;
+    if (!confirm(`Delete Round ${roundNum}? This removes all teams and results for this round.`)) return;
+
+    delete event.rounds[roundNum];
+    event.roundCount = Object.keys(event.rounds).length;
+    saveCustomEvents(events);
+}
+
+function copyPreviousRoundTeams(eventId, roundNum) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event) return;
+
+    const roundKeys = Object.keys(event.rounds || {}).map(Number).sort((a, b) => a - b);
+    const currentIdx = roundKeys.indexOf(parseInt(roundNum));
+    if (currentIdx <= 0) {
+        alert('No previous round to copy from.');
+        return;
+    }
+    const prevRoundNum = roundKeys[currentIdx - 1];
+    const prevRound = event.rounds[prevRoundNum];
+    if (!prevRound || !prevRound.teams || Object.keys(prevRound.teams).length === 0) {
+        alert('Previous round has no teams to copy.');
         return;
     }
 
-    container.innerHTML = '';
-    const grid = document.createElement('div');
-    grid.className = 'scoring-grid';
-
-    Object.keys(teams).forEach(teamNum => {
-        if (teams[teamNum] && teams[teamNum].length > 0) {
-            const div = document.createElement('div');
-            div.className = 'score-input';
-            div.innerHTML = `
-                <label>Team ${teamNum}</label>
-                <small style="display: block; opacity: 0.7; margin-bottom: 5px; font-size: 0.8em;">${teams[teamNum].join(', ')}</small>
-                <input type="number" id="beerScore${teamNum}" placeholder="Points" value="${scores[teamNum] || ''}">
-            `;
-            grid.appendChild(div);
-        }
-    });
-
-    container.appendChild(grid);
+    event.rounds[roundNum].teams = JSON.parse(JSON.stringify(prevRound.teams));
+    event.rounds[roundNum].teamCount = prevRound.teamCount || 2;
+    saveCustomEvents(events);
+    alert(`Teams copied from ${prevRound.name || 'Round ' + prevRoundNum}!`);
 }
 
-function saveBeerScores() {
-    const gameNum = document.getElementById('beerGameSelect').value;
-    const allBeerTeams = getBeerTeams();
-    const teams = allBeerTeams[gameNum] || {};
-    const allBeerScores = getBeerScores();
+// Save round teams from checkbox UI
+function saveEventRoundTeams(eventId, roundNum) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event) return;
 
-    allBeerScores[gameNum] = {};
-    Object.keys(teams).forEach(teamNum => {
-        const input = document.getElementById(`beerScore${teamNum}`);
-        if (input && input.value) {
-            allBeerScores[gameNum][teamNum] = parseInt(input.value);
-        }
-    });
+    const round = event.rounds[roundNum];
+    if (!round) return;
 
-    writeToFirebase('beerScores', allBeerScores);
-    alert(`Beer Olympics Game ${gameNum} scores saved!`);
-}
-
-// Go-Kart Functions
-function renderGokartPointConfig() {
-    const container = document.getElementById('gokartPointConfig');
-    if (!container) return;
-
-    const points = getGokartPoints();
-    container.innerHTML = '';
-
-    for (let i = 1; i <= 12; i++) {
-        const div = document.createElement('div');
-        div.className = 'point-config-item';
-        div.innerHTML = `
-            <label>${getOrdinal(i)}</label>
-            <input type="number" id="gokartPts${i}" value="${points[i] || 0}">
-        `;
-        container.appendChild(div);
+    const teamCount = round.teamCount || 2;
+    const teams = {};
+    for (let i = 1; i <= teamCount; i++) {
+        teams[i] = getSelectedFromCheckboxGroup(`ce_${eventId}_r${roundNum}`, i);
     }
+
+    round.teams = teams;
+    saveCustomEvents(events);
+    alert(`Round ${roundNum} teams saved!`);
 }
 
-function renderGokartPointDisplay() {
-    const container = document.getElementById('gokartPointDisplay');
-    if (!container) return;
+// Save round results from input UI
+function saveEventRoundResults(eventId, roundNum) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event || !event.rounds[roundNum]) return;
 
-    const points = getGokartPoints();
-    container.innerHTML = '';
-
-    for (let i = 1; i <= 12; i++) {
-        const div = document.createElement('div');
-        div.className = 'point-config-item';
-        div.innerHTML = `
-            <label>${getOrdinal(i)}</label>
-            <span style="font-size: 1.3em; font-weight: bold; color: var(--accent-red);">${points[i] || 0}</span>
-        `;
-        container.appendChild(div);
-    }
-}
-
-function saveGokartPoints() {
-    const points = {};
-    for (let i = 1; i <= 12; i++) {
-        const input = document.getElementById(`gokartPts${i}`);
-        points[i] = parseInt(input.value) || 0;
-    }
-    writeToFirebase('gokartPoints', points);
-    alert('Go-kart point values saved!');
-    renderGokartPointDisplay();
-}
-
-function renderGokartScoringAdmin() {
-    const container = document.getElementById('gokartScoringAdmin');
-    if (!container) return;
-
-    const playerList = getPlayerList();
-    const results = getGokartResults();
-
-    container.innerHTML = '';
-    const grid = document.createElement('div');
-    grid.className = 'scoring-grid';
-
-    playerList.forEach(player => {
-        const div = document.createElement('div');
-        div.className = 'score-input';
-        div.innerHTML = `
-            <label>${player}</label>
-            <select id="gokartPos_${player.replace(/\s/g, '_')}">
-                <option value="">-- Pos --</option>
-                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(p =>
-                    `<option value="${p}" ${results[player] === p ? 'selected' : ''}>${getOrdinal(p)}</option>`
-                ).join('')}
-            </select>
-        `;
-        grid.appendChild(div);
-    });
-
-    container.appendChild(grid);
-}
-
-function saveGokartResults() {
-    const playerList = getPlayerList();
+    const round = event.rounds[roundNum];
     const results = {};
 
-    playerList.forEach(player => {
-        const select = document.getElementById(`gokartPos_${player.replace(/\s/g, '_')}`);
-        if (select && select.value) {
-            results[player] = parseInt(select.value);
+    if (event.scoringMode === 'individual') {
+        // Results: player → position
+        const playerList = getPlayerList();
+        playerList.forEach(player => {
+            const sel = document.getElementById(`ceRes_${eventId}_r${roundNum}_${player.replace(/\s/g, '_')}`);
+            if (sel && sel.value) {
+                results[player] = parseInt(sel.value);
+            }
+        });
+    } else if (event.scoringMode === 'team_shared') {
+        // Results: teamNum → score
+        const teams = round.teams || {};
+        Object.keys(teams).forEach(teamNum => {
+            const input = document.getElementById(`ceRes_${eventId}_r${roundNum}_t${teamNum}`);
+            if (input && input.value !== '') {
+                results[teamNum] = parseInt(input.value) || 0;
+            }
+        });
+    } else if (event.scoringMode === 'individual_to_team') {
+        // Results: player → individual score
+        const playerList = getPlayerList();
+        playerList.forEach(player => {
+            const input = document.getElementById(`ceRes_${eventId}_r${roundNum}_${player.replace(/\s/g, '_')}`);
+            if (input && input.value !== '') {
+                results[player] = parseInt(input.value) || 0;
+            }
+        });
+    }
+
+    round.results = results;
+    saveCustomEvents(events);
+    alert(`Round ${roundNum} results saved!`);
+}
+
+// Save point values for a round
+function saveEventRoundPoints(eventId, roundNum) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event || !event.rounds[roundNum]) return;
+
+    const round = event.rounds[roundNum];
+    const pointValues = {};
+    const maxPositions = 12;
+
+    for (let i = 1; i <= maxPositions; i++) {
+        const input = document.getElementById(`cePts_${eventId}_r${roundNum}_p${i}`);
+        if (input && input.value !== '') {
+            pointValues[i] = parseInt(input.value) || 0;
+        }
+    }
+
+    round.pointValues = pointValues;
+    saveCustomEvents(events);
+    alert('Point values saved!');
+}
+
+// Update round team count
+function updateEventRoundTeamCount(eventId, roundNum, count) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event || !event.rounds[roundNum]) return;
+
+    event.rounds[roundNum].teamCount = parseInt(count) || 2;
+    saveCustomEvents(events);
+}
+
+// Update round name
+function saveEventRoundName(eventId, roundNum) {
+    const input = document.getElementById(`ceRoundName_${eventId}_r${roundNum}`);
+    if (!input) return;
+    updateEventRound(eventId, roundNum, { name: input.value.trim() || `Round ${roundNum}` });
+}
+
+// Calculate points for a single custom event
+function calculateCustomEventPlayerPoints(event) {
+    const playerList = getPlayerList();
+    const playerPoints = {};
+    playerList.forEach(p => { playerPoints[p] = 0; });
+
+    if (!event || !event.rounds) return playerPoints;
+
+    Object.values(event.rounds).forEach(round => {
+        const results = round.results || {};
+        const pointValues = round.pointValues || {};
+        const teams = round.teams || {};
+
+        if (event.scoringMode === 'individual') {
+            Object.entries(results).forEach(([player, position]) => {
+                if (playerPoints.hasOwnProperty(player)) {
+                    playerPoints[player] += parseInt(pointValues[position]) || 0;
+                }
+            });
+        } else if (event.scoringMode === 'team_shared') {
+            Object.entries(results).forEach(([teamNum, score]) => {
+                const teamPlayers = teams[teamNum] || [];
+                teamPlayers.forEach(player => {
+                    if (playerPoints.hasOwnProperty(player)) {
+                        playerPoints[player] += parseInt(score) || 0;
+                    }
+                });
+            });
+        } else if (event.scoringMode === 'individual_to_team') {
+            // Pool individual scores per team, rank teams, assign shared points
+            const teamTotals = {};
+            Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
+                teamTotals[teamNum] = 0;
+                (teamPlayers || []).forEach(player => {
+                    teamTotals[teamNum] += parseInt(results[player]) || 0;
+                });
+            });
+
+            const sortedTeams = Object.entries(teamTotals)
+                .sort((a, b) => b[1] - a[1]);
+
+            sortedTeams.forEach(([teamNum], idx) => {
+                const rank = idx + 1;
+                const pts = parseInt(pointValues[rank]) || 0;
+                const teamPlayers = teams[teamNum] || [];
+                teamPlayers.forEach(player => {
+                    if (playerPoints.hasOwnProperty(player)) {
+                        playerPoints[player] += pts;
+                    }
+                });
+            });
         }
     });
 
-    writeToFirebase('gokartResults', results);
-    alert('Go-kart results saved!');
-    renderGokartResultsTable();
+    return playerPoints;
 }
 
-function renderGokartResultsTable() {
-    const tbody = document.querySelector('#gokartResults tbody');
-    if (!tbody) return;
+// ===== CUSTOM EVENTS ADMIN UI =====
 
-    const results = getGokartResults();
-    const points = getGokartPoints();
+function renderCustomEventsAdmin() {
+    const container = document.getElementById('customEventsAdminContainer');
+    if (!container) return;
 
-    if (Object.keys(results).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; opacity: 0.7;">Results will appear after the race</td></tr>`;
+    const events = getCustomEvents();
+    const eventList = Object.values(events).sort((a, b) => (a.order || 0) - (b.order || 0));
+    const scoringLabels = {
+        'individual': 'Individual',
+        'team_shared': 'Team Shared',
+        'individual_to_team': 'Individual→Team'
+    };
+
+    let html = `
+        <div class="admin-section">
+            <h2 style="color: var(--gold);">Create New Event</h2>
+            <div style="display: grid; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Event Name</label>
+                    <input type="text" id="newEventName" placeholder="e.g., Beer Olympics, Go-Karts"
+                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Description (optional)</label>
+                    <input type="text" id="newEventDescription" placeholder="Brief description"
+                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scoring Mode</label>
+                    <select id="newEventScoringMode" style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                        <option value="individual">Individual (each player scores independently)</option>
+                        <option value="team_shared">Team Shared (team score = each member's score)</option>
+                        <option value="individual_to_team">Individual-to-Team (individual scores pooled, team rank = shared points)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Number of Rounds</label>
+                    <input type="number" id="newEventRoundCount" value="1" min="1" max="20"
+                           style="width: 100px; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                </div>
+                <button class="btn btn-gold" onclick="handleCreateCustomEvent()">Create Event</button>
+            </div>
+        </div>
+    `;
+
+    if (eventList.length > 0) {
+        html += '<div class="admin-section" style="margin-top: 20px;">';
+        html += '<h2 style="color: var(--gold);">Manage Events</h2>';
+
+        eventList.forEach(event => {
+            const roundCount = Object.keys(event.rounds || {}).length;
+            html += `
+                <div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="color: var(--gold); margin-bottom: 5px;">${event.name}</h3>
+                            <p style="font-size: 0.85em; opacity: 0.7;">
+                                ${scoringLabels[event.scoringMode] || event.scoringMode} |
+                                ${roundCount} round(s)
+                                ${event.locked ? ' | <span style="color: #e74c3c;">Locked</span>' : ''}
+                            </p>
+                            ${event.description ? `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 3px;">${event.description}</p>` : ''}
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                            <label class="toggle-switch" style="margin: 0;">
+                                <input type="checkbox" ${event.locked ? 'checked' : ''} onchange="updateCustomEventField('${event.id}', 'locked', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span style="font-size: 0.85em;">Lock</span>
+                            <button class="btn btn-small" onclick="toggleCustomEventExpand('${event.id}')">Configure</button>
+                            <button class="btn btn-small" onclick="deleteCustomEvent('${event.id}')" style="background: var(--accent-red);">Delete</button>
+                        </div>
+                    </div>
+                    <div id="eventConfig_${event.id}" style="display: none; margin-top: 15px; border-top: 1px solid var(--card-border); padding-top: 15px;">
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+function handleCreateCustomEvent() {
+    const name = document.getElementById('newEventName').value.trim();
+    const description = document.getElementById('newEventDescription').value.trim();
+    const scoringMode = document.getElementById('newEventScoringMode').value;
+    const roundCount = document.getElementById('newEventRoundCount').value;
+
+    if (!name) {
+        alert('Please enter an event name.');
         return;
     }
 
-    const sorted = Object.entries(results).sort((a, b) => a[1] - b[1]);
+    createCustomEvent(name, description, scoringMode, roundCount);
+    document.getElementById('newEventName').value = '';
+    document.getElementById('newEventDescription').value = '';
+    document.getElementById('newEventRoundCount').value = '1';
+    alert(`Event "${name}" created!`);
+    renderCustomEventsAdmin();
+}
 
-    tbody.innerHTML = '';
-    sorted.forEach(([player, position]) => {
-        const tr = document.createElement('tr');
-        const rankClass = position <= 3 ? `rank-${position}` : '';
-        tr.innerHTML = `
-            <td class="${rankClass}">${getOrdinal(position)}</td>
-            <td>${player}</td>
-            <td>${points[position] || 0}</td>
+function toggleCustomEventExpand(eventId) {
+    const configDiv = document.getElementById(`eventConfig_${eventId}`);
+    if (!configDiv) return;
+
+    if (configDiv.style.display === 'none') {
+        configDiv.style.display = 'block';
+        renderEventRoundConfigs(eventId);
+    } else {
+        configDiv.style.display = 'none';
+    }
+}
+
+function renderEventRoundConfigs(eventId) {
+    const configDiv = document.getElementById(`eventConfig_${eventId}`);
+    if (!configDiv) return;
+
+    const event = getCustomEvent(eventId);
+    if (!event) return;
+
+    const rounds = event.rounds || {};
+    const roundKeys = Object.keys(rounds).map(Number).sort((a, b) => a - b);
+    const playerList = getPlayerList();
+    const scoringLabels = {
+        'individual': 'Individual',
+        'team_shared': 'Team Shared',
+        'individual_to_team': 'Individual→Team'
+    };
+    const needsTeams = event.scoringMode !== 'individual';
+    const needsPositionPoints = event.scoringMode === 'individual' || event.scoringMode === 'individual_to_team';
+
+    let html = `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Scoring: ${scoringLabels[event.scoringMode]}</p>`;
+
+    roundKeys.forEach((roundNum, idx) => {
+        const round = rounds[roundNum];
+        const roundName = round.name || `Round ${roundNum}`;
+        const teams = round.teams || {};
+        const results = round.results || {};
+        const pointValues = round.pointValues || {};
+        const teamCount = round.teamCount || 2;
+
+        html += `
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;">
+                        <input type="text" id="ceRoundName_${eventId}_r${roundNum}" value="${roundName}"
+                               onchange="saveEventRoundName('${eventId}', ${roundNum})"
+                               style="padding: 8px; border: none; border-radius: 5px; font-size: 0.95em; flex: 1;">
+                    </div>
+                    <button class="btn btn-small" onclick="removeEventRound('${eventId}', ${roundNum})" style="background: var(--accent-red); font-size: 0.8em;">Remove Round</button>
+                </div>
         `;
-        tbody.appendChild(tr);
+
+        // Point values (for individual or individual_to_team)
+        if (needsPositionPoints) {
+            html += `<details style="margin-bottom: 10px;"><summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Point Values (per position)</summary>`;
+            html += '<div class="point-config" style="margin-top: 8px;">';
+            for (let i = 1; i <= 12; i++) {
+                html += `
+                    <div class="point-config-item">
+                        <label>${getOrdinal(i)}</label>
+                        <input type="number" id="cePts_${eventId}_r${roundNum}_p${i}" value="${pointValues[i] || 0}" style="width: 60px;">
+                    </div>
+                `;
+            }
+            html += '</div>';
+            html += `<button class="btn btn-small" onclick="saveEventRoundPoints('${eventId}', ${roundNum})" style="margin-top: 8px;">Save Points</button>`;
+            html += '</details>';
+        }
+
+        // Team assignment (for team modes)
+        if (needsTeams) {
+            html += `
+                <details style="margin-bottom: 10px;">
+                    <summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Team Assignment</summary>
+                    <div style="margin-top: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                            <label style="font-size: 0.9em;">Teams:</label>
+                            <select onchange="updateEventRoundTeamCount('${eventId}', ${roundNum}, this.value); renderEventRoundConfigs('${eventId}')"
+                                    style="padding: 8px; border-radius: 5px; border: none;">
+                                ${[2,3,4,6,12].map(n => `<option value="${n}" ${teamCount === n ? 'selected' : ''}>${n}</option>`).join('')}
+                            </select>
+                            ${idx > 0 ? `<button class="btn btn-small" onclick="copyPreviousRoundTeams('${eventId}', ${roundNum}); renderEventRoundConfigs('${eventId}')">Copy Previous Teams</button>` : ''}
+                        </div>
+                        <div class="team-assignment">
+            `;
+
+            for (let t = 1; t <= teamCount; t++) {
+                const existingMembers = teams[t] || [];
+                html += `<div class="team-card"><h4>Team ${t}</h4><div id="ceTeam_${eventId}_r${roundNum}_t${t}"></div></div>`;
+            }
+
+            html += `
+                        </div>
+                        <button class="btn btn-small btn-gold" onclick="saveEventRoundTeams('${eventId}', ${roundNum})" style="margin-top: 8px;">Save Teams</button>
+                    </div>
+                </details>
+            `;
+        }
+
+        // Results entry
+        html += `
+            <details style="margin-bottom: 10px;">
+                <summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Enter Results</summary>
+                <div style="margin-top: 8px;">
+        `;
+
+        if (event.scoringMode === 'individual') {
+            html += '<div class="scoring-grid">';
+            playerList.forEach(player => {
+                const safeId = player.replace(/\s/g, '_');
+                html += `
+                    <div class="score-input">
+                        <label>${player}</label>
+                        <select id="ceRes_${eventId}_r${roundNum}_${safeId}">
+                            <option value="">-- Pos --</option>
+                            ${[1,2,3,4,5,6,7,8,9,10,11,12].map(p =>
+                                `<option value="${p}" ${results[player] === p ? 'selected' : ''}>${getOrdinal(p)}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        } else if (event.scoringMode === 'team_shared') {
+            html += '<div class="scoring-grid">';
+            for (let t = 1; t <= teamCount; t++) {
+                const teamPlayers = teams[t] || [];
+                html += `
+                    <div class="score-input">
+                        <label>Team ${t}</label>
+                        <small style="display: block; opacity: 0.7; margin-bottom: 5px; font-size: 0.8em;">${teamPlayers.join(', ') || 'No players'}</small>
+                        <input type="number" id="ceRes_${eventId}_r${roundNum}_t${t}" placeholder="Points" value="${results[t] || ''}">
+                    </div>
+                `;
+            }
+            html += '</div>';
+        } else if (event.scoringMode === 'individual_to_team') {
+            html += '<div class="scoring-grid">';
+            playerList.forEach(player => {
+                const safeId = player.replace(/\s/g, '_');
+                html += `
+                    <div class="score-input">
+                        <label>${player}</label>
+                        <input type="number" id="ceRes_${eventId}_r${roundNum}_${safeId}" placeholder="Score" value="${results[player] || ''}">
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        html += `
+                    <button class="btn btn-small btn-gold" onclick="saveEventRoundResults('${eventId}', ${roundNum})" style="margin-top: 8px;">Save Results</button>
+                </div>
+            </details>
+        `;
+
+        html += '</div>';
     });
+
+    html += `<button class="btn btn-small" onclick="addEventRound('${eventId}'); renderEventRoundConfigs('${eventId}')" style="margin-top: 5px;">+ Add Round</button>`;
+
+    configDiv.innerHTML = html;
+
+    // Initialize checkbox groups for team assignment (must be done after DOM update)
+    if (needsTeams) {
+        roundKeys.forEach(roundNum => {
+            const round = rounds[roundNum];
+            const teams = round.teams || {};
+            const teamCount = round.teamCount || 2;
+            for (let t = 1; t <= teamCount; t++) {
+                const containerId = `ceTeam_${eventId}_r${roundNum}_t${t}`;
+                if (document.getElementById(containerId)) {
+                    createCheckboxGroup(containerId, t, `ce_${eventId}_r${roundNum}`, teams[t] || []);
+                }
+            }
+        });
+    }
+}
+
+// ===== CUSTOM EVENTS PAGE (Player-Facing) =====
+
+function renderEventsPage() {
+    const container = document.getElementById('eventsContainer');
+    if (!container) return;
+
+    const events = getCustomEvents();
+    const eventList = Object.values(events).sort((a, b) => (a.order || 0) - (b.order || 0));
+    const scoringLabels = {
+        'individual': 'Individual Scoring',
+        'team_shared': 'Team Scoring',
+        'individual_to_team': 'Individual-to-Team Scoring'
+    };
+
+    if (eventList.length === 0) {
+        container.innerHTML = '<div class="section-card"><div class="placeholder-box"><p>No events have been created yet. Check back soon!</p></div></div>';
+        return;
+    }
+
+    let html = '';
+
+    eventList.forEach(event => {
+        const rounds = event.rounds || {};
+        const roundKeys = Object.keys(rounds).map(Number).sort((a, b) => a - b);
+
+        html += `<div class="section-card">`;
+        html += `<h2>${event.name}</h2>`;
+        if (event.description) {
+            html += `<p style="opacity: 0.85; margin-bottom: 15px;">${event.description}</p>`;
+        }
+        html += `<p style="font-size: 0.85em; color: var(--gold); margin-bottom: 15px;">${scoringLabels[event.scoringMode] || event.scoringMode} | ${roundKeys.length} round(s)${event.locked ? ' | <span style="color: #e74c3c;">Locked</span>' : ''}</p>`;
+
+        roundKeys.forEach(roundNum => {
+            const round = rounds[roundNum];
+            const roundName = round.name || `Round ${roundNum}`;
+            const teams = round.teams || {};
+            const results = round.results || {};
+            const pointValues = round.pointValues || {};
+            const hasResults = Object.keys(results).length > 0;
+
+            html += `<div class="sub-event">`;
+            html += `<h4>${roundName}</h4>`;
+
+            // Show teams if team-based
+            if (event.scoringMode !== 'individual' && Object.keys(teams).length > 0) {
+                html += '<div style="margin-bottom: 10px;">';
+                Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
+                    if (teamPlayers && teamPlayers.length > 0) {
+                        html += `<p style="font-size: 0.9em;"><strong>Team ${teamNum}:</strong> ${teamPlayers.join(', ')}</p>`;
+                    }
+                });
+                html += '</div>';
+            }
+
+            // Show results
+            if (hasResults) {
+                if (event.scoringMode === 'individual') {
+                    const sorted = Object.entries(results).sort((a, b) => a[1] - b[1]);
+                    html += '<table class="leaderboard-table" style="margin-top: 10px;"><thead><tr><th>Pos</th><th>Player</th><th>Pts</th></tr></thead><tbody>';
+                    sorted.forEach(([player, position]) => {
+                        const rankClass = position <= 3 ? `rank-${position}` : '';
+                        html += `<tr><td class="${rankClass}">${getOrdinal(position)}</td><td>${player}</td><td>${pointValues[position] || 0}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                } else if (event.scoringMode === 'team_shared') {
+                    const sorted = Object.entries(results).sort((a, b) => b[1] - a[1]);
+                    html += '<table class="leaderboard-table" style="margin-top: 10px;"><thead><tr><th>Team</th><th>Players</th><th>Score</th></tr></thead><tbody>';
+                    sorted.forEach(([teamNum, score]) => {
+                        const teamPlayers = teams[teamNum] || [];
+                        html += `<tr><td>Team ${teamNum}</td><td>${teamPlayers.join(', ')}</td><td>${score}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                } else if (event.scoringMode === 'individual_to_team') {
+                    // Show team totals and rank
+                    const teamTotals = {};
+                    Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
+                        teamTotals[teamNum] = 0;
+                        (teamPlayers || []).forEach(player => {
+                            teamTotals[teamNum] += parseInt(results[player]) || 0;
+                        });
+                    });
+                    const sortedTeams = Object.entries(teamTotals).sort((a, b) => b[1] - a[1]);
+
+                    html += '<table class="leaderboard-table" style="margin-top: 10px;"><thead><tr><th>Rank</th><th>Team</th><th>Players</th><th>Total</th><th>Pts</th></tr></thead><tbody>';
+                    sortedTeams.forEach(([teamNum, total], idx) => {
+                        const rank = idx + 1;
+                        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                        const pts = pointValues[rank] || 0;
+                        const teamPlayers = teams[teamNum] || [];
+                        html += `<tr><td class="${rankClass}">${rank}</td><td>Team ${teamNum}</td><td>${teamPlayers.join(', ')}</td><td>${total}</td><td>${pts}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+            } else {
+                html += '<div class="placeholder-box"><p>Results pending</p></div>';
+            }
+
+            html += '</div>';
+        });
+
+        html += '</div>';
+    });
+
+    container.innerHTML = html;
 }
 
 // ===== TRIVIA GAME SYSTEM =====
@@ -1416,7 +1911,19 @@ function renderTriviaQuestionAdmin() {
 
     const game = getTriviaGame();
 
-    let html = '<h4 style="color: var(--gold); margin-bottom: 15px;">Trivia Questions (max 16)</h4>';
+    let html = '';
+
+    // Trivia description field
+    html += `
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; color: var(--silver);">Trivia Description (shown to players)</label>
+            <input type="text" id="triviaDescriptionInput" value="${game.description || ''}" placeholder="e.g., 16 rounds of trivia covering sports, history, and pop culture"
+                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;"
+                   onchange="saveTriviaDescription()">
+        </div>
+    `;
+
+    html += '<h4 style="color: var(--gold); margin-bottom: 15px;">Trivia Questions (max 16)</h4>';
 
     // CSV Upload section
     html += `
@@ -1954,8 +2461,11 @@ function renderTriviaPage() {
     const game = getTriviaGame();
     const admin = isAdmin();
 
-    // Player stats header
+    // Show trivia description if set
     let html = '';
+    if (game.description) {
+        html += `<div class="section-card" style="margin-bottom: 15px;"><p style="opacity: 0.85;">${game.description}</p></div>`;
+    }
 
     if (user) {
         const playerPoints = calculatePlayerPoints();
@@ -2216,13 +2726,20 @@ function submitTriviaAnswer() {
     renderTriviaPage();
 }
 
-// Calculate all player points
+// Calculate all player points (dynamic: golf + custom events + trivia + predictions)
 function calculatePlayerPoints() {
     const playerList = getPlayerList();
     const playerPoints = {};
+    const customEvents = getCustomEvents();
+    const eventList = Object.values(customEvents).sort((a, b) => (a.order || 0) - (b.order || 0));
 
+    // Initialize with golf, trivia, predictions, and one key per custom event
     playerList.forEach(player => {
-        playerPoints[player] = { golf: 0, beer: 0, gokart: 0, trivia: 0, predictions: 0, total: 0 };
+        const pts = { golf: 0, trivia: 0, predictions: 0, total: 0 };
+        eventList.forEach(event => {
+            pts[event.id] = 0;
+        });
+        playerPoints[player] = pts;
     });
 
     // Golf points (from hole-by-hole scoring)
@@ -2230,101 +2747,81 @@ function calculatePlayerPoints() {
     const golfBonuses = getGolfBonuses();
     const bonusPoints = getBonusPoints();
 
-    // Calculate team totals and assign to players
     const teamTotals = {};
     Object.keys(golfTeams).forEach(teamNum => {
         teamTotals[teamNum] = calculateGolfTeamTotal(teamNum);
     });
 
-    // Add bonus points
     if (golfBonuses.bestFront && golfTeams[golfBonuses.bestFront]) {
         golfTeams[golfBonuses.bestFront].forEach(player => {
-            if (playerPoints[player]) {
-                playerPoints[player].golf += bonusPoints.bestFront;
-            }
+            if (playerPoints[player]) playerPoints[player].golf += bonusPoints.bestFront;
         });
     }
     if (golfBonuses.bestBack && golfTeams[golfBonuses.bestBack]) {
         golfTeams[golfBonuses.bestBack].forEach(player => {
-            if (playerPoints[player]) {
-                playerPoints[player].golf += bonusPoints.bestBack;
-            }
+            if (playerPoints[player]) playerPoints[player].golf += bonusPoints.bestBack;
         });
     }
     if (golfBonuses.overallWinner && golfTeams[golfBonuses.overallWinner]) {
         golfTeams[golfBonuses.overallWinner].forEach(player => {
-            if (playerPoints[player]) {
-                playerPoints[player].golf += bonusPoints.overallWinner;
-            }
+            if (playerPoints[player]) playerPoints[player].golf += bonusPoints.overallWinner;
         });
     }
 
-    // Assign base golf points from team totals
     Object.keys(golfTeams).forEach(teamNum => {
         const teamPlayers = golfTeams[teamNum] || [];
         teamPlayers.forEach(player => {
+            if (playerPoints[player]) playerPoints[player].golf += teamTotals[teamNum] || 0;
+        });
+    });
+
+    // Custom event points
+    eventList.forEach(event => {
+        const eventPlayerPoints = calculateCustomEventPlayerPoints(event);
+        Object.keys(eventPlayerPoints).forEach(player => {
             if (playerPoints[player]) {
-                playerPoints[player].golf += teamTotals[teamNum] || 0;
+                playerPoints[player][event.id] = eventPlayerPoints[player];
             }
         });
     });
 
-    // Beer Olympics points
-    const beerTeams = getBeerTeams();
-    const beerScores = getBeerScores();
-
-    for (let game = 1; game <= 5; game++) {
-        const teams = beerTeams[game] || {};
-        const scores = beerScores[game] || {};
-
-        Object.keys(teams).forEach(teamNum => {
-            const teamPlayers = teams[teamNum] || [];
-            const pts = scores[teamNum] || 0;
-            teamPlayers.forEach(player => {
-                if (playerPoints[player]) {
-                    playerPoints[player].beer += pts;
-                }
-            });
-        });
-    }
-
-    // Go-kart points
-    const gokartResults = getGokartResults();
-    const gokartPoints = getGokartPoints();
-
-    Object.entries(gokartResults).forEach(([player, position]) => {
-        if (playerPoints[player]) {
-            playerPoints[player].gokart = gokartPoints[position] || 0;
-        }
-    });
-
-    // Trivia points (from new question-based system)
+    // Trivia points
     const triviaPlayerPoints = calculateTriviaPlayerPoints();
     Object.keys(triviaPlayerPoints).forEach(player => {
-        if (playerPoints[player]) {
-            playerPoints[player].trivia = triviaPlayerPoints[player];
-        }
+        if (playerPoints[player]) playerPoints[player].trivia = triviaPlayerPoints[player];
     });
 
     // Prediction points
     const predictionPlayerPoints = calculatePredictionPoints();
     Object.keys(predictionPlayerPoints).forEach(player => {
-        if (playerPoints[player]) {
-            playerPoints[player].predictions = predictionPlayerPoints[player];
-        }
+        if (playerPoints[player]) playerPoints[player].predictions = predictionPlayerPoints[player];
     });
 
     // Calculate totals
     Object.keys(playerPoints).forEach(player => {
-        playerPoints[player].total =
-            playerPoints[player].golf +
-            playerPoints[player].beer +
-            playerPoints[player].gokart +
-            playerPoints[player].trivia +
-            playerPoints[player].predictions;
+        let total = playerPoints[player].golf + playerPoints[player].trivia + playerPoints[player].predictions;
+        eventList.forEach(event => {
+            total += playerPoints[player][event.id] || 0;
+        });
+        playerPoints[player].total = total;
     });
 
     return playerPoints;
+}
+
+// Helper to get ordered column info for leaderboard
+function getLeaderboardColumns() {
+    const customEvents = getCustomEvents();
+    const eventList = Object.values(customEvents).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    const columns = [{ key: 'golf', label: 'Golf' }];
+    eventList.forEach(event => {
+        columns.push({ key: event.id, label: event.name });
+    });
+    columns.push({ key: 'trivia', label: 'Trivia' });
+    columns.push({ key: 'predictions', label: 'Preds' });
+
+    return columns;
 }
 
 // Leaderboard rendering
@@ -2333,8 +2830,7 @@ function renderLeaderboards() {
     renderOverallLeaderboard();
     renderCumulativeChart();
     renderGolfLeaderboard();
-    renderBeerOlympicsLeaderboard();
-    renderGokartLeaderboard();
+    renderCustomEventLeaderboards();
     renderTriviaLeaderboard();
     renderPredictionsLeaderboard();
 }
@@ -2401,30 +2897,33 @@ function renderPodium() {
 }
 
 function renderOverallLeaderboard() {
-    const tbody = document.querySelector('#overallLeaderboard tbody');
-    if (!tbody) return;
+    const tableContainer = document.getElementById('overallLeaderboardContainer');
+    if (!tableContainer) return;
 
     const playerPoints = calculatePlayerPoints();
+    const columns = getLeaderboardColumns();
     const sorted = Object.entries(playerPoints)
         .sort((a, b) => b[1].total - a[1].total);
 
-    tbody.innerHTML = '';
+    let html = '<div style="overflow-x: auto;"><table class="leaderboard-table" id="overallLeaderboard"><thead><tr>';
+    html += '<th>Rank</th><th>Player</th>';
+    columns.forEach(col => {
+        html += `<th>${col.label}</th>`;
+    });
+    html += '<th>Total</th></tr></thead><tbody>';
+
     sorted.forEach(([player, points], idx) => {
         const rank = idx + 1;
         const rankClass = rank <= 3 ? `rank-${rank}` : '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="${rankClass}">${rank}</td>
-            <td>${player}</td>
-            <td>${points.golf}</td>
-            <td>${points.beer}</td>
-            <td>${points.gokart}</td>
-            <td>${points.trivia}</td>
-            <td>${points.predictions}</td>
-            <td style="font-weight: bold;">${points.total}</td>
-        `;
-        tbody.appendChild(tr);
+        html += `<tr><td class="${rankClass}">${rank}</td><td>${player}</td>`;
+        columns.forEach(col => {
+            html += `<td>${points[col.key] || 0}</td>`;
+        });
+        html += `<td style="font-weight: bold;">${points.total}</td></tr>`;
     });
+
+    html += '</tbody></table></div>';
+    tableContainer.innerHTML = html;
 }
 
 function renderCumulativeChart() {
@@ -2434,16 +2933,25 @@ function renderCumulativeChart() {
     const playerPoints = calculatePlayerPoints();
     const players = Object.keys(playerPoints);
     const completed = getCompletedEvents();
+    const columns = getLeaderboardColumns();
 
-    // Determine how many events to show (only completed ones)
-    const allEvents = ['Start', 'Golf', 'Beer', 'Karts', 'Trivia'];
+    // Build list of completed events for the chart
     let eventsToShow = ['Start'];
-    if (completed.golf) eventsToShow.push('Golf');
-    if (completed.beer) eventsToShow.push('Beer');
-    if (completed.gokart) eventsToShow.push('Karts');
-    if (completed.trivia) eventsToShow.push('Trivia');
+    let cumulativeKeys = []; // keys in order for cumulative addition
+    columns.forEach(col => {
+        if (col.key === 'predictions') return; // predictions shown separately
+        if (col.key === 'golf' && completed.golf) {
+            eventsToShow.push('Golf');
+            cumulativeKeys.push('golf');
+        } else if (col.key === 'trivia' && completed.trivia) {
+            eventsToShow.push('Trivia');
+            cumulativeKeys.push('trivia');
+        } else if (col.key !== 'golf' && col.key !== 'trivia' && col.key !== 'predictions' && completed[col.key]) {
+            eventsToShow.push(col.label);
+            cumulativeKeys.push(col.key);
+        }
+    });
 
-    // If no events completed yet, show placeholder
     if (eventsToShow.length === 1) {
         container.innerHTML = '<h3 style="color: var(--gold); margin-bottom: 15px;">Cumulative Score Progression</h3><p style="text-align: center; opacity: 0.7;">Chart will populate as events are completed</p>';
         return;
@@ -2454,14 +2962,14 @@ function renderCumulativeChart() {
         return;
     }
 
-    // Calculate cumulative scores after each event (only for completed events)
     const chartData = players.map(player => {
         const pts = playerPoints[player];
         const scores = [0];
-        if (completed.golf) scores.push(pts.golf);
-        if (completed.beer) scores.push(pts.golf + pts.beer);
-        if (completed.gokart) scores.push(pts.golf + pts.beer + pts.gokart);
-        if (completed.trivia) scores.push(pts.total);
+        let cumulative = 0;
+        cumulativeKeys.forEach(key => {
+            cumulative += pts[key] || 0;
+            scores.push(cumulative);
+        });
         return { name: player, scores };
     });
 
@@ -2586,81 +3094,43 @@ function renderGolfLeaderboard() {
     });
 }
 
-function renderBeerOlympicsLeaderboard() {
-    const tbody = document.querySelector('#beerOlympicsLeaderboard tbody');
-    if (!tbody) return;
+function renderCustomEventLeaderboards() {
+    const container = document.getElementById('customEventLeaderboards');
+    if (!container) return;
 
-    const playerList = getPlayerList();
-    const beerTeams = getBeerTeams();
-    const beerScores = getBeerScores();
+    const customEvents = getCustomEvents();
+    const eventList = Object.values(customEvents).sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    const playerGamePoints = {};
-    playerList.forEach(player => {
-        playerGamePoints[player] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, total: 0 };
-    });
-
-    for (let game = 1; game <= 5; game++) {
-        const teams = beerTeams[game] || {};
-        const scores = beerScores[game] || {};
-
-        Object.keys(teams).forEach(teamNum => {
-            const teamPlayers = teams[teamNum] || [];
-            const pts = scores[teamNum] || 0;
-            teamPlayers.forEach(player => {
-                if (playerGamePoints[player]) {
-                    playerGamePoints[player][game] = pts;
-                    playerGamePoints[player].total += pts;
-                }
-            });
-        });
-    }
-
-    const sorted = Object.entries(playerGamePoints).sort((a, b) => b[1].total - a[1].total);
-
-    tbody.innerHTML = '';
-    sorted.forEach(([player, points], idx) => {
-        const rank = idx + 1;
-        const rankClass = rank <= 3 ? `rank-${rank}` : '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="${rankClass}">${rank}</td>
-            <td>${player}</td>
-            <td>${points[1] || '-'}</td>
-            <td>${points[2] || '-'}</td>
-            <td>${points[3] || '-'}</td>
-            <td>${points[4] || '-'}</td>
-            <td>${points[5] || '-'}</td>
-            <td style="font-weight: bold;">${points.total}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function renderGokartLeaderboard() {
-    const tbody = document.querySelector('#gokartingLeaderboard tbody');
-    if (!tbody) return;
-
-    const results = getGokartResults();
-    const points = getGokartPoints();
-
-    if (Object.keys(results).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; opacity: 0.7;">No go-kart results yet</td></tr>`;
+    if (eventList.length === 0) {
+        container.innerHTML = '';
         return;
     }
 
-    const sorted = Object.entries(results).sort((a, b) => a[1] - b[1]);
+    let html = '';
+    eventList.forEach(event => {
+        const eventPoints = calculateCustomEventPlayerPoints(event);
+        const hasData = Object.values(eventPoints).some(p => p > 0);
+        const sorted = Object.entries(eventPoints).sort((a, b) => b[1] - a[1]);
 
-    tbody.innerHTML = '';
-    sorted.forEach(([player, position]) => {
-        const rankClass = position <= 3 ? `rank-${position}` : '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="${rankClass}">${getOrdinal(position)}</td>
-            <td>${player}</td>
-            <td>${points[position] || 0}</td>
-        `;
-        tbody.appendChild(tr);
+        html += `<div class="section-card"><h2>${event.name} Results</h2>`;
+        html += '<div style="overflow-x: auto;"><table class="leaderboard-table"><thead><tr>';
+        html += '<th>Rank</th><th>Player</th><th>Points</th>';
+        html += '</tr></thead><tbody>';
+
+        if (!hasData) {
+            html += `<tr><td colspan="3" style="text-align: center; opacity: 0.7;">No ${event.name} results yet</td></tr>`;
+        } else {
+            sorted.forEach(([player, points], idx) => {
+                const rank = idx + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                html += `<tr><td class="${rankClass}">${rank}</td><td>${player}</td><td>${points}</td></tr>`;
+            });
+        }
+
+        html += '</tbody></table></div></div>';
     });
+
+    container.innerHTML = html;
 }
 
 function renderTriviaLeaderboard() {
@@ -2735,11 +3205,14 @@ function renderProfile() {
     }
 
     const playerPoints = calculatePlayerPoints();
-    const userPoints = playerPoints[user] || { golf: 0, beer: 0, gokart: 0, trivia: 0, predictions: 0, total: 0 };
+    const customEvents = getCustomEvents();
+    const eventList = Object.values(customEvents).sort((a, b) => (a.order || 0) - (b.order || 0));
+    const defaultPoints = { golf: 0, trivia: 0, predictions: 0, total: 0 };
+    eventList.forEach(e => { defaultPoints[e.id] = 0; });
+    const userPoints = playerPoints[user] || defaultPoints;
 
     // Get user's teams
     const golfTeams = getGolfTeams();
-    const beerTeams = getBeerTeams();
 
     let golfTeamNum = null;
     Object.keys(golfTeams).forEach(teamNum => {
@@ -2764,8 +3237,9 @@ function renderProfile() {
     html += '<div class="section-card"><h2>Your Scores</h2><div class="profile-stats">';
     html += `<div class="stat-card"><h4>Total</h4><div class="value">${userPoints.total}</div></div>`;
     html += `<div class="stat-card"><h4>Golf</h4><div class="value">${userPoints.golf}</div>${golfTeamNum ? `<div class="team">Team ${golfTeamNum}</div>` : ''}</div>`;
-    html += `<div class="stat-card"><h4>Beer</h4><div class="value">${userPoints.beer}</div></div>`;
-    html += `<div class="stat-card"><h4>Karts</h4><div class="value">${userPoints.gokart}</div></div>`;
+    eventList.forEach(event => {
+        html += `<div class="stat-card"><h4>${event.name}</h4><div class="value">${userPoints[event.id] || 0}</div></div>`;
+    });
     html += `<div class="stat-card"><h4>Trivia</h4><div class="value">${userPoints.trivia}</div></div>`;
     html += `<div class="stat-card"><h4>Preds</h4><div class="value">${userPoints.predictions}</div></div>`;
     html += '</div></div>';
@@ -2781,16 +3255,20 @@ function renderProfile() {
         html += `<div class="schedule-item"><h4>Golf - Team ${golfTeamNum}</h4><p>${golfTeams[golfTeamNum].join(', ')}</p></div>`;
     }
 
-    // Beer Olympics teams
-    for (let game = 1; game <= 5; game++) {
-        const teams = beerTeams[game] || {};
-        Object.keys(teams).forEach(teamNum => {
-            if (teams[teamNum].includes(user)) {
-                hasAssignments = true;
-                html += `<div class="schedule-item"><h4>Beer Olympics Game ${game} - Team ${teamNum}</h4><p>${teams[teamNum].join(', ')}</p></div>`;
-            }
+    // Custom event teams
+    eventList.forEach(event => {
+        if (event.scoringMode === 'individual') return;
+        const rounds = event.rounds || {};
+        Object.entries(rounds).forEach(([roundNum, round]) => {
+            const teams = round.teams || {};
+            Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
+                if (teamPlayers && teamPlayers.includes(user)) {
+                    hasAssignments = true;
+                    html += `<div class="schedule-item"><h4>${event.name} - ${round.name || 'Round ' + roundNum} - Team ${teamNum}</h4><p>${teamPlayers.join(', ')}</p></div>`;
+                }
+            });
         });
-    }
+    });
 
     if (!hasAssignments) {
         html += '<p style="opacity: 0.7;">No team assignments yet.</p>';
@@ -3284,10 +3762,7 @@ function exportData() {
         golfBonuses: getGolfBonuses(),
         golfScoringEnabled: getGolfScoringEnabled(),
         bonusPoints: getBonusPoints(),
-        beerTeams: getBeerTeams(),
-        beerScores: getBeerScores(),
-        gokartPoints: getGokartPoints(),
-        gokartResults: getGokartResults(),
+        customEvents: getCustomEvents(),
         triviaGame: getTriviaGame(),
         siteSettings: getSiteSettings(),
         predictions: getPredictions()
@@ -3306,7 +3781,6 @@ function confirmResetData() {
         if (confirm('Really? All scores and teams will be deleted!')) {
             // Reset Firebase data to defaults
             writeToFirebase('players', DEFAULT_PLAYERS);
-            writeToFirebase('gokartPoints', DEFAULT_GOKART_POINTS);
             writeToFirebase('triviaPoints', DEFAULT_TRIVIA_POINTS);
             writeToFirebase('bonusPoints', DEFAULT_BONUS_POINTS);
             writeToFirebase('golfTeams', {});
@@ -3314,9 +3788,7 @@ function confirmResetData() {
             writeToFirebase('golfShotguns', {});
             writeToFirebase('golfBonuses', { bestFront: '', bestBack: '', overallWinner: '' });
             writeToFirebase('golfScoringEnabled', {});
-            writeToFirebase('beerTeams', {1: {}, 2: {}, 3: {}, 4: {}, 5: {}});
-            writeToFirebase('beerScores', {1: {}, 2: {}, 3: {}, 4: {}, 5: {}});
-            writeToFirebase('gokartResults', {});
+            writeToFirebase('customEvents', {});
             writeToFirebase('triviaGame', DEFAULT_TRIVIA_GAME);
             writeToFirebase('siteSettings', DEFAULT_SITE_SETTINGS);
             writeToFirebase('predictions', DEFAULT_PREDICTIONS);
@@ -3351,6 +3823,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (path === '/admin' || path === '/admin.html') {
         renderPlayerList();
         renderSiteSettings();
+        renderCustomEventsAdmin();
         renderTriviaQuestionAdmin();
         renderTriviaGameControls();
         renderPredictionsAdmin();
@@ -3364,11 +3837,8 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGolfScorecard();
     }
 
-    if (path === '/gokarting' || path === '/gokarting.html') {
-        renderGokartPointDisplay();
-        renderGokartPointConfig();
-        renderGokartScoringAdmin();
-        renderGokartResultsTable();
+    if (path === '/events' || path === '/events.html') {
+        renderEventsPage();
     }
 
     if (path === '/trivia' || path === '/trivia.html') {
