@@ -31,13 +31,9 @@ title: Admin - Dird Plesk Memorial
                 <h3>Golf</h3>
                 <p>Teams, scoring controls & bonuses</p>
             </a>
-            <a href="#" onclick="openBeerOlympicsAdmin(); return false;" class="event-link">
-                <h3>Beer Olympics</h3>
-                <p>Manage all 5 games</p>
-            </a>
-            <a href="/gokarting" class="event-link">
-                <h3>Go-Karting</h3>
-                <p>Set points & results</p>
+            <a href="/events" class="event-link">
+                <h3>Events</h3>
+                <p>View event results</p>
             </a>
             <a href="/trivia" class="event-link">
                 <h3>Trivia</h3>
@@ -73,46 +69,16 @@ title: Admin - Dird Plesk Memorial
             <!-- Bonus inputs populated by JavaScript -->
         </div>
 
+        <div id="golfFormatSettings" style="margin-top: 25px; border-top: 1px solid var(--card-border); padding-top: 15px;">
+            <!-- Golf format settings populated by JavaScript -->
+        </div>
+
         <button class="btn" onclick="closeGolfAdmin()" style="margin-top: 20px;">Close Golf Admin</button>
     </div>
 
-    <!-- Beer Olympics Admin Section -->
-    <div class="admin-section" id="beerOlympicsAdminSection" style="display: none;">
-        <h2>Beer Olympics - Game Management</h2>
-        <div style="margin: 15px 0;">
-            <label>Select Game: </label>
-            <select id="beerGameSelect" onchange="loadBeerGameAdmin()" style="padding: 10px; border-radius: 5px; border: none;">
-                <option value="1">Game 1</option>
-                <option value="2">Game 2</option>
-                <option value="3">Game 3</option>
-                <option value="4">Game 4</option>
-                <option value="5">Game 5</option>
-            </select>
-        </div>
-
-        <h3 style="color: var(--gold);">Team Assignment for <span id="currentGameLabel">Game 1</span></h3>
-        <p>Tap players to add to team:</p>
-        <div style="margin: 15px 0;">
-            <label>Number of teams: </label>
-            <select id="beerTeamCount" onchange="updateBeerTeamInputs()" style="padding: 10px; border-radius: 5px; border: none;">
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="6" selected>6</option>
-                <option value="12">12</option>
-            </select>
-        </div>
-        <div id="beerTeamAssignments" class="team-assignment">
-            <!-- Team assignment inputs populated by JavaScript -->
-        </div>
-        <button class="btn btn-gold" onclick="saveBeerTeams()" style="margin-top: 15px;">Save Teams</button>
-
-        <h3 style="margin-top: 30px; color: var(--gold);">Enter Scores for <span id="currentGameScoreLabel">Game 1</span></h3>
-        <div id="beerScoreInputs">
-            <!-- Score inputs appear after teams are saved -->
-        </div>
-        <button class="btn btn-gold" onclick="saveBeerScores()" style="margin-top: 15px;">Save Scores</button>
-        <button class="btn" onclick="closeBeerOlympicsAdmin()" style="margin-top: 15px;">Close</button>
+    <!-- Custom Events Admin Section -->
+    <div id="customEventsAdminContainer">
+        <!-- Custom events management populated by JavaScript -->
     </div>
 
     <!-- Trivia Admin Section -->

@@ -16,8 +16,7 @@ title: User Guide - Dird Plesk Memorial
         <li><a href="#events">Events Overview</a>
             <ul>
                 <li><a href="#golf">Golf</a></li>
-                <li><a href="#beer-olympics">Beer Olympics</a></li>
-                <li><a href="#go-karting">Go-Karting</a></li>
+                <li><a href="#custom-events">Custom Events</a></li>
                 <li><a href="#trivia">Trivia</a></li>
                 <li><a href="#predictions">Predictions</a></li>
             </ul>
@@ -77,7 +76,7 @@ title: User Guide - Dird Plesk Memorial
 
 <div class="section-card" id="events">
     <h2>Events Overview</h2>
-    <p>The competition features five ways to earn points:</p>
+    <p>The competition features multiple ways to earn points: Golf, Custom Events (created by admin), Trivia, and Predictions.</p>
 </div>
 
 <div class="section-card" id="golf">
@@ -100,35 +99,33 @@ title: User Guide - Dird Plesk Memorial
     </ul>
 </div>
 
-<div class="section-card" id="beer-olympics">
-    <h2>Beer Olympics</h2>
-    <p>Five separate games with individual scoring per game.</p>
+<div class="section-card" id="custom-events">
+    <h2>Custom Events</h2>
+    <p>The admin can create any number of custom competition events, each with multiple rounds and flexible scoring.</p>
 
-    <h3>How It Works</h3>
+    <h3>Scoring Modes</h3>
     <ul>
-        <li>Each game can have different team configurations</li>
-        <li>Points are awarded based on team finishing position in each game</li>
-        <li>Individual players earn points based on their team's performance</li>
-        <li>All 5 game scores combine for total Beer Olympics points</li>
+        <li><strong>Individual:</strong> Each player scores independently. Points awarded by finishing position (1st, 2nd, etc.)</li>
+        <li><strong>Team Shared:</strong> Teams compete together. Each team member receives the same score as their team.</li>
+        <li><strong>Individual-to-Team:</strong> Players earn individual scores, which are pooled per team. Teams are then ranked and each team member receives shared points based on team placement.</li>
     </ul>
 
-    <h3>Scoring</h3>
-    <p>Points are distributed based on placement (1st, 2nd, 3rd, etc.). The exact point values can be configured by the admin.</p>
-</div>
-
-<div class="section-card" id="go-karting">
-    <h2>Go-Karting</h2>
-    <p>Individual racing competition.</p>
-
-    <h3>How It Works</h3>
+    <h3>Rounds</h3>
     <ul>
-        <li>Each player competes individually</li>
-        <li>Finishing positions determine points</li>
-        <li>Admin enters final positions after racing</li>
+        <li>Each event can have multiple rounds</li>
+        <li>Teams can be different in each round (great for rotating teams)</li>
+        <li>"Copy Previous Teams" button makes setting up similar rounds easy</li>
+        <li>Point values are configurable per round</li>
     </ul>
 
-    <h3>Point Structure</h3>
-    <p>Points decrease by position (e.g., 1st: 12 pts, 2nd: 10 pts, etc.). Configurable by admin.</p>
+    <h3>How It Works</h3>
+    <ol>
+        <li>Admin creates events from the Admin page (Custom Events section)</li>
+        <li>Sets scoring mode, number of rounds, and round details</li>
+        <li>For team events: assigns players to teams per round</li>
+        <li>Enters results after each round</li>
+        <li>Points automatically calculate and appear on the Leaderboard</li>
+    </ol>
 </div>
 
 <div class="section-card" id="trivia">
@@ -191,8 +188,7 @@ title: User Guide - Dird Plesk Memorial
     <h3>Event Breakdowns</h3>
     <ul>
         <li><strong>Golf Results:</strong> Team standings and player points</li>
-        <li><strong>Beer Olympics:</strong> Individual totals across all 5 games</li>
-        <li><strong>Go-Karting:</strong> Race finishing order and points</li>
+        <li><strong>Custom Events:</strong> One leaderboard per event showing player totals</li>
         <li><strong>Trivia:</strong> Individual scores from trivia questions</li>
         <li><strong>Predictions:</strong> Bonus points from correct picks</li>
     </ul>
@@ -228,27 +224,21 @@ title: User Guide - Dird Plesk Memorial
     <h3>Golf</h3>
     <ol>
         <li>Click "Golf" in Event Management</li>
+        <li>Set golf format and scoring type (Scramble, Stableford, etc.)</li>
         <li>Select number of teams (2, 3, 4, 6, or 12)</li>
         <li>Assign players to teams by tapping their names</li>
-        <li>Save teams, then enter finishing positions</li>
-        <li>Add bonus point winners (Best Dressed, Longest Drive, etc.)</li>
+        <li>Save teams, enable scoring per team</li>
+        <li>Configure bonus point values and award bonuses</li>
     </ol>
 
-    <h3>Beer Olympics</h3>
+    <h3>Custom Events</h3>
     <ol>
-        <li>Click "Beer Olympics" in Event Management</li>
-        <li>Select which game to manage (1-5)</li>
-        <li>Set number of teams for that game</li>
-        <li>Assign players to teams</li>
-        <li>Save teams, then enter team placements</li>
-        <li>Repeat for each game</li>
-    </ol>
-
-    <h3>Go-Karting</h3>
-    <ol>
-        <li>Navigate to the Go-Karting page</li>
-        <li>Enter finishing positions for each player</li>
-        <li>Save results</li>
+        <li>Scroll to "Create New Event" in the Admin page</li>
+        <li>Enter event name, description, scoring mode, and round count</li>
+        <li>Click "Configure" on a created event to manage rounds</li>
+        <li>For each round: set team count, assign teams, set point values, enter results</li>
+        <li>Use "Copy Previous Teams" to quickly set up rounds with same teams</li>
+        <li>Lock events when complete to prevent accidental changes</li>
     </ol>
 </div>
 
@@ -259,10 +249,9 @@ title: User Guide - Dird Plesk Memorial
     <h3>Available Locks</h3>
     <ul>
         <li><strong>Golf:</strong> Locks team assignments and hole scores</li>
-        <li><strong>Beer Olympics:</strong> Locks all 5 game results</li>
-        <li><strong>Go-Karts:</strong> Locks race finishing positions</li>
         <li><strong>Trivia:</strong> Locks trivia game and responses</li>
         <li><strong>Predictions:</strong> Locks prediction responses and finalization</li>
+        <li><strong>Custom Events:</strong> Each custom event has its own lock toggle in the event management section</li>
     </ul>
 
     <h3>How to Lock/Unlock</h3>

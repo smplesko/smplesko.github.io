@@ -8,35 +8,15 @@ title: Leaderboard - Dird Plesk Memorial
     <p>Current Standings</p>
 </div>
 
-<!-- Podium Display (shows after trivia complete) -->
+<!-- Podium Display (shows when competition is closed) -->
 <div class="section-card" id="podiumDisplay" style="display: none;">
     <!-- Podium rendered by JavaScript -->
 </div>
 
 <div class="section-card">
     <h2>Overall Standings</h2>
-    <div style="overflow-x: auto;">
-        <table class="leaderboard-table" id="overallLeaderboard">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Golf</th>
-                    <th>Beer</th>
-                    <th>Karts</th>
-                    <th>Trivia</th>
-                    <th>Preds</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="8" style="text-align: center; opacity: 0.7;">
-                        Loading standings...
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="overallLeaderboardContainer">
+        <p style="text-align: center; opacity: 0.7;">Loading standings...</p>
     </div>
 </div>
 
@@ -69,54 +49,8 @@ title: Leaderboard - Dird Plesk Memorial
     </div>
 </div>
 
-<div class="section-card">
-    <h2>Beer Olympics Results</h2>
-    <div style="overflow-x: auto;">
-        <table class="leaderboard-table" id="beerOlympicsLeaderboard">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>G1</th>
-                    <th>G2</th>
-                    <th>G3</th>
-                    <th>G4</th>
-                    <th>G5</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="8" style="text-align: center; opacity: 0.7;">
-                        No beer olympics results yet
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="section-card">
-    <h2>Go-Karting Results</h2>
-    <div style="overflow-x: auto;">
-        <table class="leaderboard-table" id="gokartingLeaderboard">
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Driver</th>
-                    <th>Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="3" style="text-align: center; opacity: 0.7;">
-                        No go-kart results yet
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<!-- Dynamic custom event leaderboards rendered by JavaScript -->
+<div id="customEventLeaderboards"></div>
 
 <div class="section-card">
     <h2>Trivia Results</h2>
