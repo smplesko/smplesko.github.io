@@ -89,3 +89,26 @@ function getSelectedFromCheckboxGroup(prefix, teamNum) {
     const checkboxes = document.querySelectorAll(`input[name="${prefix}Team${teamNum}"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
 }
+
+// ===== TABLE BUILDERS =====
+
+// Build tbody HTML for a ranked Rank/Player/Points table
+// sortedEntries: [[name, points], ...] pre-sorted descending
+// options.highlightPlayer: player name to highlight with "(You)" label
+function buildRankedTableBody(sortedEntries, options) {
+    var highlightPlayer = options && options.highlightPlayer;
+    return sortedEntries.map(function(entry, idx) {
+        var name = entry[0], points = entry[1];
+        var rank = idx + 1;
+        var rankClass = rank <= 3 ? 'rank-' + rank : '';
+        var isHighlighted = highlightPlayer && name === highlightPlayer;
+        var highlightStyle = isHighlighted ? ' style="background: rgba(201, 162, 39, 0.2);"' : '';
+        var displayName = isHighlighted ? name + ' (You)' : name;
+        return '<tr' + highlightStyle + '><td class="' + rankClass + '">' + rank + '</td><td>' + displayName + '</td><td>' + points + '</td></tr>';
+    }).join('');
+}
+
+// Build a "no data" placeholder row for tables
+function emptyTableRow(colspan, message) {
+    return '<tr><td colspan="' + colspan + '" style="text-align: center; opacity: 0.7;">' + message + '</td></tr>';
+}

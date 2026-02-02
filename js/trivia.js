@@ -789,35 +789,10 @@ function renderTriviaPage() {
         html += `
             <div class="trivia-complete" style="text-align: center; padding: 20px;">
                 <h2 style="color: var(--gold); margin-bottom: 20px;">Trivia Complete!</h2>
-
                 <table class="leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Player</th>
-                            <th>Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-
-        sorted.forEach(([player, points], idx) => {
-            const rank = idx + 1;
-            const rankClass = rank <= 3 ? `rank-${rank}` : '';
-            const isMe = player === user;
-            html += `
-                <tr ${isMe ? 'style="background: rgba(201, 162, 39, 0.2);"' : ''}>
-                    <td class="${rankClass}">${rank}</td>
-                    <td>${player}${isMe ? ' (You)' : ''}</td>
-                    <td>${points}</td>
-                </tr>
-            `;
-        });
-
-        html += `
-                    </tbody>
+                    <thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead>
+                    <tbody>${buildRankedTableBody(sorted, { highlightPlayer: user })}</tbody>
                 </table>
-
                 <a href="/leaderboard" class="btn btn-gold" style="margin-top: 25px; display: inline-block;">See Final Weekend Results</a>
             </div>
         `;

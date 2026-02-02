@@ -342,7 +342,7 @@ function renderGolfLeaderboard() {
     const teams = getGolfTeams();
 
     if (Object.keys(teams).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; opacity: 0.7;">No golf results yet</td></tr>`;
+        tbody.innerHTML = emptyTableRow(4, 'No golf results yet');
         return;
     }
 
@@ -392,17 +392,7 @@ function renderCustomEventLeaderboards() {
         html += '<div style="overflow-x: auto;"><table class="leaderboard-table"><thead><tr>';
         html += '<th>Rank</th><th>Player</th><th>Points</th>';
         html += '</tr></thead><tbody>';
-
-        if (!hasData) {
-            html += `<tr><td colspan="3" style="text-align: center; opacity: 0.7;">No ${event.name} results yet</td></tr>`;
-        } else {
-            sorted.forEach(([player, points], idx) => {
-                const rank = idx + 1;
-                const rankClass = rank <= 3 ? `rank-${rank}` : '';
-                html += `<tr><td class="${rankClass}">${rank}</td><td>${player}</td><td>${points}</td></tr>`;
-            });
-        }
-
+        html += hasData ? buildRankedTableBody(sorted) : emptyTableRow(3, `No ${event.name} results yet`);
         html += '</tbody></table></div></div>';
     });
 
@@ -415,29 +405,15 @@ function renderTriviaLeaderboard() {
 
     const game = getTriviaGame();
     const triviaPoints = calculateTriviaPlayerPoints();
-
-    // Check if trivia has any data
     const hasData = Object.values(triviaPoints).some(p => p > 0);
 
     if (!hasData && game.status === 'waiting') {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; opacity: 0.7;">No trivia results yet</td></tr>`;
+        tbody.innerHTML = emptyTableRow(3, 'No trivia results yet');
         return;
     }
 
     const sorted = Object.entries(triviaPoints).sort((a, b) => b[1] - a[1]);
-
-    tbody.innerHTML = '';
-    sorted.forEach(([player, points], idx) => {
-        const rank = idx + 1;
-        const rankClass = rank <= 3 ? `rank-${rank}` : '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="${rankClass}">${rank}</td>
-            <td>${player}</td>
-            <td>${points}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+    tbody.innerHTML = buildRankedTableBody(sorted);
 }
 
 function renderPredictionsLeaderboard() {
@@ -448,22 +424,10 @@ function renderPredictionsLeaderboard() {
     const hasData = Object.values(predictionPoints).some(p => p > 0);
 
     if (!hasData) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; opacity: 0.7;">No predictions results yet</td></tr>`;
+        tbody.innerHTML = emptyTableRow(3, 'No predictions results yet');
         return;
     }
 
     const sorted = Object.entries(predictionPoints).sort((a, b) => b[1] - a[1]);
-
-    tbody.innerHTML = '';
-    sorted.forEach(([player, points], idx) => {
-        const rank = idx + 1;
-        const rankClass = rank <= 3 ? `rank-${rank}` : '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="${rankClass}">${rank}</td>
-            <td>${player}</td>
-            <td>${points}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+    tbody.innerHTML = buildRankedTableBody(sorted);
 }
