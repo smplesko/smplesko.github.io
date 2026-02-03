@@ -300,7 +300,7 @@ function renderGolfScorecard() {
             // Back 9
             html += '<p class="text-gold mt-15 mb-5">Back 9</p>';
             html += '<div class="hole-grid">';
-            for (let hole = 10; hole <= 18; hole++) {
+            for (let hole = 10; hole <= HOLE_COUNT; hole++) {
                 html += createHoleInput(teamNum, hole, teamScores[hole], enabled || isAdmin());
             }
             html += '</div>';

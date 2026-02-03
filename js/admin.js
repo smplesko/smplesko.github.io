@@ -13,7 +13,7 @@ function renderPlayerList() {
     const list = document.createElement('div');
     list.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;';
 
-    for (let slot = 1; slot <= 12; slot++) {
+    for (let slot = 1; slot <= MAX_PLAYERS; slot++) {
         const player = players[slot] || { name: '', isAdmin: false };
         const item = document.createElement('div');
         item.style.cssText = 'background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;';

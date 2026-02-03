@@ -196,7 +196,7 @@ function saveEventRoundPoints(eventId, roundNum) {
 
     const round = event.rounds[roundNum];
     const pointValues = {};
-    const maxPositions = 12;
+    const maxPositions = MAX_PLAYERS;
 
     for (let i = 1; i <= maxPositions; i++) {
         const input = document.getElementById(`cePts_${eventId}_r${roundNum}_p${i}`);
@@ -445,7 +445,7 @@ function renderEventRoundConfigs(eventId) {
         if (needsPositionPoints) {
             html += `<details style="margin-bottom: 10px;"><summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Point Values (per position)</summary>`;
             html += '<div class="point-config" style="margin-top: 8px;">';
-            for (let i = 1; i <= 12; i++) {
+            for (let i = 1; i <= MAX_PLAYERS; i++) {
                 html += `
                     <div class="point-config-item">
                         <label>${getOrdinal(i)}</label>
@@ -504,7 +504,7 @@ function renderEventRoundConfigs(eventId) {
                         <label>${player}</label>
                         <select id="ceRes_${eventId}_r${roundNum}_${safeId}">
                             <option value="">-- Pos --</option>
-                            ${[1,2,3,4,5,6,7,8,9,10,11,12].map(p =>
+                            ${Array.from({length: MAX_PLAYERS}, (_, i) => i + 1).map(p =>
                                 `<option value="${p}" ${results[player] === p ? 'selected' : ''}>${getOrdinal(p)}</option>`
                             ).join('')}
                         </select>

@@ -72,7 +72,7 @@ function renderTriviaQuestionAdmin() {
         </div>
     `;
 
-    html += '<h4 class="text-gold mb-15">Trivia Questions (max 16)</h4>';
+    html += '<h4 class="text-gold mb-15">Trivia Questions (max ' + MAX_TRIVIA_QUESTIONS + ')</h4>';
 
     // CSV Upload section
     html += `
@@ -104,7 +104,7 @@ question,category</code>
 
     html += '<div style="display: grid; gap: 10px;">';
 
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < MAX_TRIVIA_QUESTIONS; i++) {
         const q = game.questions[i] || { text: '', pointValue: 1, type: 'freeform', options: [], correctAnswer: 0, category: '' };
         const questionType = q.type || (q.options && q.options.length > 0 ? 'multiple_choice' : 'freeform');
         const isMultipleChoice = questionType === 'multiple_choice';
@@ -211,9 +211,9 @@ function handleTriviaCsvUpload(event) {
                 return;
             }
 
-            if (questions.length > 16) {
-                alert(`CSV contains ${questions.length} questions. Only the first 16 will be imported.`);
-                questions.length = 16;
+            if (questions.length > MAX_TRIVIA_QUESTIONS) {
+                alert(`CSV contains ${questions.length} questions. Only the first ${MAX_TRIVIA_QUESTIONS} will be imported.`);
+                questions.length = MAX_TRIVIA_QUESTIONS;
             }
 
             const game = getTriviaGame();
@@ -328,7 +328,7 @@ function saveTriviaQuestions() {
     const game = getTriviaGame();
     const newQuestions = [];
 
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < MAX_TRIVIA_QUESTIONS; i++) {
         const textInput = document.getElementById(`triviaQ${i}`);
         const ptsInput = document.getElementById(`triviaQPts${i}`);
         const catInput = document.getElementById(`triviaQCat${i}`);

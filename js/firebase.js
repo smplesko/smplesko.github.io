@@ -36,9 +36,15 @@ let dataCache = {
 
 let firebaseReady = false;
 
+// ===== CONFIGURATION CONSTANTS =====
+const MAX_PLAYERS = 12;
+const HOLE_COUNT = 18;
+const MAX_TRIVIA_QUESTIONS = 16;
+const MAX_PREDICTIONS = 16;
+
 // ===== DEFAULT DATA =====
 
-// Player structure: 12 players with slot numbers and display names
+// Player structure: MAX_PLAYERS slots with display names
 // Stephen (admin) is Player 1
 const DEFAULT_PLAYERS = {
     1: { name: 'Stephen', isAdmin: true },
@@ -109,14 +115,14 @@ const DEFAULT_TRIVIA_GAME = {
     status: 'waiting',
     responses: {},
     joinedPlayers: {},  // Track who has joined the trivia lobby
-    maxQuestions: 16,
+    maxQuestions: MAX_TRIVIA_QUESTIONS,
     description: ''  // Optional sub-description shown on trivia page
 };
 
 // Default predictions settings
 const DEFAULT_PREDICTIONS = {
     items: [],
-    maxPredictions: 16
+    maxPredictions: MAX_PREDICTIONS
 };
 
 // ===== FIREBASE DATA SYNC =====
@@ -330,7 +336,7 @@ function getTriviaGame() {
         status: game.status || 'waiting',
         responses: game.responses || {},
         joinedPlayers: game.joinedPlayers || {},
-        maxQuestions: game.maxQuestions || 16,
+        maxQuestions: game.maxQuestions || MAX_TRIVIA_QUESTIONS,
         description: game.description || ''
     };
 }
@@ -390,7 +396,7 @@ function calculateGolfTeamTotal(teamNum) {
     const bonusPoints = getBonusPoints();
 
     let total = 0;
-    for (let hole = 1; hole <= 18; hole++) {
+    for (let hole = 1; hole <= HOLE_COUNT; hole++) {
         const score = teamScores[hole];
         if (score && GOLF_SCORES[score]) {
             total += GOLF_SCORES[score].points;
@@ -409,7 +415,7 @@ function getPredictions() {
     const data = dataCache.predictions || {};
     return {
         items: data.items || [],
-        maxPredictions: data.maxPredictions || 16
+        maxPredictions: data.maxPredictions || MAX_PREDICTIONS
     };
 }
 
