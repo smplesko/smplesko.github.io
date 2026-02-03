@@ -175,35 +175,33 @@ window.addEventListener('beforeunload', cleanupFirebaseListeners);
 // Called when Firebase data changes - refresh relevant UI
 // Note: render functions are defined in app.js (loaded after this file)
 function onDataChange(path) {
-    const currentPath = window.location.pathname;
-
     // Always update hero settings
     if (path === 'siteSettings') {
         applyHeroSettings();
     }
 
     // Update player grid on home
-    if (path === 'players' && (currentPath === '/' || currentPath === '/index.html')) {
+    if (path === 'players' && isHomePage()) {
         renderPlayerGrid();
     }
 
     // Update leaderboards
-    if (currentPath === '/leaderboard' || currentPath === '/leaderboard.html') {
+    if (isPage('leaderboard')) {
         renderLeaderboards();
     }
 
     // Update golf scorecard
-    if (path.startsWith('golf') && (currentPath === '/golf' || currentPath === '/golf.html')) {
+    if (path.startsWith('golf') && isPage('golf')) {
         renderGolfScorecard();
     }
 
     // Update events page
-    if (path === 'customEvents' && (currentPath === '/events' || currentPath === '/events.html')) {
+    if (path === 'customEvents' && isPage('events')) {
         renderEventsPage();
     }
 
     // Update trivia page
-    if (path === 'triviaGame' && (currentPath === '/trivia' || currentPath === '/trivia.html')) {
+    if (path === 'triviaGame' && isPage('trivia')) {
         renderTriviaPage();
         if (isAdmin()) {
             renderTriviaGameControls();
@@ -211,7 +209,7 @@ function onDataChange(path) {
     }
 
     // Update admin page
-    if (currentPath === '/admin' || currentPath === '/admin.html') {
+    if (isPage('admin')) {
         if (path === 'players') renderPlayerList();
         if (path === 'siteSettings') renderSiteSettings();
         if (path === 'customEvents') renderCustomEventsAdmin();
@@ -223,12 +221,12 @@ function onDataChange(path) {
     }
 
     // Update predictions page
-    if (path === 'predictions' && (currentPath === '/predictions' || currentPath === '/predictions.html')) {
+    if (path === 'predictions' && isPage('predictions')) {
         renderPredictionsPage();
     }
 
     // Update profile
-    if (currentPath === '/profile' || currentPath === '/profile.html') {
+    if (isPage('profile')) {
         renderProfile();
     }
 

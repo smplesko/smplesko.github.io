@@ -29,16 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
     initData();
     updateUI();
 
-    const path = window.location.pathname;
-
     // Apply site settings to hero on all pages
     applyHeroSettings();
 
-    if (path === '/' || path === '/index.html') {
+    if (isHomePage()) {
         renderPlayerGrid();
     }
 
-    if (path === '/admin' || path === '/admin.html') {
+    if (isPage('admin')) {
         renderPlayerList();
         renderSiteSettings();
         renderCustomEventsAdmin();
@@ -47,19 +45,19 @@ document.addEventListener('DOMContentLoaded', function() {
         renderPredictionsAdmin();
     }
 
-    if (path === '/leaderboard' || path === '/leaderboard.html') {
+    if (isPage('leaderboard')) {
         renderLeaderboards();
     }
 
-    if (path === '/golf' || path === '/golf.html') {
+    if (isPage('golf')) {
         renderGolfScorecard();
     }
 
-    if (path === '/events' || path === '/events.html') {
+    if (isPage('events')) {
         renderEventsPage();
     }
 
-    if (path === '/trivia' || path === '/trivia.html') {
+    if (isPage('trivia')) {
         renderTriviaPage();
         // Admin controls are rendered if admin
         if (isAdmin()) {
@@ -68,11 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (path === '/predictions' || path === '/predictions.html') {
+    if (isPage('predictions')) {
         renderPredictionsPage();
     }
 
-    if (path === '/profile' || path === '/profile.html') {
+    if (isPage('profile')) {
         renderProfile();
     }
 

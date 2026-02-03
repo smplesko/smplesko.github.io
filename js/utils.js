@@ -35,6 +35,20 @@ function applyTheme() {
     }
 }
 
+// ===== PAGE ROUTING HELPERS =====
+
+// Check if current page matches name (handles both /page and /page.html)
+function isPage(name, path) {
+    const p = path || window.location.pathname;
+    return p === '/' + name || p === '/' + name + '.html';
+}
+
+// Check if on home page
+function isHomePage(path) {
+    const p = path || window.location.pathname;
+    return p === '/' || p === '/index.html';
+}
+
 // ===== UI HELPERS =====
 
 // Show save error banner (used by Firebase write failures)

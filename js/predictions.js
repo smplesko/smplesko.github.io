@@ -153,8 +153,7 @@ function updatePredictionsBanner() {
     if (unanswered.length === 0) return;
 
     // Don't show on predictions page
-    const currentPath = window.location.pathname;
-    if (currentPath === '/predictions' || currentPath === '/predictions.html') return;
+    if (isPage('predictions')) return;
 
     // Create banner
     const banner = document.createElement('div');
