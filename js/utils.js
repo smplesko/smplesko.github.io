@@ -110,5 +110,5 @@ function buildRankedTableBody(sortedEntries, options) {
 
 // Build a "no data" placeholder row for tables
 function emptyTableRow(colspan, message) {
-    return '<tr><td colspan="' + colspan + '" style="text-align: center; opacity: 0.7;">' + message + '</td></tr>';
+    return '<tr><td colspan="' + colspan + '" class="text-center text-muted">' + message + '</td></tr>';
 }

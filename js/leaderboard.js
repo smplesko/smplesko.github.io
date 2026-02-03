@@ -228,12 +228,12 @@ function renderCumulativeChart() {
     });
 
     if (eventsToShow.length === 1) {
-        container.innerHTML = '<h3 style="color: var(--gold); margin-bottom: 15px;">Cumulative Score Progression</h3><p style="text-align: center; opacity: 0.7;">Chart will populate as events are completed</p>';
+        container.innerHTML = '<h3 class="text-gold mb-15">Cumulative Score Progression</h3><p class="text-center text-muted">Chart will populate as events are completed</p>';
         return;
     }
 
     if (players.length === 0) {
-        container.innerHTML = '<p style="text-align: center; opacity: 0.7;">No data to display</p>';
+        container.innerHTML = '<p class="text-center text-muted">No data to display</p>';
         return;
     }
 

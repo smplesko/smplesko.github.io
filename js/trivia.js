@@ -72,12 +72,12 @@ function renderTriviaQuestionAdmin() {
         </div>
     `;
 
-    html += '<h4 style="color: var(--gold); margin-bottom: 15px;">Trivia Questions (max 16)</h4>';
+    html += '<h4 class="text-gold mb-15">Trivia Questions (max 16)</h4>';
 
     // CSV Upload section
     html += `
         <div style="background: rgba(201, 162, 39, 0.1); border: 1px dashed var(--gold); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            <h5 style="color: var(--gold); margin-bottom: 10px;">Bulk Import via CSV</h5>
+            <h5 class="text-gold mb-10">Bulk Import via CSV</h5>
             <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">
                 Upload a CSV file to import multiple questions at once. Supports both question types.
             </p>
@@ -386,10 +386,10 @@ function renderTriviaGameControls() {
     const joinedPlayers = Object.keys(game.joinedPlayers || {});
     const playerList = getPlayerList();
 
-    let html = '<h4 style="color: var(--gold); margin-bottom: 15px;">Game Controls</h4>';
+    let html = '<h4 class="text-gold mb-15">Game Controls</h4>';
 
     if (totalQuestions === 0) {
-        html += '<p style="opacity: 0.7;">Add questions above first</p>';
+        html += '<p class="text-muted">Add questions above first</p>';
         container.innerHTML = html;
         return;
     }
@@ -399,10 +399,10 @@ function renderTriviaGameControls() {
     if (game.status === 'waiting') {
         // Show waiting room status
         html += `<div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin: 15px 0;">`;
-        html += `<h5 style="color: var(--gold); margin-bottom: 10px;">Waiting Room (${joinedPlayers.length}/${playerList.length} players)</h5>`;
+        html += `<h5 class="text-gold mb-10">Waiting Room (${joinedPlayers.length}/${playerList.length} players)</h5>`;
 
         if (joinedPlayers.length === 0) {
-            html += `<p style="opacity: 0.7;">No players have joined yet. Players can join from the Trivia page.</p>`;
+            html += `<p class="text-muted">No players have joined yet. Players can join from the Trivia page.</p>`;
         } else {
             html += `<div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
             joinedPlayers.forEach(player => {
@@ -467,7 +467,7 @@ function renderTriviaResponseReview() {
     const hasOptions = question.options && question.options.length > 0;
 
     let html = `<div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin: 15px 0;">`;
-    html += `<h5 style="color: var(--gold); margin-bottom: 10px;">Q${qNum}: ${question.text}</h5>`;
+    html += `<h5 class="text-gold mb-10">Q${qNum}: ${question.text}</h5>`;
     html += `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Point value: ${question.pointValue}${question.category ? ` | Category: ${question.category}` : ''}</p>`;
 
     // Show correct answer for multiple choice
@@ -480,7 +480,7 @@ function renderTriviaResponseReview() {
     const playerList = getPlayerList();
 
     if (Object.keys(responses).length === 0) {
-        html += '<p style="opacity: 0.7;">No responses submitted yet</p>';
+        html += '<p class="text-muted">No responses submitted yet</p>';
     } else {
         html += '<div style="display: grid; gap: 10px;">';
         playerList.forEach(player => {
@@ -657,7 +657,7 @@ function renderTriviaPage() {
 
         html += `
             <div class="trivia-waiting" style="text-align: center; padding: 40px 20px;">
-                <h2 style="color: var(--gold);">Welcome to Trivia!</h2>
+                <h2 class="text-gold">Welcome to Trivia!</h2>
         `;
 
         if (!user) {
@@ -774,11 +774,11 @@ function renderTriviaPage() {
         html += `
             <div class="trivia-reviewing" style="text-align: center; padding: 30px 20px;">
                 ${question.category ? `<p style="margin-bottom: 10px;"><span style="background: var(--accent-red); padding: 3px 10px; border-radius: 12px; font-size: 0.85em;">${question.category}</span></p>` : ''}
-                <h3 style="color: var(--gold);">Q${qNum}: ${question.text}</h3>
+                <h3 class="text-gold">Q${qNum}: ${question.text}</h3>
                 <p style="margin: 15px 0;">Your answer: <strong>"${answerDisplay}"</strong></p>
                 ${myResponse && myResponse.approved
                     ? '<p style="color: #2ecc71;"><strong>Correct!</strong></p>'
-                    : '<p style="opacity: 0.7;">Waiting for admin to review answers...</p>'}
+                    : '<p class="text-muted">Waiting for admin to review answers...</p>'}
             </div>
         `;
     } else if (game.status === 'complete') {

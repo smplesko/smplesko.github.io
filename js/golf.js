@@ -19,10 +19,10 @@ function loadGolfFormatSettings() {
     const golf = settings.golfSettings || { format: 'Scramble', scoringType: 'Stableford', description: '' };
 
     container.innerHTML = `
-        <h4 style="color: var(--gold); margin-bottom: 15px;">Golf Format & Scoring</h4>
+        <h4 class="text-gold mb-15">Golf Format & Scoring</h4>
         <div style="display: grid; gap: 12px;">
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver); font-size: 0.9em;">Format</label>
+                <label class="label-block text-silver">Format</label>
                 <select id="golfFormatInput" style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
                     <option value="Scramble" ${golf.format === 'Scramble' ? 'selected' : ''}>Scramble</option>
                     <option value="Best Ball" ${golf.format === 'Best Ball' ? 'selected' : ''}>Best Ball</option>
@@ -31,14 +31,14 @@ function loadGolfFormatSettings() {
                 </select>
             </div>
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver); font-size: 0.9em;">Scoring Type</label>
+                <label class="label-block text-silver">Scoring Type</label>
                 <select id="golfScoringTypeInput" style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
                     <option value="Stableford" ${golf.scoringType === 'Stableford' ? 'selected' : ''}>Stableford</option>
                     <option value="Stroke" ${golf.scoringType === 'Stroke' ? 'selected' : ''}>Stroke (Low Score Wins)</option>
                 </select>
             </div>
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver); font-size: 0.9em;">Description / Rules</label>
+                <label class="label-block text-silver">Description / Rules</label>
                 <textarea id="golfDescriptionInput" placeholder="e.g., 18-hole scramble at XYZ Course"
                           style="width: 100%; padding: 10px; border: none; border-radius: 5px; min-height: 60px; resize: vertical;">${golf.description || ''}</textarea>
             </div>
@@ -101,11 +101,11 @@ function loadGolfScoringControls() {
     const { teams, scoringEnabled } = getGolfData();
 
     if (Object.keys(teams).length === 0) {
-        container.innerHTML = '<p style="opacity: 0.7;">Save teams first to manage scoring</p>';
+        container.innerHTML = '<p class="text-muted">Save teams first to manage scoring</p>';
         return;
     }
 
-    container.innerHTML = '<h4 style="color: var(--gold); margin-bottom: 15px;">Team Scoring Controls</h4>';
+    container.innerHTML = '<h4 class="text-gold mb-15">Team Scoring Controls</h4>';
 
     Object.keys(teams).forEach(teamNum => {
         const enabled = scoringEnabled[teamNum] !== false;
@@ -138,7 +138,7 @@ function loadGolfBonusInputs() {
     const bonusPoints = getBonusPoints();
 
     if (Object.keys(teams).length === 0) {
-        container.innerHTML = '<p style="opacity: 0.7;">Save teams first</p>';
+        container.innerHTML = '<p class="text-muted">Save teams first</p>';
         return;
     }
 
@@ -290,7 +290,7 @@ function renderGolfScorecard() {
             html += '<div class="scoring-locked"><p>Scoring is currently locked for this team</p></div>';
         } else {
             // Front 9
-            html += '<p style="color: var(--gold); margin: 10px 0 5px;">Front 9</p>';
+            html += '<p class="text-gold mt-10 mb-5">Front 9</p>';
             html += '<div class="hole-grid">';
             for (let hole = 1; hole <= 9; hole++) {
                 html += createHoleInput(teamNum, hole, teamScores[hole], enabled || isAdmin());
@@ -298,7 +298,7 @@ function renderGolfScorecard() {
             html += '</div>';
 
             // Back 9
-            html += '<p style="color: var(--gold); margin: 15px 0 5px;">Back 9</p>';
+            html += '<p class="text-gold mt-15 mb-5">Back 9</p>';
             html += '<div class="hole-grid">';
             for (let hole = 10; hole <= 18; hole++) {
                 html += createHoleInput(teamNum, hole, teamScores[hole], enabled || isAdmin());
@@ -308,7 +308,7 @@ function renderGolfScorecard() {
             // Shotguns
             html += `
                 <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <label style="color: var(--silver);">Team Shotguns:</label>
+                    <label class="text-silver">Team Shotguns:</label>
                     <input type="number" id="shotguns${teamNum}" value="${teamShotgunCount}"
                            min="0" style="width: 70px; padding: 10px; border-radius: 5px; border: none;"
                            onchange="saveGolfShotguns(${teamNum})" ${!enabled && !isAdmin() ? 'disabled' : ''}>

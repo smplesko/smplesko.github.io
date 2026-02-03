@@ -8,7 +8,7 @@ function renderPlayerList() {
     if (!container) return;
 
     const players = getPlayers();
-    container.innerHTML = '<h4 style="margin-bottom: 15px;">Player Names:</h4>';
+    container.innerHTML = '<h4 class="mb-15">Player Names:</h4>';
 
     const list = document.createElement('div');
     list.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;';
@@ -60,12 +60,12 @@ function renderSiteSettings() {
     container.innerHTML = `
         <div style="display: grid; gap: 15px;">
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Homepage Title (H1)</label>
+                <label class="label-block text-silver">Homepage Title (H1)</label>
                 <input type="text" id="heroTitleInput" value="${settings.heroTitle || ''}"
                        style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
             </div>
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Homepage Subtitle</label>
+                <label class="label-block text-silver">Homepage Subtitle</label>
                 <input type="text" id="heroSubtitleInput" value="${settings.heroSubtitle || ''}"
                        style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
             </div>
@@ -77,7 +77,7 @@ function renderSiteSettings() {
                     </label>
                     <span style="color: var(--silver);">Show Notes Section on Homepage</span>
                 </div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Notes Content (HTML supported for links)</label>
+                <label class="label-block text-silver">Notes Content (HTML supported for links)</label>
                 <textarea id="notesContentInput" placeholder="Enter notes here... Use &lt;a href='url'&gt;link text&lt;/a&gt; for hyperlinks"
                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em; min-height: 120px; resize: vertical; font-family: inherit;">${notesContent}</textarea>
                 <p style="font-size: 0.8em; color: var(--silver); margin-top: 5px; opacity: 0.7;">
@@ -87,7 +87,7 @@ function renderSiteSettings() {
             <button class="btn btn-gold" onclick="saveSiteSettingsForm()">Save Site Settings</button>
 
             <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px;">
-                <h4 style="color: var(--gold); margin-bottom: 15px;">Event Locks</h4>
+                <h4 class="text-gold mb-15">Event Locks</h4>
                 <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Lock events to prevent accidental score changes. Custom event locks are managed in their own settings.</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -115,7 +115,7 @@ function renderSiteSettings() {
             </div>
 
             <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px;">
-                <h4 style="color: var(--gold); margin-bottom: 15px;">Competition Status</h4>
+                <h4 class="text-gold mb-15">Competition Status</h4>
                 ${settings.competitionClosed
                     ? `<div style="background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <p style="color: #2ecc71; font-weight: bold;">Competition is CLOSED</p>
