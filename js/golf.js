@@ -366,3 +366,24 @@ function saveGolfShotguns(teamNum) {
     shotguns[teamNum] = parseInt(input.value) || 0;
     writeToFirebase('golfShotguns', shotguns);
 }
+
+// Generate scoring guide table from GOLF_SCORES constant
+function renderScoringGuide() {
+    const tbody = document.querySelector('#scoringGuide tbody');
+    if (!tbody) return;
+
+    const scoreDescriptions = {
+        'albatross': '3 under',
+        'eagle': '2 under',
+        'birdie': '1 under',
+        'par': '',
+        'bogey': '1 over',
+        'ohshit': '2+ over'
+    };
+
+    tbody.innerHTML = Object.entries(GOLF_SCORES).map(([key, val]) => {
+        const desc = scoreDescriptions[key] ? ` (${scoreDescriptions[key]})` : '';
+        const pts = val.points === 1 ? 'pt' : 'pts';
+        return `<tr><td>${val.label}${desc}</td><td>${val.points} ${pts}</td></tr>`;
+    }).join('');
+}

@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (isPage('golf')) {
+        renderScoringGuide();
         renderGolfScorecard();
     }
 
