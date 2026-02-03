@@ -1037,6 +1037,11 @@ input:checked + .toggle-slider:before {
     .point-config {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .table-scroll-wrapper {
+        margin: 0 -10px;
+        padding: 0 10px;
+    }
 }
 
 /* Table horizontal scroll wrapper */
@@ -1045,13 +1050,6 @@ input:checked + .toggle-slider:before {
     -webkit-overflow-scrolling: touch;
     margin: 0 -15px;
     padding: 0 15px;
-}
-
-@media (max-width: 480px) {
-    .table-scroll-wrapper {
-        margin: 0 -10px;
-        padding: 0 10px;
-    }
 }
 
 /* Sub-events for Beer Olympics */
