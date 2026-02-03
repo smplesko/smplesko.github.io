@@ -2,6 +2,13 @@
 // Event CRUD, scoring logic, admin UI, and player-facing page
 // Depends on: utils.js, firebase.js, auth.js
 
+// ===== CONSTANTS =====
+const SCORING_LABELS = {
+    'individual': 'Individual',
+    'team_shared': 'Team Shared',
+    'individual_to_team': 'Individual→Team'
+};
+
 // ===== CUSTOM EVENTS SYSTEM =====
 
 function getCustomEvent(eventId) {
@@ -292,11 +299,6 @@ function renderCustomEventsAdmin() {
 
     const events = getCustomEvents();
     const eventList = Object.values(events).sort((a, b) => (a.order || 0) - (b.order || 0));
-    const scoringLabels = {
-        'individual': 'Individual',
-        'team_shared': 'Team Shared',
-        'individual_to_team': 'Individual→Team'
-    };
 
     let html = `
         <div class="admin-section">
@@ -342,7 +344,7 @@ function renderCustomEventsAdmin() {
                         <div>
                             <h3 style="color: var(--gold); margin-bottom: 5px;">${event.name}</h3>
                             <p style="font-size: 0.85em; opacity: 0.7;">
-                                ${scoringLabels[event.scoringMode] || event.scoringMode} |
+                                ${SCORING_LABELS[event.scoringMode] || event.scoringMode} |
                                 ${roundCount} round(s)
                                 ${event.locked ? ' | <span style="color: #e74c3c;">Locked</span>' : ''}
                             </p>
@@ -411,15 +413,10 @@ function renderEventRoundConfigs(eventId) {
     const rounds = event.rounds || {};
     const roundKeys = Object.keys(rounds).map(Number).sort((a, b) => a - b);
     const playerList = getPlayerList();
-    const scoringLabels = {
-        'individual': 'Individual',
-        'team_shared': 'Team Shared',
-        'individual_to_team': 'Individual→Team'
-    };
     const needsTeams = event.scoringMode !== 'individual';
     const needsPositionPoints = event.scoringMode === 'individual' || event.scoringMode === 'individual_to_team';
 
-    let html = `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Scoring: ${scoringLabels[event.scoringMode]}</p>`;
+    let html = `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Scoring: ${SCORING_LABELS[event.scoringMode]}</p>`;
 
     roundKeys.forEach((roundNum, idx) => {
         const round = rounds[roundNum];
@@ -598,7 +595,7 @@ function renderEventsPage() {
         if (event.description) {
             html += `<p style="opacity: 0.85; margin-bottom: 15px;">${event.description}</p>`;
         }
-        html += `<p style="font-size: 0.85em; color: var(--gold); margin-bottom: 15px;">${scoringLabels[event.scoringMode] || event.scoringMode} | ${roundKeys.length} round(s)${event.locked ? ' | <span style="color: #e74c3c;">Locked</span>' : ''}</p>`;
+        html += `<p style="font-size: 0.85em; color: var(--gold); margin-bottom: 15px;">${SCORING_LABELS[event.scoringMode] || event.scoringMode} | ${roundKeys.length} round(s)${event.locked ? ' | <span style="color: #e74c3c;">Locked</span>' : ''}</p>`;
 
         roundKeys.forEach(roundNum => {
             const round = rounds[roundNum];

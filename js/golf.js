@@ -2,6 +2,13 @@
 // Golf admin UI, scorecard rendering, scoring controls
 // Depends on: utils.js, firebase.js, auth.js
 
+// Build team dropdown options with selected value
+function buildTeamOptions(teams, selectedValue) {
+    return Object.keys(teams).map(t =>
+        `<option value="${t}" ${String(selectedValue) === String(t) ? 'selected' : ''}>Team ${t}</option>`
+    ).join('');
+}
+
 // Golf Admin
 function openGolfAdmin() {
     document.getElementById('golfAdminSection').style.display = 'block';
@@ -142,9 +149,9 @@ function loadGolfBonusInputs() {
         return;
     }
 
-    const teamOptions = Object.keys(teams).map(t => `<option value="${t}" ${String(bonuses.bestFront) === String(t) ? 'selected' : ''}>Team ${t}</option>`).join('');
-    const teamOptionsBack = Object.keys(teams).map(t => `<option value="${t}" ${String(bonuses.bestBack) === String(t) ? 'selected' : ''}>Team ${t}</option>`).join('');
-    const teamOptionsOverall = Object.keys(teams).map(t => `<option value="${t}" ${String(bonuses.overallWinner) === String(t) ? 'selected' : ''}>Team ${t}</option>`).join('');
+    const teamOptionsFront = buildTeamOptions(teams, bonuses.bestFront);
+    const teamOptionsBack = buildTeamOptions(teams, bonuses.bestBack);
+    const teamOptionsOverall = buildTeamOptions(teams, bonuses.overallWinner);
 
     container.innerHTML = `
         <div class="bonus-section">
@@ -175,7 +182,7 @@ function loadGolfBonusInputs() {
                     <label>Best Front 9</label>
                     <select id="bonusBestFront" onchange="saveGolfBonuses()">
                         <option value="">-- Select --</option>
-                        ${teamOptions}
+                        ${teamOptionsFront}
                     </select>
                 </div>
                 <div class="bonus-input">
