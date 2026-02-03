@@ -1037,6 +1037,11 @@ input:checked + .toggle-slider:before {
     .point-config {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .table-scroll-wrapper {
+        margin: 0 -10px;
+        padding: 0 10px;
+    }
 }
 
 /* Table horizontal scroll wrapper */
@@ -1045,13 +1050,6 @@ input:checked + .toggle-slider:before {
     -webkit-overflow-scrolling: touch;
     margin: 0 -15px;
     padding: 0 15px;
-}
-
-@media (max-width: 480px) {
-    .table-scroll-wrapper {
-        margin: 0 -10px;
-        padding: 0 10px;
-    }
 }
 
 /* Sub-events for Beer Olympics */
@@ -1391,3 +1389,36 @@ body.is-admin nav .admin-only {
 [data-theme="light"] .modal {
     background: rgba(0, 0, 0, 0.5);
 }
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Text Colors */
+.text-gold { color: var(--gold); }
+.text-silver { color: var(--silver); }
+.text-red { color: var(--accent-red); }
+.text-muted { opacity: 0.7; }
+.text-center { text-align: center; }
+
+/* Spacing */
+.mb-5 { margin-bottom: 5px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+
+/* Flex Utilities */
+.flex { display: flex; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-10 { gap: 10px; }
+.gap-15 { gap: 15px; }
+
+/* Grid Utilities */
+.grid { display: grid; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Form Helpers */
+.input-full { width: 100%; padding: 10px; border: none; border-radius: 5px; }
+.label-block { display: block; margin-bottom: 5px; font-size: 0.9em; }

@@ -36,9 +36,15 @@ let dataCache = {
 
 let firebaseReady = false;
 
+// ===== CONFIGURATION CONSTANTS =====
+const MAX_PLAYERS = 12;
+const HOLE_COUNT = 18;
+const MAX_TRIVIA_QUESTIONS = 16;
+const MAX_PREDICTIONS = 16;
+
 // ===== DEFAULT DATA =====
 
-// Player structure: 12 players with slot numbers and display names
+// Player structure: MAX_PLAYERS slots with display names
 // Stephen (admin) is Player 1
 const DEFAULT_PLAYERS = {
     1: { name: 'Stephen', isAdmin: true },
@@ -109,14 +115,14 @@ const DEFAULT_TRIVIA_GAME = {
     status: 'waiting',
     responses: {},
     joinedPlayers: {},  // Track who has joined the trivia lobby
-    maxQuestions: 16,
+    maxQuestions: MAX_TRIVIA_QUESTIONS,
     description: ''  // Optional sub-description shown on trivia page
 };
 
 // Default predictions settings
 const DEFAULT_PREDICTIONS = {
     items: [],
-    maxPredictions: 16
+    maxPredictions: MAX_PREDICTIONS
 };
 
 // ===== FIREBASE DATA SYNC =====
@@ -169,35 +175,33 @@ window.addEventListener('beforeunload', cleanupFirebaseListeners);
 // Called when Firebase data changes - refresh relevant UI
 // Note: render functions are defined in app.js (loaded after this file)
 function onDataChange(path) {
-    const currentPath = window.location.pathname;
-
     // Always update hero settings
     if (path === 'siteSettings') {
         applyHeroSettings();
     }
 
     // Update player grid on home
-    if (path === 'players' && (currentPath === '/' || currentPath === '/index.html')) {
+    if (path === 'players' && isHomePage()) {
         renderPlayerGrid();
     }
 
     // Update leaderboards
-    if (currentPath === '/leaderboard' || currentPath === '/leaderboard.html') {
+    if (isPage('leaderboard')) {
         renderLeaderboards();
     }
 
     // Update golf scorecard
-    if (path.startsWith('golf') && (currentPath === '/golf' || currentPath === '/golf.html')) {
+    if (path.startsWith('golf') && isPage('golf')) {
         renderGolfScorecard();
     }
 
     // Update events page
-    if (path === 'customEvents' && (currentPath === '/events' || currentPath === '/events.html')) {
+    if (path === 'customEvents' && isPage('events')) {
         renderEventsPage();
     }
 
     // Update trivia page
-    if (path === 'triviaGame' && (currentPath === '/trivia' || currentPath === '/trivia.html')) {
+    if (path === 'triviaGame' && isPage('trivia')) {
         renderTriviaPage();
         if (isAdmin()) {
             renderTriviaGameControls();
@@ -205,7 +209,7 @@ function onDataChange(path) {
     }
 
     // Update admin page
-    if (currentPath === '/admin' || currentPath === '/admin.html') {
+    if (isPage('admin')) {
         if (path === 'players') renderPlayerList();
         if (path === 'siteSettings') renderSiteSettings();
         if (path === 'customEvents') renderCustomEventsAdmin();
@@ -217,12 +221,12 @@ function onDataChange(path) {
     }
 
     // Update predictions page
-    if (path === 'predictions' && (currentPath === '/predictions' || currentPath === '/predictions.html')) {
+    if (path === 'predictions' && isPage('predictions')) {
         renderPredictionsPage();
     }
 
     // Update profile
-    if (currentPath === '/profile' || currentPath === '/profile.html') {
+    if (isPage('profile')) {
         renderProfile();
     }
 
@@ -294,25 +298,24 @@ function getBonusPoints() {
     return dataCache.bonusPoints || DEFAULT_BONUS_POINTS;
 }
 
-function getGolfTeams() {
-    return dataCache.golfTeams || {};
+// All golf state in one call - use destructuring at call site:
+// const { teams, holeScores, shotguns, bonuses, scoringEnabled } = getGolfData();
+function getGolfData() {
+    return {
+        teams: dataCache.golfTeams || {},
+        holeScores: dataCache.golfHoleScores || {},
+        shotguns: dataCache.golfShotguns || {},
+        bonuses: dataCache.golfBonuses || { bestFront: '', bestBack: '', overallWinner: '' },
+        scoringEnabled: dataCache.golfScoringEnabled || {}
+    };
 }
 
-function getGolfHoleScores() {
-    return dataCache.golfHoleScores || {};
-}
-
-function getGolfShotguns() {
-    return dataCache.golfShotguns || {};
-}
-
-function getGolfBonuses() {
-    return dataCache.golfBonuses || { bestFront: '', bestBack: '', overallWinner: '' };
-}
-
-function getGolfScoringEnabled() {
-    return dataCache.golfScoringEnabled || {};
-}
+// Individual accessors (convenience for callers that only need one piece)
+function getGolfTeams() { return getGolfData().teams; }
+function getGolfHoleScores() { return getGolfData().holeScores; }
+function getGolfShotguns() { return getGolfData().shotguns; }
+function getGolfBonuses() { return getGolfData().bonuses; }
+function getGolfScoringEnabled() { return getGolfData().scoringEnabled; }
 
 function getSiteSettings() {
     return dataCache.siteSettings || DEFAULT_SITE_SETTINGS;
@@ -331,7 +334,7 @@ function getTriviaGame() {
         status: game.status || 'waiting',
         responses: game.responses || {},
         joinedPlayers: game.joinedPlayers || {},
-        maxQuestions: game.maxQuestions || 16,
+        maxQuestions: game.maxQuestions || MAX_TRIVIA_QUESTIONS,
         description: game.description || ''
     };
 }
@@ -391,7 +394,7 @@ function calculateGolfTeamTotal(teamNum) {
     const bonusPoints = getBonusPoints();
 
     let total = 0;
-    for (let hole = 1; hole <= 18; hole++) {
+    for (let hole = 1; hole <= HOLE_COUNT; hole++) {
         const score = teamScores[hole];
         if (score && GOLF_SCORES[score]) {
             total += GOLF_SCORES[score].points;
@@ -410,7 +413,7 @@ function getPredictions() {
     const data = dataCache.predictions || {};
     return {
         items: data.items || [],
-        maxPredictions: data.maxPredictions || 16
+        maxPredictions: data.maxPredictions || MAX_PREDICTIONS
     };
 }
 
