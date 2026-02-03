@@ -98,8 +98,7 @@ function loadGolfScoringControls() {
     const container = document.getElementById('golfScoringControls');
     if (!container) return;
 
-    const teams = getGolfTeams();
-    const scoringEnabled = getGolfScoringEnabled();
+    const { teams, scoringEnabled } = getGolfData();
 
     if (Object.keys(teams).length === 0) {
         container.innerHTML = '<p style="opacity: 0.7;">Save teams first to manage scoring</p>';
@@ -135,8 +134,7 @@ function loadGolfBonusInputs() {
     const container = document.getElementById('golfBonusInputs');
     if (!container) return;
 
-    const teams = getGolfTeams();
-    const bonuses = getGolfBonuses();
+    const { teams, bonuses } = getGolfData();
     const bonusPoints = getBonusPoints();
 
     if (Object.keys(teams).length === 0) {
@@ -252,10 +250,7 @@ function renderGolfScorecard() {
     }
 
     const user = getCurrentUser();
-    const teams = getGolfTeams();
-    const holeScores = getGolfHoleScores();
-    const shotguns = getGolfShotguns();
-    const scoringEnabled = getGolfScoringEnabled();
+    const { teams, holeScores, shotguns, scoringEnabled } = getGolfData();
 
     // Find user's team
     let userTeam = null;

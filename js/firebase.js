@@ -294,25 +294,24 @@ function getBonusPoints() {
     return dataCache.bonusPoints || DEFAULT_BONUS_POINTS;
 }
 
-function getGolfTeams() {
-    return dataCache.golfTeams || {};
+// All golf state in one call - use destructuring at call site:
+// const { teams, holeScores, shotguns, bonuses, scoringEnabled } = getGolfData();
+function getGolfData() {
+    return {
+        teams: dataCache.golfTeams || {},
+        holeScores: dataCache.golfHoleScores || {},
+        shotguns: dataCache.golfShotguns || {},
+        bonuses: dataCache.golfBonuses || { bestFront: '', bestBack: '', overallWinner: '' },
+        scoringEnabled: dataCache.golfScoringEnabled || {}
+    };
 }
 
-function getGolfHoleScores() {
-    return dataCache.golfHoleScores || {};
-}
-
-function getGolfShotguns() {
-    return dataCache.golfShotguns || {};
-}
-
-function getGolfBonuses() {
-    return dataCache.golfBonuses || { bestFront: '', bestBack: '', overallWinner: '' };
-}
-
-function getGolfScoringEnabled() {
-    return dataCache.golfScoringEnabled || {};
-}
+// Individual accessors (convenience for callers that only need one piece)
+function getGolfTeams() { return getGolfData().teams; }
+function getGolfHoleScores() { return getGolfData().holeScores; }
+function getGolfShotguns() { return getGolfData().shotguns; }
+function getGolfBonuses() { return getGolfData().bonuses; }
+function getGolfScoringEnabled() { return getGolfData().scoringEnabled; }
 
 function getSiteSettings() {
     return dataCache.siteSettings || DEFAULT_SITE_SETTINGS;

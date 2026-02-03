@@ -19,8 +19,7 @@ function calculatePlayerPoints() {
     });
 
     // Golf points (from hole-by-hole scoring)
-    const golfTeams = getGolfTeams();
-    const golfBonuses = getGolfBonuses();
+    const { teams: golfTeams, bonuses: golfBonuses } = getGolfData();
     const bonusPoints = getBonusPoints();
 
     const teamTotals = {};
