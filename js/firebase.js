@@ -96,6 +96,7 @@ const DEFAULT_SITE_SETTINGS = {
     notesVisible: true,
     notesContent: 'Notes go here',
     competitionClosed: false,
+    onboardingComplete: false,
     eventLocks: {
         golf: false,
         trivia: false,

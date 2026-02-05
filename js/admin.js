@@ -322,3 +322,307 @@ function confirmResetData() {
         }
     }
 }
+
+// ===== ONBOARDING WIZARD =====
+
+let onboardingStep = 1;
+let onboardingData = {};
+
+// Check if onboarding should be shown
+function shouldShowOnboarding() {
+    const settings = getSiteSettings();
+    return !settings.onboardingComplete && isAdmin();
+}
+
+// Start the onboarding wizard
+function startOnboarding() {
+    onboardingStep = 1;
+    onboardingData = {
+        heroTitle: '',
+        heroSubtitle: '',
+        players: {},
+        golfDate: '',
+        golfTime: '',
+        golfFormat: 'Scramble',
+        golfScoringType: 'Stableford'
+    };
+
+    // Pre-fill with current data
+    const settings = getSiteSettings();
+    const players = getPlayers();
+
+    onboardingData.heroTitle = settings.heroTitle || '';
+    onboardingData.heroSubtitle = settings.heroSubtitle || '';
+    onboardingData.golfDate = settings.golfSettings?.scheduledDate || '';
+    onboardingData.golfTime = settings.golfSettings?.scheduledTime || '';
+    onboardingData.golfFormat = settings.golfSettings?.format || 'Scramble';
+    onboardingData.golfScoringType = settings.golfSettings?.scoringType || 'Stableford';
+
+    for (let i = 1; i <= MAX_PLAYERS; i++) {
+        onboardingData.players[i] = players[i]?.name || '';
+    }
+
+    renderOnboardingWizard();
+}
+
+// Render the current onboarding step
+function renderOnboardingWizard() {
+    let existingModal = document.getElementById('onboardingModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'onboardingModal';
+    modal.className = 'onboarding-modal';
+
+    const totalSteps = 4;
+    const progressPercent = (onboardingStep / totalSteps) * 100;
+
+    let stepContent = '';
+    let stepTitle = '';
+
+    switch (onboardingStep) {
+        case 1:
+            stepTitle = 'Welcome! Let\'s Set Up Your Tournament';
+            stepContent = renderOnboardingStep1();
+            break;
+        case 2:
+            stepTitle = 'Add Your Players';
+            stepContent = renderOnboardingStep2();
+            break;
+        case 3:
+            stepTitle = 'Golf Event Setup';
+            stepContent = renderOnboardingStep3();
+            break;
+        case 4:
+            stepTitle = 'You\'re All Set!';
+            stepContent = renderOnboardingStep4();
+            break;
+    }
+
+    modal.innerHTML = `
+        <div class="onboarding-content">
+            <div class="onboarding-progress">
+                <div class="onboarding-progress-bar" style="width: ${progressPercent}%"></div>
+            </div>
+            <div class="onboarding-step-indicator">Step ${onboardingStep} of ${totalSteps}</div>
+            <h2 class="onboarding-title">${stepTitle}</h2>
+            <div class="onboarding-body">
+                ${stepContent}
+            </div>
+            <div class="onboarding-actions">
+                ${onboardingStep > 1 ? '<button class="btn" onclick="onboardingPrev()">Back</button>' : '<button class="btn" style="background: var(--silver);" onclick="skipOnboarding()">Skip Setup</button>'}
+                ${onboardingStep < totalSteps
+                    ? '<button class="btn btn-gold" onclick="onboardingNext()">Next</button>'
+                    : '<button class="btn btn-gold" onclick="completeOnboarding()">Finish Setup</button>'
+                }
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function renderOnboardingStep1() {
+    return `
+        <p class="onboarding-desc">Give your tournament a name and tagline that will appear on the homepage.</p>
+        <div class="onboarding-form">
+            <div class="onboarding-field">
+                <label>Tournament Name</label>
+                <input type="text" id="ob_heroTitle" value="${onboardingData.heroTitle}"
+                       placeholder="e.g., Annual Golf Championship 2026">
+            </div>
+            <div class="onboarding-field">
+                <label>Tagline / Subtitle</label>
+                <input type="text" id="ob_heroSubtitle" value="${onboardingData.heroSubtitle}"
+                       placeholder="e.g., May the best golfer win!">
+            </div>
+        </div>
+    `;
+}
+
+function renderOnboardingStep2() {
+    let playersHtml = '<div class="onboarding-players-grid">';
+    for (let i = 1; i <= MAX_PLAYERS; i++) {
+        const isAdmin = i === 1;
+        playersHtml += `
+            <div class="onboarding-player-item">
+                <label>Player ${i}${isAdmin ? ' (Admin)' : ''}</label>
+                <input type="text" id="ob_player${i}" value="${onboardingData.players[i] || ''}"
+                       placeholder="Enter name" onchange="onboardingData.players[${i}] = this.value">
+            </div>
+        `;
+    }
+    playersHtml += '</div>';
+
+    return `
+        <p class="onboarding-desc">Enter the names of all participants. Player 1 is the admin account.</p>
+        ${playersHtml}
+    `;
+}
+
+function renderOnboardingStep3() {
+    return `
+        <p class="onboarding-desc">Configure your golf event details. You can always change these later in Admin settings.</p>
+        <div class="onboarding-form">
+            <div class="onboarding-field-row">
+                <div class="onboarding-field">
+                    <label>Golf Date</label>
+                    <input type="date" id="ob_golfDate" value="${onboardingData.golfDate}">
+                </div>
+                <div class="onboarding-field">
+                    <label>Tee Time</label>
+                    <input type="time" id="ob_golfTime" value="${onboardingData.golfTime}">
+                </div>
+            </div>
+            <div class="onboarding-field-row">
+                <div class="onboarding-field">
+                    <label>Format</label>
+                    <select id="ob_golfFormat">
+                        <option value="Scramble" ${onboardingData.golfFormat === 'Scramble' ? 'selected' : ''}>Scramble</option>
+                        <option value="Best Ball" ${onboardingData.golfFormat === 'Best Ball' ? 'selected' : ''}>Best Ball</option>
+                        <option value="Stroke Play" ${onboardingData.golfFormat === 'Stroke Play' ? 'selected' : ''}>Stroke Play</option>
+                        <option value="Match Play" ${onboardingData.golfFormat === 'Match Play' ? 'selected' : ''}>Match Play</option>
+                    </select>
+                </div>
+                <div class="onboarding-field">
+                    <label>Scoring</label>
+                    <select id="ob_golfScoringType">
+                        <option value="Stableford" ${onboardingData.golfScoringType === 'Stableford' ? 'selected' : ''}>Stableford</option>
+                        <option value="Stroke" ${onboardingData.golfScoringType === 'Stroke' ? 'selected' : ''}>Stroke</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <p class="onboarding-hint">Tip: You can set up golf teams and other events from the Admin page after setup.</p>
+    `;
+}
+
+function renderOnboardingStep4() {
+    const playerCount = Object.values(onboardingData.players).filter(n => n && n.trim()).length;
+    const hasGolfDate = onboardingData.golfDate ? 'Yes' : 'Not set';
+
+    return `
+        <div class="onboarding-summary">
+            <div class="onboarding-checkmark">&#10003;</div>
+            <p class="onboarding-desc">Your tournament is ready to go!</p>
+            <div class="onboarding-summary-items">
+                <div class="onboarding-summary-item">
+                    <span class="summary-label">Tournament:</span>
+                    <span class="summary-value">${onboardingData.heroTitle || 'Default Title'}</span>
+                </div>
+                <div class="onboarding-summary-item">
+                    <span class="summary-label">Players:</span>
+                    <span class="summary-value">${playerCount} configured</span>
+                </div>
+                <div class="onboarding-summary-item">
+                    <span class="summary-label">Golf Scheduled:</span>
+                    <span class="summary-value">${hasGolfDate}</span>
+                </div>
+            </div>
+            <p class="onboarding-hint">You can add custom events, trivia questions, and predictions from the Admin page.</p>
+        </div>
+    `;
+}
+
+function saveOnboardingStepData() {
+    // Save current step's input values to onboardingData
+    switch (onboardingStep) {
+        case 1:
+            const title = document.getElementById('ob_heroTitle');
+            const subtitle = document.getElementById('ob_heroSubtitle');
+            if (title) onboardingData.heroTitle = title.value;
+            if (subtitle) onboardingData.heroSubtitle = subtitle.value;
+            break;
+        case 2:
+            for (let i = 1; i <= MAX_PLAYERS; i++) {
+                const input = document.getElementById(`ob_player${i}`);
+                if (input) onboardingData.players[i] = input.value;
+            }
+            break;
+        case 3:
+            const golfDate = document.getElementById('ob_golfDate');
+            const golfTime = document.getElementById('ob_golfTime');
+            const golfFormat = document.getElementById('ob_golfFormat');
+            const golfScoringType = document.getElementById('ob_golfScoringType');
+            if (golfDate) onboardingData.golfDate = golfDate.value;
+            if (golfTime) onboardingData.golfTime = golfTime.value;
+            if (golfFormat) onboardingData.golfFormat = golfFormat.value;
+            if (golfScoringType) onboardingData.golfScoringType = golfScoringType.value;
+            break;
+    }
+}
+
+function onboardingNext() {
+    saveOnboardingStepData();
+    onboardingStep++;
+    renderOnboardingWizard();
+}
+
+function onboardingPrev() {
+    saveOnboardingStepData();
+    onboardingStep--;
+    renderOnboardingWizard();
+}
+
+function skipOnboarding() {
+    if (confirm('Skip setup? You can always configure everything from the Admin page.')) {
+        const settings = getSiteSettings();
+        settings.onboardingComplete = true;
+        saveSiteSettings(settings);
+        closeOnboardingModal();
+    }
+}
+
+function completeOnboarding() {
+    saveOnboardingStepData();
+
+    // Save all collected data to Firebase
+    const settings = getSiteSettings();
+    settings.heroTitle = onboardingData.heroTitle || settings.heroTitle;
+    settings.heroSubtitle = onboardingData.heroSubtitle || settings.heroSubtitle;
+    settings.onboardingComplete = true;
+
+    if (!settings.golfSettings) settings.golfSettings = {};
+    settings.golfSettings.scheduledDate = onboardingData.golfDate;
+    settings.golfSettings.scheduledTime = onboardingData.golfTime;
+    settings.golfSettings.format = onboardingData.golfFormat;
+    settings.golfSettings.scoringType = onboardingData.golfScoringType;
+
+    saveSiteSettings(settings);
+
+    // Save player names
+    const players = getPlayers();
+    for (let i = 1; i <= MAX_PLAYERS; i++) {
+        if (onboardingData.players[i]) {
+            players[i] = {
+                name: onboardingData.players[i],
+                isAdmin: i === 1
+            };
+        }
+    }
+    writeToFirebase('players', players);
+
+    closeOnboardingModal();
+
+    // Refresh the page to show updated data
+    if (isHomePage()) {
+        renderPlayerGrid();
+        renderWeekendSchedule();
+        applyHeroSettings();
+    }
+}
+
+function closeOnboardingModal() {
+    const modal = document.getElementById('onboardingModal');
+    if (modal) modal.remove();
+}
+
+// Check and trigger onboarding after admin login
+function checkOnboarding() {
+    if (shouldShowOnboarding()) {
+        // Small delay to let the page render first
+        setTimeout(startOnboarding, 500);
+    }
+}
