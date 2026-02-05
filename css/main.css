@@ -652,6 +652,27 @@ body.is-admin footer .admin-only {
     font-size: 0.85em;
 }
 
+/* Clickable schedule items */
+.schedule-item-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.schedule-item-link:hover {
+    transform: translateX(5px);
+}
+
+.schedule-item-link:hover .schedule-item {
+    border-left-color: var(--gold);
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.schedule-item-link .schedule-item {
+    transition: all 0.2s;
+}
+
 /* Golf Scorecard */
 .scorecard {
     background: var(--overlay-bg);
@@ -1422,3 +1443,254 @@ body.is-admin nav .admin-only {
 /* Form Helpers */
 .input-full { width: 100%; padding: 10px; border: none; border-radius: 5px; }
 .label-block { display: block; margin-bottom: 5px; font-size: 0.9em; }
+
+/* ===== ONBOARDING WIZARD ===== */
+.onboarding-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.onboarding-content {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.onboarding-progress {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.onboarding-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--accent-red));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.onboarding-step-indicator {
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--silver);
+    margin-bottom: 15px;
+}
+
+.onboarding-title {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.onboarding-desc {
+    text-align: center;
+    color: var(--silver-light);
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.onboarding-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.onboarding-field {
+    flex: 1;
+}
+
+.onboarding-field label {
+    display: block;
+    color: var(--silver);
+    font-size: 0.9em;
+    margin-bottom: 6px;
+}
+
+.onboarding-field input,
+.onboarding-field select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    background: var(--white);
+    color: var(--input-text);
+}
+
+.onboarding-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.onboarding-players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.onboarding-player-item label {
+    display: block;
+    color: var(--silver);
+    font-size: 0.8em;
+    margin-bottom: 4px;
+}
+
+.onboarding-player-item input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.onboarding-hint {
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--silver);
+    margin-top: 20px;
+    opacity: 0.8;
+}
+
+.onboarding-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.onboarding-toggle-row span {
+    font-size: 1.1em;
+    color: var(--silver-light);
+}
+
+.onboarding-quick-event {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.onboarding-quick-event input[type="text"] {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.onboarding-quick-event input[type="date"] {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95em;
+    width: 140px;
+}
+
+.onboarding-quick-event .btn {
+    padding: 8px 12px;
+    margin: 0;
+}
+
+.onboarding-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 15px;
+}
+
+.onboarding-actions .btn {
+    flex: 1;
+    max-width: 150px;
+}
+
+.onboarding-summary {
+    text-align: center;
+}
+
+.onboarding-checkmark {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 40px;
+    color: white;
+}
+
+.onboarding-summary-items {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.onboarding-summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.onboarding-summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    color: var(--silver);
+}
+
+.summary-value {
+    color: var(--gold);
+    font-weight: bold;
+}
+
+@media (max-width: 480px) {
+    .onboarding-content {
+        padding: 20px;
+    }
+
+    .onboarding-title {
+        font-size: 1.2em;
+    }
+
+    .onboarding-field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .onboarding-players-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .onboarding-actions {
+        flex-direction: column;
+    }
+
+    .onboarding-actions .btn {
+        max-width: 100%;
+    }
+}

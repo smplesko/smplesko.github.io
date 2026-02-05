@@ -21,6 +21,11 @@ function setCurrentUser(playerName, slot, admin = false) {
     localStorage.setItem('currentUserSlot', slot);
     localStorage.setItem('isAdmin', admin.toString());
     updateUI();
+
+    // Trigger onboarding for admin users
+    if (admin && typeof checkOnboarding === 'function') {
+        checkOnboarding();
+    }
 }
 
 function logout() {

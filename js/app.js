@@ -2,6 +2,108 @@
 // UI rendering and page-specific logic
 // Depends on: utils.js, firebase.js, auth.js
 
+// ===== WEEKEND SCHEDULE =====
+
+// Format date/time for schedule display
+function formatScheduleTime(date, time) {
+    if (!date) return '';
+    const d = new Date(date + 'T00:00:00');
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    let display = d.toLocaleDateString('en-US', options);
+    if (time) {
+        const [hours, minutes] = time.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        display += ` @ ${h12}:${minutes} ${ampm}`;
+    }
+    return display;
+}
+
+// Render dynamic weekend schedule from all events
+function renderWeekendSchedule() {
+    const container = document.getElementById('weekendSchedule');
+    if (!container) return;
+
+    const events = [];
+    const settings = getSiteSettings();
+    const golfSettings = settings.golfSettings || {};
+
+    // Add golf event
+    events.push({
+        type: 'golf',
+        name: 'Golf',
+        description: golfSettings.description || `${golfSettings.format || 'Scramble'} - ${golfSettings.scoringType || 'Stableford'} scoring`,
+        scheduledDate: golfSettings.scheduledDate || '',
+        scheduledTime: golfSettings.scheduledTime || '',
+        link: '/golf'
+    });
+
+    // Add trivia event
+    const triviaGame = getTriviaGame();
+    events.push({
+        type: 'trivia',
+        name: 'Trivia',
+        description: triviaGame.description || 'Individual competition - test your knowledge!',
+        scheduledDate: triviaGame.scheduledDate || '',
+        scheduledTime: triviaGame.scheduledTime || '',
+        link: '/trivia'
+    });
+
+    // Add each custom event individually
+    const customEvents = getCustomEvents();
+    Object.values(customEvents).forEach(event => {
+        events.push({
+            type: 'custom',
+            id: event.id,
+            name: event.name,
+            description: event.description || '',
+            scheduledDate: event.scheduledDate || '',
+            scheduledTime: event.scheduledTime || '',
+            link: '/events'
+        });
+    });
+
+    // Sort by date/time (events with dates first, then by date, then by time)
+    events.sort((a, b) => {
+        // Events without dates go last
+        if (!a.scheduledDate && !b.scheduledDate) return 0;
+        if (!a.scheduledDate) return 1;
+        if (!b.scheduledDate) return -1;
+
+        // Sort by date
+        const dateCompare = a.scheduledDate.localeCompare(b.scheduledDate);
+        if (dateCompare !== 0) return dateCompare;
+
+        // Same date - sort by time (no time = start of day)
+        const timeA = a.scheduledTime || '00:00';
+        const timeB = b.scheduledTime || '00:00';
+        return timeA.localeCompare(timeB);
+    });
+
+    // Render schedule items
+    let html = '';
+    events.forEach(event => {
+        const timeDisplay = formatScheduleTime(event.scheduledDate, event.scheduledTime);
+        html += `
+            <a href="${event.link}" class="schedule-item-link">
+                <div class="schedule-item">
+                    <span class="time">${timeDisplay || 'TBD'}</span>
+                    <h4>${event.name}</h4>
+                    ${event.description ? `<p>${event.description}</p>` : ''}
+                </div>
+            </a>
+        `;
+    });
+
+    // If no events at all, show placeholder
+    if (events.length === 0) {
+        html = '<div class="placeholder-box"><p>No events scheduled yet.</p></div>';
+    }
+
+    container.innerHTML = html;
+}
+
 // Render player grid on homepage (sorted alphabetically by display name)
 function renderPlayerGrid() {
     const grid = document.getElementById('playerGrid');
@@ -34,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (isHomePage()) {
         renderPlayerGrid();
+        renderWeekendSchedule();
     }
 
     if (isPage('admin')) {

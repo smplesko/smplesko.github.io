@@ -96,6 +96,13 @@ const DEFAULT_SITE_SETTINGS = {
     notesVisible: true,
     notesContent: 'Notes go here',
     competitionClosed: false,
+    onboardingComplete: false,
+    featuresEnabled: {
+        golf: true,
+        events: true,
+        trivia: true,
+        predictions: true
+    },
     eventLocks: {
         golf: false,
         trivia: false,
@@ -104,7 +111,10 @@ const DEFAULT_SITE_SETTINGS = {
     golfSettings: {
         format: 'Scramble',
         scoringType: 'Stableford',
-        description: ''
+        description: '',
+        scheduledDate: '',
+        scheduledTime: '',
+        enabled: true
     }
 };
 
@@ -116,7 +126,9 @@ const DEFAULT_TRIVIA_GAME = {
     responses: {},
     joinedPlayers: {},  // Track who has joined the trivia lobby
     maxQuestions: MAX_TRIVIA_QUESTIONS,
-    description: ''  // Optional sub-description shown on trivia page
+    description: '',  // Optional sub-description shown on trivia page
+    scheduledDate: '',
+    scheduledTime: ''
 };
 
 // Default predictions settings
@@ -180,9 +192,12 @@ function onDataChange(path) {
         applyHeroSettings();
     }
 
-    // Update player grid on home
+    // Update player grid and schedule on home
     if (path === 'players' && isHomePage()) {
         renderPlayerGrid();
+    }
+    if ((path === 'siteSettings' || path === 'triviaGame' || path === 'customEvents') && isHomePage()) {
+        renderWeekendSchedule();
     }
 
     // Update leaderboards
@@ -335,7 +350,9 @@ function getTriviaGame() {
         responses: game.responses || {},
         joinedPlayers: game.joinedPlayers || {},
         maxQuestions: game.maxQuestions || MAX_TRIVIA_QUESTIONS,
-        description: game.description || ''
+        description: game.description || '',
+        scheduledDate: game.scheduledDate || '',
+        scheduledTime: game.scheduledTime || ''
     };
 }
 
