@@ -652,6 +652,27 @@ body.is-admin footer .admin-only {
     font-size: 0.85em;
 }
 
+/* Clickable schedule items */
+.schedule-item-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.schedule-item-link:hover {
+    transform: translateX(5px);
+}
+
+.schedule-item-link:hover .schedule-item {
+    border-left-color: var(--gold);
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.schedule-item-link .schedule-item {
+    transition: all 0.2s;
+}
+
 /* Golf Scorecard */
 .scorecard {
     background: var(--overlay-bg);

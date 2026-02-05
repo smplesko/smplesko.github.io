@@ -62,13 +62,26 @@ function renderTriviaQuestionAdmin() {
 
     let html = '';
 
-    // Trivia description field
+    // Trivia description and schedule fields
     html += `
         <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 5px; color: var(--silver);">Trivia Description (shown to players)</label>
             <input type="text" id="triviaDescriptionInput" value="${game.description || ''}" placeholder="e.g., 16 rounds of trivia covering sports, history, and pop culture"
                    style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;"
                    onchange="saveTriviaDescription()">
+        </div>
+        <div style="margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scheduled Date</label>
+                <input type="date" id="triviaScheduledDateInput" value="${game.scheduledDate || ''}"
+                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Start Time</label>
+                <input type="time" id="triviaScheduledTimeInput" value="${game.scheduledTime || ''}"
+                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+            </div>
+            <button class="btn btn-gold" onclick="saveTriviaSchedule()">Save Schedule</button>
         </div>
     `;
 
@@ -583,6 +596,16 @@ function resetTriviaGame() {
         renderTriviaGameControls();
         renderTriviaPage();
     }
+}
+
+function saveTriviaSchedule() {
+    const dateInput = document.getElementById('triviaScheduledDateInput');
+    const timeInput = document.getElementById('triviaScheduledTimeInput');
+    const game = getTriviaGame();
+    game.scheduledDate = dateInput ? dateInput.value : '';
+    game.scheduledTime = timeInput ? timeInput.value : '';
+    saveTriviaGame(game);
+    alert('Trivia schedule saved!');
 }
 
 // Player joins trivia lobby

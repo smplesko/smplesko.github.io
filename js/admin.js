@@ -87,6 +87,45 @@ function renderSiteSettings() {
             <button class="btn btn-gold" onclick="saveSiteSettingsForm()">Save Site Settings</button>
 
             <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px;">
+                <h4 class="text-gold mb-15">Golf Settings</h4>
+                <div style="display: grid; gap: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="label-block text-silver">Format</label>
+                            <input type="text" id="golfFormatInput" value="${settings.golfSettings?.format || 'Scramble'}"
+                                   placeholder="e.g., Scramble"
+                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                        </div>
+                        <div>
+                            <label class="label-block text-silver">Scoring Type</label>
+                            <input type="text" id="golfScoringTypeInput" value="${settings.golfSettings?.scoringType || 'Stableford'}"
+                                   placeholder="e.g., Stableford"
+                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-block text-silver">Description (shown on golf page)</label>
+                        <input type="text" id="golfDescriptionInput" value="${settings.golfSettings?.description || ''}"
+                               placeholder="e.g., 18 holes at Lions Golf Course"
+                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="label-block text-silver">Scheduled Date</label>
+                            <input type="date" id="golfScheduledDateInput" value="${settings.golfSettings?.scheduledDate || ''}"
+                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                        </div>
+                        <div>
+                            <label class="label-block text-silver">Start Time</label>
+                            <input type="time" id="golfScheduledTimeInput" value="${settings.golfSettings?.scheduledTime || ''}"
+                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                        </div>
+                    </div>
+                    <button class="btn btn-gold" onclick="saveGolfSettings()">Save Golf Settings</button>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px;">
                 <h4 class="text-gold mb-15">Event Locks</h4>
                 <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Lock events to prevent accidental score changes. Custom event locks are managed in their own settings.</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
@@ -191,6 +230,27 @@ function saveSiteSettingsForm() {
 
     // Update homepage if we're on it
     applyHeroSettings();
+}
+
+function saveGolfSettings() {
+    const format = document.getElementById('golfFormatInput').value.trim();
+    const scoringType = document.getElementById('golfScoringTypeInput').value.trim();
+    const description = document.getElementById('golfDescriptionInput').value.trim();
+    const scheduledDate = document.getElementById('golfScheduledDateInput').value;
+    const scheduledTime = document.getElementById('golfScheduledTimeInput').value;
+
+    const settings = getSiteSettings();
+    if (!settings.golfSettings) {
+        settings.golfSettings = {};
+    }
+    settings.golfSettings.format = format || 'Scramble';
+    settings.golfSettings.scoringType = scoringType || 'Stableford';
+    settings.golfSettings.description = description;
+    settings.golfSettings.scheduledDate = scheduledDate;
+    settings.golfSettings.scheduledTime = scheduledTime;
+
+    saveSiteSettings(settings);
+    alert('Golf settings saved!');
 }
 
 function applyHeroSettings() {

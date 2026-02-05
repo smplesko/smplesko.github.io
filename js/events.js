@@ -9,6 +9,22 @@ const SCORING_LABELS = {
     'individual_to_team': 'Individual→Team'
 };
 
+// Format date/time for display
+function formatScheduleDisplay(date, time) {
+    if (!date) return '';
+    const d = new Date(date + 'T00:00:00');
+    const options = { weekday: 'short', month: 'short', day: 'numeric' };
+    let display = d.toLocaleDateString('en-US', options);
+    if (time) {
+        const [hours, minutes] = time.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        display += ` @ ${h12}:${minutes} ${ampm}`;
+    }
+    return display;
+}
+
 // ===== CUSTOM EVENTS SYSTEM =====
 
 function getCustomEvent(eventId) {
@@ -16,7 +32,7 @@ function getCustomEvent(eventId) {
     return events[eventId] || null;
 }
 
-function createCustomEvent(name, description, scoringMode, roundCount) {
+function createCustomEvent(name, description, scoringMode, roundCount, scheduledDate, scheduledTime) {
     const events = getCustomEvents();
     const id = 'evt_' + Date.now();
 
@@ -28,6 +44,8 @@ function createCustomEvent(name, description, scoringMode, roundCount) {
         roundCount: parseInt(roundCount) || 1,
         locked: false,
         order: Object.keys(events).length + 1,
+        scheduledDate: scheduledDate || '',
+        scheduledTime: scheduledTime || '',
         rounds: {}
     };
 
@@ -58,6 +76,18 @@ function updateCustomEventField(eventId, field, value) {
     if (!events[eventId]) return;
     events[eventId][field] = value;
     saveCustomEvents(events);
+}
+
+function saveEventSchedule(eventId) {
+    const dateInput = document.getElementById(`eventDate_${eventId}`);
+    const timeInput = document.getElementById(`eventTime_${eventId}`);
+    const events = getCustomEvents();
+    if (!events[eventId]) return;
+    events[eventId].scheduledDate = dateInput ? dateInput.value : '';
+    events[eventId].scheduledTime = timeInput ? timeInput.value : '';
+    saveCustomEvents(events);
+    alert('Schedule saved!');
+    renderCustomEventsAdmin();
 }
 
 function updateEventRound(eventId, roundNum, updates) {
@@ -314,6 +344,18 @@ function renderCustomEventsAdmin() {
                     <input type="text" id="newEventDescription" placeholder="Brief description"
                            style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
                 </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scheduled Date (optional)</label>
+                        <input type="date" id="newEventDate"
+                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: var(--silver);">Start Time (optional)</label>
+                        <input type="time" id="newEventTime"
+                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                    </div>
+                </div>
                 <div>
                     <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scoring Mode</label>
                     <select id="newEventScoringMode" style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
@@ -338,6 +380,7 @@ function renderCustomEventsAdmin() {
 
         eventList.forEach(event => {
             const roundCount = Object.keys(event.rounds || {}).length;
+            const scheduleDisplay = formatScheduleDisplay(event.scheduledDate, event.scheduledTime);
             html += `
                 <div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
@@ -348,6 +391,7 @@ function renderCustomEventsAdmin() {
                                 ${roundCount} round(s)
                                 ${event.locked ? ' | <span style="color: #e74c3c;">Locked</span>' : ''}
                             </p>
+                            ${scheduleDisplay ? `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 3px;">📅 ${scheduleDisplay}</p>` : ''}
                             ${event.description ? `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 3px;">${event.description}</p>` : ''}
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
@@ -377,15 +421,19 @@ function handleCreateCustomEvent() {
     const description = document.getElementById('newEventDescription').value.trim();
     const scoringMode = document.getElementById('newEventScoringMode').value;
     const roundCount = document.getElementById('newEventRoundCount').value;
+    const scheduledDate = document.getElementById('newEventDate').value;
+    const scheduledTime = document.getElementById('newEventTime').value;
 
     if (!name) {
         alert('Please enter an event name.');
         return;
     }
 
-    createCustomEvent(name, description, scoringMode, roundCount);
+    createCustomEvent(name, description, scoringMode, roundCount, scheduledDate, scheduledTime);
     document.getElementById('newEventName').value = '';
     document.getElementById('newEventDescription').value = '';
+    document.getElementById('newEventDate').value = '';
+    document.getElementById('newEventTime').value = '';
     document.getElementById('newEventRoundCount').value = '1';
     alert(`Event "${name}" created!`);
     renderCustomEventsAdmin();
@@ -416,7 +464,24 @@ function renderEventRoundConfigs(eventId) {
     const needsTeams = event.scoringMode !== 'individual';
     const needsPositionPoints = event.scoringMode === 'individual' || event.scoringMode === 'individual_to_team';
 
-    let html = `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Scoring: ${SCORING_LABELS[event.scoringMode]}</p>`;
+    let html = `
+        <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);">
+            <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">Scoring: ${SCORING_LABELS[event.scoringMode]}</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
+                <div>
+                    <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Scheduled Date</label>
+                    <input type="date" id="eventDate_${eventId}" value="${event.scheduledDate || ''}"
+                           style="width: 100%; padding: 8px; border: none; border-radius: 5px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Start Time</label>
+                    <input type="time" id="eventTime_${eventId}" value="${event.scheduledTime || ''}"
+                           style="width: 100%; padding: 8px; border: none; border-radius: 5px;">
+                </div>
+                <button class="btn btn-small" onclick="saveEventSchedule('${eventId}')">Save Schedule</button>
+            </div>
+        </div>
+    `;
 
     roundKeys.forEach((roundNum, idx) => {
         const round = rounds[roundNum];
