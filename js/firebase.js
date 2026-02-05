@@ -97,6 +97,12 @@ const DEFAULT_SITE_SETTINGS = {
     notesContent: 'Notes go here',
     competitionClosed: false,
     onboardingComplete: false,
+    featuresEnabled: {
+        golf: true,
+        events: true,
+        trivia: true,
+        predictions: true
+    },
     eventLocks: {
         golf: false,
         trivia: false,
@@ -107,7 +113,8 @@ const DEFAULT_SITE_SETTINGS = {
         scoringType: 'Stableford',
         description: '',
         scheduledDate: '',
-        scheduledTime: ''
+        scheduledTime: '',
+        enabled: true
     }
 };
 

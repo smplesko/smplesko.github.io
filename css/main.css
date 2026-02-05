@@ -1571,6 +1571,48 @@ body.is-admin nav .admin-only {
     opacity: 0.8;
 }
 
+.onboarding-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.onboarding-toggle-row span {
+    font-size: 1.1em;
+    color: var(--silver-light);
+}
+
+.onboarding-quick-event {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.onboarding-quick-event input[type="text"] {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.onboarding-quick-event input[type="date"] {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95em;
+    width: 140px;
+}
+
+.onboarding-quick-event .btn {
+    padding: 8px 12px;
+    margin: 0;
+}
+
 .onboarding-actions {
     display: flex;
     justify-content: space-between;
