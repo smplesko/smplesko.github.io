@@ -181,7 +181,7 @@ function toggleEventLock(eventName) {
 
     const lockNames = { golf: 'Golf', trivia: 'Trivia', predictions: 'Predictions' };
     const action = settings.eventLocks[eventName] ? 'locked' : 'unlocked';
-    alert(`${lockNames[eventName]} is now ${action}.`);
+    showToast(`${lockNames[eventName]} is now ${action}.`, 'success');
 }
 
 function isEventLocked(eventName) {
@@ -197,7 +197,7 @@ function closeCompetition() {
     const settings = getSiteSettings();
     settings.competitionClosed = true;
     saveSiteSettings(settings);
-    alert('Competition closed! Final standings are now visible on the Leaderboard.');
+    showToast('Competition closed! Final standings are now visible.', 'success');
     renderSiteSettings();
 }
 
@@ -209,7 +209,7 @@ function reopenCompetition() {
     const settings = getSiteSettings();
     settings.competitionClosed = false;
     saveSiteSettings(settings);
-    alert('Competition reopened.');
+    showToast('Competition reopened.', 'success');
     renderSiteSettings();
 }
 
@@ -226,7 +226,7 @@ function saveSiteSettingsForm() {
     settings.notesContent = notesContent;
 
     saveSiteSettings(settings);
-    alert('Site settings saved!');
+    showToast('Site settings saved!', 'success');
 
     // Update homepage if we're on it
     applyHeroSettings();
@@ -250,7 +250,7 @@ function saveGolfSettings() {
     settings.golfSettings.scheduledTime = scheduledTime;
 
     saveSiteSettings(settings);
-    alert('Golf settings saved!');
+    showToast('Golf settings saved!', 'success');
 }
 
 function applyHeroSettings() {
@@ -317,7 +317,7 @@ function confirmResetData() {
             writeToFirebase('siteSettings', DEFAULT_SITE_SETTINGS);
             writeToFirebase('predictions', DEFAULT_PREDICTIONS);
 
-            alert('All data has been reset');
+            showToast('All data has been reset', 'success');
             window.location.reload();
         }
     }
@@ -907,7 +907,7 @@ function completeOnboarding() {
         applyHeroSettings();
     }
 
-    alert('Setup complete! Your tournament is ready.');
+    showToast('Setup complete! Your tournament is ready.', 'success');
 }
 
 function closeOnboardingModal() {

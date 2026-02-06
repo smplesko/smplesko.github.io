@@ -126,3 +126,122 @@ function buildRankedTableBody(sortedEntries, options) {
 function emptyTableRow(colspan, message) {
     return '<tr><td colspan="' + colspan + '" class="text-center text-muted">' + message + '</td></tr>';
 }
+
+// ===== DATE/TIME FORMATTING =====
+
+// Unified date/time formatter for schedule displays
+// Options:
+//   shortWeekday: false = "Saturday" (default), true = "Sat"
+function formatDateTime(date, time, options) {
+    if (!date) return '';
+    options = options || {};
+    const shortWeekday = options.shortWeekday || false;
+
+    const d = new Date(date + 'T00:00:00');
+    const dateOptions = {
+        weekday: shortWeekday ? 'short' : 'long',
+        month: 'short',
+        day: 'numeric'
+    };
+    let display = d.toLocaleDateString('en-US', dateOptions);
+
+    if (time) {
+        const [hours, minutes] = time.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        display += ` @ ${h12}:${minutes} ${ampm}`;
+    }
+    return display;
+}
+
+// ===== TOAST NOTIFICATION SYSTEM =====
+
+// Show a non-blocking toast notification
+// Types: 'success' (green), 'error' (red), 'warning' (yellow), 'info' (blue)
+function showToast(message, type, duration) {
+    type = type || 'success';
+    duration = duration || 3000;
+
+    // Create toast container if it doesn't exist
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+
+    // Icon based on type
+    const icons = {
+        success: '&#10003;',
+        error: '&#10007;',
+        warning: '&#9888;',
+        info: '&#8505;'
+    };
+
+    toast.innerHTML = `
+        <span class="toast-icon">${icons[type] || icons.info}</span>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add('toast-visible'), 10);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+        toast.classList.remove('toast-visible');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+
+    return toast;
+}
+
+// Confirmation dialog replacement for critical actions
+// Returns a Promise that resolves to true/false
+function showConfirm(message, options) {
+    options = options || {};
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'confirm-modal';
+        modal.innerHTML = `
+            <div class="confirm-content">
+                <p class="confirm-message">${message}</p>
+                <div class="confirm-actions">
+                    <button class="btn" onclick="this.closest('.confirm-modal').dataset.result='false'; this.closest('.confirm-modal').remove()">
+                        ${options.cancelText || 'Cancel'}
+                    </button>
+                    <button class="btn btn-gold" onclick="this.closest('.confirm-modal').dataset.result='true'; this.closest('.confirm-modal').remove()">
+                        ${options.confirmText || 'Confirm'}
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Handle click outside to cancel
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.dataset.result = 'false';
+                modal.remove();
+            }
+        });
+
+        // Observe removal to resolve promise
+        const observer = new MutationObserver(() => {
+            if (!document.contains(modal)) {
+                observer.disconnect();
+                resolve(modal.dataset.result === 'true');
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        document.body.appendChild(modal);
+    });
+}

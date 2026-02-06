@@ -1444,6 +1444,203 @@ body.is-admin nav .admin-only {
 .input-full { width: 100%; padding: 10px; border: none; border-radius: 5px; }
 .label-block { display: block; margin-bottom: 5px; font-size: 0.9em; }
 
+/* Form Input Utilities - replaces inline styles */
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+.form-input-sm {
+    padding: 8px;
+    font-size: 0.95em;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+/* Card/Grid Utilities - replaces inline styles */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.card {
+    background: var(--overlay-bg);
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.card-section {
+    background: var(--overlay-bg);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* ===== TOAST NOTIFICATION SYSTEM ===== */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    width: calc(100% - 40px);
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    font-size: 0.95em;
+}
+
+.toast-visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-success {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+}
+
+.toast-error {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.toast-warning {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+    color: white;
+}
+
+.toast-info {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.toast-icon {
+    font-size: 1.3em;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.4em;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    color: white;
+}
+
+/* Confirm Modal */
+.confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10001;
+    padding: 20px;
+}
+
+.confirm-content {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-dark) 100%);
+    border: 2px solid var(--accent-red);
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+[data-theme="light"] .confirm-content {
+    background: var(--white);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.confirm-message {
+    font-size: 1.1em;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    color: var(--text-primary);
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.confirm-actions .btn {
+    min-width: 100px;
+}
+
+/* Responsive toast */
+@media (max-width: 480px) {
+    .toast-container {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+
+    .toast {
+        padding: 12px 14px;
+        font-size: 0.9em;
+    }
+}
+
 /* ===== ONBOARDING WIZARD ===== */
 .onboarding-modal {
     position: fixed;
