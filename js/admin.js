@@ -323,6 +323,30 @@ function confirmResetData() {
     }
 }
 
+// Fresh Start - clears titles and player names, resets onboarding
+function freshStart() {
+    if (!confirm('This will clear the homepage title, subtitle, and all player names. The onboarding wizard will restart. Continue?')) {
+        return;
+    }
+
+    // Clear site settings (title, subtitle) and reset onboarding flag
+    const settings = getSiteSettings();
+    settings.heroTitle = '';
+    settings.heroSubtitle = '';
+    settings.onboardingComplete = false;
+    saveSiteSettings(settings);
+
+    // Clear all player names (keep admin flag on slot 1)
+    const emptyPlayers = {};
+    for (let i = 1; i <= MAX_PLAYERS; i++) {
+        emptyPlayers[i] = { name: '', isAdmin: i === 1 };
+    }
+    writeToFirebase('players', emptyPlayers);
+
+    showToast('Fresh start! Reloading...', 'success');
+    setTimeout(() => window.location.reload(), 1000);
+}
+
 // ===== ONBOARDING WIZARD =====
 
 let onboardingStep = 1;
