@@ -57,7 +57,7 @@ function submitPassword() {
         setCurrentUser(player.name, slot, true);
         closeModal();
     } else {
-        alert('Incorrect password');
+        showToast('Incorrect password', 'error');
     }
 }
 

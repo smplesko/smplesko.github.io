@@ -230,7 +230,7 @@ function saveEventRoundPoints(eventId, roundNum) {
 
     round.pointValues = pointValues;
     saveCustomEvents(events);
-    alert('Point values saved!');
+    showToast('Point values saved!', 'success');
 }
 
 // Update round team count
@@ -411,7 +411,7 @@ function handleCreateCustomEvent() {
     const scheduledTime = document.getElementById('newEventTime').value;
 
     if (!name) {
-        alert('Please enter an event name.');
+        showToast('Please enter an event name.', 'warning');
         return;
     }
 
@@ -421,7 +421,7 @@ function handleCreateCustomEvent() {
     document.getElementById('newEventDate').value = '';
     document.getElementById('newEventTime').value = '';
     document.getElementById('newEventRoundCount').value = '1';
-    alert(`Event "${name}" created!`);
+    showToast(`Event "${name}" created!`, 'success');
     renderCustomEventsAdmin();
 }
 

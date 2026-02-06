@@ -62,7 +62,7 @@ function saveGolfFormatSettings() {
         description: document.getElementById('golfDescriptionInput').value.trim()
     };
     saveSiteSettings(settings);
-    alert('Golf settings saved!');
+    showToast('Golf settings saved!', 'success');
 }
 
 function closeGolfAdmin() {
@@ -97,7 +97,7 @@ function saveGolfTeams() {
     }
 
     writeToFirebase('golfTeams', teams);
-    alert('Golf teams saved!');
+    showToast('Golf teams saved!', 'success');
     loadGolfScoringControls();
 }
 

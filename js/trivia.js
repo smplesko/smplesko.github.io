@@ -220,12 +220,12 @@ function handleTriviaCsvUpload(event) {
             const questions = parseTriviaCsv(csv);
 
             if (questions.length === 0) {
-                alert('No valid questions found in CSV file.');
+                showToast('No valid questions found in CSV file.', 'error');
                 return;
             }
 
             if (questions.length > MAX_TRIVIA_QUESTIONS) {
-                alert(`CSV contains ${questions.length} questions. Only the first ${MAX_TRIVIA_QUESTIONS} will be imported.`);
+                showToast(`CSV contains ${questions.length} questions. Only first ${MAX_TRIVIA_QUESTIONS} will be imported.`, 'warning');
                 questions.length = MAX_TRIVIA_QUESTIONS;
             }
 
@@ -233,13 +233,13 @@ function handleTriviaCsvUpload(event) {
             game.questions = questions;
             saveTriviaGame(game);
 
-            alert(`Successfully imported ${questions.length} trivia questions!`);
+            showToast(`Successfully imported ${questions.length} trivia questions!`, 'success');
             renderTriviaQuestionAdmin();
 
             // Clear the file input
             event.target.value = '';
         } catch (err) {
-            alert('Error parsing CSV file: ' + err.message);
+            showToast('Error parsing CSV file: ' + err.message, 'error');
         }
     };
     reader.readAsText(file);
@@ -386,7 +386,7 @@ function saveTriviaQuestions() {
 
     game.questions = newQuestions;
     saveTriviaGame(game);
-    alert(`Saved ${game.questions.length} trivia questions!`);
+    showToast(`Saved ${game.questions.length} trivia questions!`, 'success');
 }
 
 // Admin: Game controls
@@ -592,7 +592,7 @@ function resetTriviaGame() {
         game.responses = {};
         game.joinedPlayers = {};
         saveTriviaGame(game);
-        alert('Trivia has been reset!');
+        showToast('Trivia has been reset!', 'success');
         renderTriviaGameControls();
         renderTriviaPage();
     }
@@ -605,14 +605,14 @@ function saveTriviaSchedule() {
     game.scheduledDate = dateInput ? dateInput.value : '';
     game.scheduledTime = timeInput ? timeInput.value : '';
     saveTriviaGame(game);
-    alert('Trivia schedule saved!');
+    showToast('Trivia schedule saved!', 'success');
 }
 
 // Player joins trivia lobby
 function joinTriviaLobby() {
     const user = getCurrentUser();
     if (!user) {
-        alert('Please log in first');
+        showToast('Please log in first', 'warning');
         return;
     }
 
@@ -842,7 +842,7 @@ function selectTriviaOption(optNum) {
 function submitTriviaAnswer() {
     const user = getCurrentUser();
     if (!user) {
-        alert('Please log in first');
+        showToast('Please log in first', 'warning');
         return;
     }
 
