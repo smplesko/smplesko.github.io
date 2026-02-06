@@ -43,7 +43,7 @@ function getUnansweredPredictions(userName) {
 function submitPredictionAnswer(predictionId, answer) {
     const user = getCurrentUser();
     if (!user) {
-        alert('Please log in first');
+        showToast('Please log in first', 'warning');
         return;
     }
 
@@ -51,7 +51,7 @@ function submitPredictionAnswer(predictionId, answer) {
     const predictionIndex = predictions.items.findIndex(p => p.id === predictionId);
 
     if (predictionIndex === -1) {
-        alert('Prediction not found');
+        showToast('Prediction not found', 'error');
         return;
     }
 
@@ -59,7 +59,7 @@ function submitPredictionAnswer(predictionId, answer) {
 
     // Check if already answered
     if (prediction.responses && prediction.responses[user]) {
-        alert('You have already answered this prediction');
+        showToast('You have already answered this prediction', 'warning');
         return;
     }
 
@@ -85,7 +85,7 @@ function createPrediction(question, type, options, pointValue) {
     const predictions = getPredictions();
 
     if (predictions.items.length >= predictions.maxPredictions) {
-        alert(`Maximum of ${predictions.maxPredictions} predictions reached`);
+        showToast(`Maximum of ${predictions.maxPredictions} predictions reached`, 'warning');
         return false;
     }
 
@@ -112,7 +112,7 @@ function finalizePrediction(predictionId, correctAnswer) {
     const predictionIndex = predictions.items.findIndex(p => p.id === predictionId);
 
     if (predictionIndex === -1) {
-        alert('Prediction not found');
+        showToast('Prediction not found', 'error');
         return;
     }
 
@@ -123,7 +123,7 @@ function finalizePrediction(predictionId, correctAnswer) {
     predictions.items[predictionIndex].correctAnswer = correctAnswer;
     predictions.items[predictionIndex].finalized = true;
     savePredictions(predictions);
-    alert('Prediction finalized! Points have been awarded.');
+    showToast('Prediction finalized! Points have been awarded.', 'success');
 }
 
 // Admin: Delete prediction
@@ -411,7 +411,7 @@ function handleCreatePrediction() {
     const pointValue = parseInt(document.getElementById('newPredictionPoints').value) || 1;
 
     if (!question) {
-        alert('Please enter a question');
+        showToast('Please enter a question', 'warning');
         return;
     }
 
@@ -422,7 +422,7 @@ function handleCreatePrediction() {
         const optionsText = document.getElementById('newPredictionOptions').value.trim();
         options = optionsText.split('\n').map(o => o.trim()).filter(o => o);
         if (options.length < 2) {
-            alert('Please enter at least 2 options');
+            showToast('Please enter at least 2 options', 'warning');
             return;
         }
     }
@@ -431,7 +431,7 @@ function handleCreatePrediction() {
         document.getElementById('newPredictionQuestion').value = '';
         document.getElementById('newPredictionOptions').value = '';
         document.getElementById('newPredictionPoints').value = '1';
-        alert('Prediction created!');
+        showToast('Prediction created!', 'success');
     }
 }
 
@@ -440,7 +440,7 @@ function handleFinalizePrediction(predictionId) {
     const correctAnswer = select.value;
 
     if (!correctAnswer) {
-        alert('Please select the correct answer');
+        showToast('Please select the correct answer', 'warning');
         return;
     }
 

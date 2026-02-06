@@ -4,21 +4,7 @@
 
 // ===== WEEKEND SCHEDULE =====
 
-// Format date/time for schedule display
-function formatScheduleTime(date, time) {
-    if (!date) return '';
-    const d = new Date(date + 'T00:00:00');
-    const options = { weekday: 'long', month: 'short', day: 'numeric' };
-    let display = d.toLocaleDateString('en-US', options);
-    if (time) {
-        const [hours, minutes] = time.split(':');
-        const h = parseInt(hours);
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const h12 = h % 12 || 12;
-        display += ` @ ${h12}:${minutes} ${ampm}`;
-    }
-    return display;
-}
+// Note: Date formatting now uses formatDateTime() from utils.js
 
 // Render dynamic weekend schedule from all events
 function renderWeekendSchedule() {
@@ -84,7 +70,7 @@ function renderWeekendSchedule() {
     // Render schedule items
     let html = '';
     events.forEach(event => {
-        const timeDisplay = formatScheduleTime(event.scheduledDate, event.scheduledTime);
+        const timeDisplay = formatDateTime(event.scheduledDate, event.scheduledTime);
         html += `
             <a href="${event.link}" class="schedule-item-link">
                 <div class="schedule-item">

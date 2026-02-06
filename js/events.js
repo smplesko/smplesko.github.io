@@ -9,21 +9,7 @@ const SCORING_LABELS = {
     'individual_to_team': 'Individual→Team'
 };
 
-// Format date/time for display
-function formatScheduleDisplay(date, time) {
-    if (!date) return '';
-    const d = new Date(date + 'T00:00:00');
-    const options = { weekday: 'short', month: 'short', day: 'numeric' };
-    let display = d.toLocaleDateString('en-US', options);
-    if (time) {
-        const [hours, minutes] = time.split(':');
-        const h = parseInt(hours);
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const h12 = h % 12 || 12;
-        display += ` @ ${h12}:${minutes} ${ampm}`;
-    }
-    return display;
-}
+// Note: Date formatting now uses formatDateTime() from utils.js with { shortWeekday: true }
 
 // ===== CUSTOM EVENTS SYSTEM =====
 
@@ -86,7 +72,7 @@ function saveEventSchedule(eventId) {
     events[eventId].scheduledDate = dateInput ? dateInput.value : '';
     events[eventId].scheduledTime = timeInput ? timeInput.value : '';
     saveCustomEvents(events);
-    alert('Schedule saved!');
+    showToast('Schedule saved!', 'success');
     renderCustomEventsAdmin();
 }
 
@@ -146,20 +132,20 @@ function copyPreviousRoundTeams(eventId, roundNum) {
     const roundKeys = Object.keys(event.rounds || {}).map(Number).sort((a, b) => a - b);
     const currentIdx = roundKeys.indexOf(parseInt(roundNum));
     if (currentIdx <= 0) {
-        alert('No previous round to copy from.');
+        showToast('No previous round to copy from.', 'warning');
         return;
     }
     const prevRoundNum = roundKeys[currentIdx - 1];
     const prevRound = event.rounds[prevRoundNum];
     if (!prevRound || !prevRound.teams || Object.keys(prevRound.teams).length === 0) {
-        alert('Previous round has no teams to copy.');
+        showToast('Previous round has no teams to copy.', 'warning');
         return;
     }
 
     event.rounds[roundNum].teams = JSON.parse(JSON.stringify(prevRound.teams));
     event.rounds[roundNum].teamCount = prevRound.teamCount || 2;
     saveCustomEvents(events);
-    alert(`Teams copied from ${prevRound.name || 'Round ' + prevRoundNum}!`);
+    showToast(`Teams copied from ${prevRound.name || 'Round ' + prevRoundNum}!`, 'success');
 }
 
 // Save round teams from checkbox UI
@@ -179,7 +165,7 @@ function saveEventRoundTeams(eventId, roundNum) {
 
     round.teams = teams;
     saveCustomEvents(events);
-    alert(`Round ${roundNum} teams saved!`);
+    showToast(`Round ${roundNum} teams saved!`, 'success');
 }
 
 // Save round results from input UI
@@ -222,7 +208,7 @@ function saveEventRoundResults(eventId, roundNum) {
 
     round.results = results;
     saveCustomEvents(events);
-    alert(`Round ${roundNum} results saved!`);
+    showToast(`Round ${roundNum} results saved!`, 'success');
 }
 
 // Save point values for a round
@@ -244,7 +230,7 @@ function saveEventRoundPoints(eventId, roundNum) {
 
     round.pointValues = pointValues;
     saveCustomEvents(events);
-    alert('Point values saved!');
+    showToast('Point values saved!', 'success');
 }
 
 // Update round team count
@@ -380,7 +366,7 @@ function renderCustomEventsAdmin() {
 
         eventList.forEach(event => {
             const roundCount = Object.keys(event.rounds || {}).length;
-            const scheduleDisplay = formatScheduleDisplay(event.scheduledDate, event.scheduledTime);
+            const scheduleDisplay = formatDateTime(event.scheduledDate, event.scheduledTime, { shortWeekday: true });
             html += `
                 <div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
@@ -425,7 +411,7 @@ function handleCreateCustomEvent() {
     const scheduledTime = document.getElementById('newEventTime').value;
 
     if (!name) {
-        alert('Please enter an event name.');
+        showToast('Please enter an event name.', 'warning');
         return;
     }
 
@@ -435,7 +421,7 @@ function handleCreateCustomEvent() {
     document.getElementById('newEventDate').value = '';
     document.getElementById('newEventTime').value = '';
     document.getElementById('newEventRoundCount').value = '1';
-    alert(`Event "${name}" created!`);
+    showToast(`Event "${name}" created!`, 'success');
     renderCustomEventsAdmin();
 }
 

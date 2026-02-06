@@ -98,7 +98,7 @@ function saveProfileName() {
             updatePlayerName(slot, newName);
             localStorage.setItem('currentUser', newName);
             updateUI();
-            alert('Name updated!');
+            showToast('Name updated!', 'success');
             renderProfile();
         }
     }
