@@ -629,6 +629,11 @@ function renderOnboardingStep4() {
             <div class="onboarding-quick-event">
                 <input type="text" id="ob_eventName${idx}" value="${evt.name}" placeholder="Event name">
                 <input type="date" id="ob_eventDate${idx}" value="${evt.date || ''}">
+                <select id="ob_eventScoring${idx}" style="padding: 8px; border-radius: 5px; border: none;">
+                    <option value="individual" ${evt.scoringMode === 'individual' || !evt.scoringMode ? 'selected' : ''}>Individual</option>
+                    <option value="team_shared" ${evt.scoringMode === 'team_shared' ? 'selected' : ''}>Team Shared</option>
+                    <option value="individual_to_team" ${evt.scoringMode === 'individual_to_team' ? 'selected' : ''}>Individual→Team</option>
+                </select>
                 <button class="btn btn-small" onclick="removeOnboardingEvent(${idx})" style="background: var(--accent-red);">×</button>
             </div>
         `;
@@ -667,7 +672,7 @@ function toggleOnboardingEvents() {
 
 function addOnboardingEvent() {
     saveOnboardingEventData();
-    onboardingData.quickEvents.push({ name: '', date: '' });
+    onboardingData.quickEvents.push({ name: '', date: '', scoringMode: 'individual' });
     renderOnboardingWizard();
 }
 
@@ -681,8 +686,10 @@ function saveOnboardingEventData() {
     onboardingData.quickEvents.forEach((evt, idx) => {
         const nameInput = document.getElementById(`ob_eventName${idx}`);
         const dateInput = document.getElementById(`ob_eventDate${idx}`);
+        const scoringInput = document.getElementById(`ob_eventScoring${idx}`);
         if (nameInput) evt.name = nameInput.value;
         if (dateInput) evt.date = dateInput.value;
+        if (scoringInput) evt.scoringMode = scoringInput.value;
     });
 }
 
@@ -917,7 +924,7 @@ function completeOnboarding() {
     if (onboardingData.includeEvents && onboardingData.quickEvents.length > 0) {
         onboardingData.quickEvents.forEach(evt => {
             if (evt.name && evt.name.trim()) {
-                createCustomEvent(evt.name.trim(), '', 'individual', 1, evt.date || '', '');
+                createCustomEvent(evt.name.trim(), '', evt.scoringMode || 'individual', 1, evt.date || '', '');
             }
         });
     }

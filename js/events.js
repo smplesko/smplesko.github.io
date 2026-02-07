@@ -73,7 +73,18 @@ function saveEventSchedule(eventId) {
     events[eventId].scheduledTime = timeInput ? timeInput.value : '';
     saveCustomEvents(events);
     showToast('Schedule saved!', 'success');
-    renderCustomEventsAdmin();
+}
+
+function saveEventScoringMode(eventId) {
+    const scoringSelect = document.getElementById(`eventScoring_${eventId}`);
+    if (!scoringSelect) return;
+    const events = getCustomEvents();
+    if (!events[eventId]) return;
+    events[eventId].scoringMode = scoringSelect.value;
+    saveCustomEvents(events);
+    showToast('Scoring mode updated!', 'success');
+    // Re-render the config to show/hide team options based on new mode
+    renderEventRoundConfigs(eventId);
 }
 
 function updateEventRound(eventId, roundNum, updates) {
@@ -451,7 +462,15 @@ function renderEventRoundConfigs(eventId) {
 
     let html = `
         <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);">
-            <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">Scoring: ${SCORING_LABELS[event.scoringMode]}</p>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Scoring Mode</label>
+                <select id="eventScoring_${eventId}" onchange="saveEventScoringMode('${eventId}')"
+                        style="width: 100%; max-width: 300px; padding: 8px; border: none; border-radius: 5px;">
+                    <option value="individual" ${event.scoringMode === 'individual' ? 'selected' : ''}>Individual (each player scores independently)</option>
+                    <option value="team_shared" ${event.scoringMode === 'team_shared' ? 'selected' : ''}>Team Shared (team score = each member's score)</option>
+                    <option value="individual_to_team" ${event.scoringMode === 'individual_to_team' ? 'selected' : ''}>Individual→Team (individual scores pooled, team rank = shared points)</option>
+                </select>
+            </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
                 <div>
                     <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Scheduled Date</label>
