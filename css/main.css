@@ -1444,6 +1444,52 @@ body.is-admin nav .admin-only {
 .input-full { width: 100%; padding: 10px; border: none; border-radius: 5px; }
 .label-block { display: block; margin-bottom: 5px; font-size: 0.9em; }
 
+/* Form Label - replaces inline style="display: block; margin-bottom: 5px; color: var(--silver);" */
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--silver);
+}
+
+.form-label-sm {
+    font-size: 0.85em;
+}
+
+/* Spacing Utilities - Margins */
+.mt-5 { margin-top: 5px; }
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-20 { margin-bottom: 20px; }
+.my-15 { margin-top: 15px; margin-bottom: 15px; }
+
+/* Padding Utilities */
+.pt-15 { padding-top: 15px; }
+
+/* Layout Utilities */
+.overflow-auto { overflow-x: auto; }
+.flex-1 { flex: 1; }
+.flex-center { display: flex; align-items: center; gap: 10px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+/* Grid Form Layout */
+.form-grid { display: grid; gap: 15px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Text Utilities */
+.text-sm { font-size: 0.85em; }
+.text-xs { font-size: 0.8em; }
+.text-muted { opacity: 0.7; }
+.text-silver { color: var(--silver); }
+.text-success { color: #2ecc71; }
+.text-error { color: var(--accent-red); }
+.link-gold { cursor: pointer; color: var(--gold); font-size: 0.9em; }
+
+/* Border Utilities */
+.border-top { border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px; }
+
 /* Form Input Utilities - replaces inline styles */
 .form-input {
     width: 100%;

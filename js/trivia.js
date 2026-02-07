@@ -65,21 +65,21 @@ function renderTriviaQuestionAdmin() {
     // Trivia description and schedule fields
     html += `
         <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 5px; color: var(--silver);">Trivia Description (shown to players)</label>
+            <label class="form-label">Trivia Description (shown to players)</label>
             <input type="text" id="triviaDescriptionInput" value="${game.description || ''}" placeholder="e.g., 16 rounds of trivia covering sports, history, and pop culture"
-                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;"
+                   class="form-input"
                    onchange="saveTriviaDescription()">
         </div>
         <div style="margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scheduled Date</label>
+                <label class="form-label">Scheduled Date</label>
                 <input type="date" id="triviaScheduledDateInput" value="${game.scheduledDate || ''}"
-                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                       class="form-input">
             </div>
             <div>
-                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Start Time</label>
+                <label class="form-label">Start Time</label>
                 <input type="time" id="triviaScheduledTimeInput" value="${game.scheduledTime || ''}"
-                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                       class="form-input">
             </div>
             <button class="btn btn-gold" onclick="saveTriviaSchedule()">Save Schedule</button>
         </div>

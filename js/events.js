@@ -320,37 +320,37 @@ function renderCustomEventsAdmin() {
             <h2 style="color: var(--gold);">Create New Event</h2>
             <div style="display: grid; gap: 15px;">
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Event Name</label>
+                    <label class="form-label">Event Name</label>
                     <input type="text" id="newEventName" placeholder="e.g., Beer Olympics, Go-Karts"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                           class="form-input">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Description (optional)</label>
+                    <label class="form-label">Description (optional)</label>
                     <input type="text" id="newEventDescription" placeholder="Brief description"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                           class="form-input">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
-                        <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scheduled Date (optional)</label>
+                        <label class="form-label">Scheduled Date (optional)</label>
                         <input type="date" id="newEventDate"
-                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                               class="form-input">
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 5px; color: var(--silver);">Start Time (optional)</label>
+                        <label class="form-label">Start Time (optional)</label>
                         <input type="time" id="newEventTime"
-                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                               class="form-input">
                     </div>
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scoring Mode</label>
-                    <select id="newEventScoringMode" style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                    <label class="form-label">Scoring Mode</label>
+                    <select id="newEventScoringMode" class="form-input">
                         <option value="individual">Individual (each player scores independently)</option>
                         <option value="team_shared">Team Shared (team score = each member's score)</option>
                         <option value="individual_to_team">Individual-to-Team (individual scores pooled, team rank = shared points)</option>
                     </select>
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Number of Rounds</label>
+                    <label class="form-label">Number of Rounds</label>
                     <input type="number" id="newEventRoundCount" value="1" min="1" max="20"
                            style="width: 100px; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
                 </div>

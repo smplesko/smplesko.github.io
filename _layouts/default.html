@@ -130,40 +130,22 @@
             </div>
         </footer>
 
-        <!-- Site Password Gate Script -->
+        <!-- Site Password Gate Script - Part 1: Initial check (runs immediately) -->
         <script>
             (function() {
-                const SITE_PASSWORD = 'austin';
                 const STORAGE_KEY = 'siteAccessGranted';
 
-                function showContent() {
+                window.showSiteContent = function() {
                     document.getElementById('siteGate').style.display = 'none';
                     document.getElementById('mainNav').classList.remove('site-content-hidden');
                     document.getElementById('mainContainer').classList.remove('site-content-hidden');
                     document.getElementById('mainFooter').classList.remove('site-content-hidden');
-                }
-
-                // Check if already authenticated
-                if (localStorage.getItem(STORAGE_KEY) === 'true') {
-                    showContent();
-                }
-
-                // Make check function global
-                window.checkSitePassword = function() {
-                    const input = document.getElementById('sitePassword');
-                    const error = document.getElementById('siteGateError');
-
-                    if (input.value.toLowerCase() === SITE_PASSWORD) {
-                        // Correct password - remember and show content
-                        localStorage.setItem(STORAGE_KEY, 'true');
-                        showContent();
-                    } else {
-                        // Wrong password
-                        error.style.display = 'block';
-                        input.value = '';
-                        input.focus();
-                    }
                 };
+
+                // Check if already authenticated (immediate check for UX)
+                if (localStorage.getItem(STORAGE_KEY) === 'true') {
+                    showSiteContent();
+                }
 
                 // Allow Enter key to submit
                 document.getElementById('sitePassword').addEventListener('keypress', function(e) {
@@ -178,6 +160,7 @@
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+        <script src="/js/config.js"></script>
         <script src="/js/utils.js"></script>
         <script src="/js/firebase.js"></script>
         <script src="/js/auth.js"></script>

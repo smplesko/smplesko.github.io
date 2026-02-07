@@ -1,20 +1,10 @@
 // Dird Plesk Memorial - Firebase & Data Layer
 // Firebase init, data cache, defaults, listeners, and all data accessors
-// Depends on: utils.js (for showSaveError, applyTheme)
+// Depends on: config.js, utils.js (for showSaveError, applyTheme)
 
 // ===== FIREBASE INITIALIZATION =====
-const firebaseConfig = {
-    apiKey: "AIzaSyD-bbGBqC58dvjqJhdFLHaTBfp1FGpuPHM",
-    authDomain: "bp-games-tracker.firebaseapp.com",
-    databaseURL: "https://bp-games-tracker-default-rtdb.firebaseio.com",
-    projectId: "bp-games-tracker",
-    storageBucket: "bp-games-tracker.firebasestorage.app",
-    messagingSenderId: "983654017455",
-    appId: "1:983654017455:web:81ff968449c7320d1fe75a"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Configuration loaded from config.js (APP_CONFIG)
+firebase.initializeApp(APP_CONFIG.firebase);
 const db = firebase.database();
 
 // ===== LOCAL DATA CACHE =====

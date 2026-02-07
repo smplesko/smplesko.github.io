@@ -319,25 +319,25 @@ function renderPredictionsAdmin() {
             <h2 style="color: var(--gold); border-bottom-color: var(--gold);">Create New Prediction</h2>
             <div style="display: grid; gap: 15px;">
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Question</label>
+                    <label class="form-label">Question</label>
                     <input type="text" id="newPredictionQuestion" placeholder="Who will win the golf tournament?"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                           class="form-input">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Type</label>
+                    <label class="form-label">Type</label>
                     <select id="newPredictionType" onchange="updatePredictionOptionsInput()"
-                            style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                            class="form-input">
                         <option value="whoDoneIt">Who Done It (12 Players)</option>
                         <option value="custom">Custom Options</option>
                     </select>
                 </div>
                 <div id="customOptionsContainer" style="display: none;">
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Custom Options (one per line)</label>
+                    <label class="form-label">Custom Options (one per line)</label>
                     <textarea id="newPredictionOptions" placeholder="Option 1&#10;Option 2" rows="4"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;"></textarea>
+                              class="form-input"></textarea>
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Point Value</label>
+                    <label class="form-label">Point Value</label>
                     <input type="number" id="newPredictionPoints" value="1" min="1" max="10"
                            style="width: 100px; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
                 </div>

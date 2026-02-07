@@ -62,12 +62,12 @@ function renderSiteSettings() {
             <div>
                 <label class="label-block text-silver">Homepage Title (H1)</label>
                 <input type="text" id="heroTitleInput" value="${settings.heroTitle || ''}"
-                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                       class="form-input">
             </div>
             <div>
                 <label class="label-block text-silver">Homepage Subtitle</label>
                 <input type="text" id="heroSubtitleInput" value="${settings.heroSubtitle || ''}"
-                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                       class="form-input">
             </div>
             <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 5px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -94,31 +94,31 @@ function renderSiteSettings() {
                             <label class="label-block text-silver">Format</label>
                             <input type="text" id="golfFormatInput" value="${settings.golfSettings?.format || 'Scramble'}"
                                    placeholder="e.g., Scramble"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                         <div>
                             <label class="label-block text-silver">Scoring Type</label>
                             <input type="text" id="golfScoringTypeInput" value="${settings.golfSettings?.scoringType || 'Stableford'}"
                                    placeholder="e.g., Stableford"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                     </div>
                     <div>
                         <label class="label-block text-silver">Description (shown on golf page)</label>
                         <input type="text" id="golfDescriptionInput" value="${settings.golfSettings?.description || ''}"
                                placeholder="e.g., 18 holes at Lions Golf Course"
-                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                               class="form-input">
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
                             <label class="label-block text-silver">Scheduled Date</label>
                             <input type="date" id="golfScheduledDateInput" value="${settings.golfSettings?.scheduledDate || ''}"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                         <div>
                             <label class="label-block text-silver">Start Time</label>
                             <input type="time" id="golfScheduledTimeInput" value="${settings.golfSettings?.scheduledTime || ''}"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                     </div>
                     <button class="btn btn-gold" onclick="saveGolfSettings()">Save Golf Settings</button>

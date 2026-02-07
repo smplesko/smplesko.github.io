@@ -1,5 +1,24 @@
 // Dird Plesk Memorial - Utility Functions
-// Shared helpers with no dependencies on other modules
+// Shared helpers - depends on config.js for APP_CONFIG
+
+// ===== SITE PASSWORD GATE =====
+// Password validation (runs after config.js is loaded)
+function checkSitePassword() {
+    const input = document.getElementById('sitePassword');
+    const error = document.getElementById('siteGateError');
+    const STORAGE_KEY = 'siteAccessGranted';
+
+    if (input.value.toLowerCase() === APP_CONFIG.sitePassword) {
+        // Correct password - remember and show content
+        localStorage.setItem(STORAGE_KEY, 'true');
+        showSiteContent();
+    } else {
+        // Wrong password
+        error.style.display = 'block';
+        input.value = '';
+        input.focus();
+    }
+}
 
 // Ordinal suffix helper (1st, 2nd, 3rd, etc.)
 function getOrdinal(n) {

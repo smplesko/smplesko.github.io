@@ -1,0 +1,16 @@
+# Configuration with secrets (use config.example.js as template)
+# js/config.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+node_modules/
+.sass-cache/
