@@ -279,25 +279,24 @@ function calculateCustomEventPlayerPoints(event) {
                 });
             });
         } else if (event.scoringMode === 'individual_to_team') {
-            // Pool individual scores per team, rank teams, assign shared points
+            // Each player's placement gives points via pointValues
+            // Sum those points per team; each team member gets team total
             const teamTotals = {};
             Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
                 teamTotals[teamNum] = 0;
                 (teamPlayers || []).forEach(player => {
-                    teamTotals[teamNum] += parseInt(results[player]) || 0;
+                    const placement = parseInt(results[player]) || 0;
+                    const pts = parseInt(pointValues[placement]) || 0;
+                    teamTotals[teamNum] += pts;
                 });
             });
 
-            const sortedTeams = Object.entries(teamTotals)
-                .sort((a, b) => b[1] - a[1]);
-
-            sortedTeams.forEach(([teamNum], idx) => {
-                const rank = idx + 1;
-                const pts = parseInt(pointValues[rank]) || 0;
-                const teamPlayers = teams[teamNum] || [];
-                teamPlayers.forEach(player => {
+            // Each team member gets their team's total points
+            Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
+                const teamPts = teamTotals[teamNum] || 0;
+                (teamPlayers || []).forEach(player => {
                     if (playerPoints.hasOwnProperty(player)) {
-                        playerPoints[player] += pts;
+                        playerPoints[player] += teamPts;
                     }
                 });
             });

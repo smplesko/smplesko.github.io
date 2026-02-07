@@ -214,7 +214,7 @@ function renderCumulativeChart() {
     let eventsToShow = ['Start'];
     let cumulativeKeys = []; // keys in order for cumulative addition
     columns.forEach(col => {
-        if (col.key === 'predictions') return; // predictions shown separately
+        if (col.key === 'predictions') return; // predictions added at the end
         if (col.key === 'golf' && completed.golf) {
             eventsToShow.push('Golf');
             cumulativeKeys.push('golf');
@@ -226,6 +226,12 @@ function renderCumulativeChart() {
             cumulativeKeys.push(col.key);
         }
     });
+
+    // Add predictions as final point if any predictions are finalized
+    if (completed.predictions) {
+        eventsToShow.push('Preds');
+        cumulativeKeys.push('predictions');
+    }
 
     if (eventsToShow.length === 1) {
         container.innerHTML = '<h3 class="text-gold mb-15">Cumulative Score Progression</h3><p class="text-center text-muted">Chart will populate as events are completed</p>';

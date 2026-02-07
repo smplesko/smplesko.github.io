@@ -291,10 +291,12 @@ function getPlayerBySlot(slot) {
 
 function updatePlayerName(slot, newName) {
     const players = getPlayers();
-    if (players[slot]) {
-        players[slot].name = newName;
-        writeToFirebase('players', players);
+    // Create slot if it doesn't exist
+    if (!players[slot]) {
+        players[slot] = { name: '', isAdmin: slot === 1 };
     }
+    players[slot].name = newName;
+    writeToFirebase('players', players);
 }
 
 function getCustomEvents() {
@@ -398,6 +400,13 @@ function getCompletedEvents() {
     const triviaGame = getTriviaGame();
     if (triviaGame.status === 'complete') {
         completed.trivia = true;
+    }
+
+    // Predictions: Check if any predictions are finalized
+    const predictions = getPredictions();
+    const hasFinalized = predictions.items && predictions.items.some(p => p.finalized);
+    if (hasFinalized) {
+        completed.predictions = true;
     }
 
     return completed;
