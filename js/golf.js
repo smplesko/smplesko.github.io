@@ -56,11 +56,11 @@ function loadGolfFormatSettings() {
 
 function saveGolfFormatSettings() {
     const settings = getSiteSettings();
-    settings.golfSettings = {
-        format: document.getElementById('golfFormatInput').value,
-        scoringType: document.getElementById('golfScoringTypeInput').value,
-        description: document.getElementById('golfDescriptionInput').value.trim()
-    };
+    // Preserve existing settings (like scheduledDate/Time) while updating format settings
+    if (!settings.golfSettings) settings.golfSettings = {};
+    settings.golfSettings.format = document.getElementById('golfFormatInput').value;
+    settings.golfSettings.scoringType = document.getElementById('golfScoringTypeInput').value;
+    settings.golfSettings.description = document.getElementById('golfDescriptionInput').value.trim();
     saveSiteSettings(settings);
     showToast('Golf settings saved!', 'success');
 }
@@ -70,7 +70,7 @@ function closeGolfAdmin() {
 }
 
 function updateGolfTeamInputs() {
-    const count = parseInt(document.getElementById('golfTeamCount').value);
+    const count = validateTeamCount(document.getElementById('golfTeamCount').value);
     const container = document.getElementById('golfTeamAssignments');
     const existingTeams = getGolfTeams();
 
@@ -89,7 +89,7 @@ function updateGolfTeamInputs() {
 }
 
 function saveGolfTeams() {
-    const count = parseInt(document.getElementById('golfTeamCount').value);
+    const count = validateTeamCount(document.getElementById('golfTeamCount').value);
     const teams = {};
 
     for (let i = 1; i <= count; i++) {
