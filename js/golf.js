@@ -159,19 +159,19 @@ function loadGolfBonusInputs() {
             <div class="bonus-grid">
                 <div class="bonus-input">
                     <label>Best Front (pts)</label>
-                    <input type="number" id="bonusPtsFront" value="${bonusPoints.bestFront}" onchange="saveBonusPointValues()">
+                    <input type="number" id="bonusPtsFront" value="${bonusPoints.bestFront}" min="0" max="50" onchange="saveBonusPointValues()">
                 </div>
                 <div class="bonus-input">
                     <label>Best Back (pts)</label>
-                    <input type="number" id="bonusPtsBack" value="${bonusPoints.bestBack}" onchange="saveBonusPointValues()">
+                    <input type="number" id="bonusPtsBack" value="${bonusPoints.bestBack}" min="0" max="50" onchange="saveBonusPointValues()">
                 </div>
                 <div class="bonus-input">
                     <label>Overall Winner (pts)</label>
-                    <input type="number" id="bonusPtsOverall" value="${bonusPoints.overallWinner}" onchange="saveBonusPointValues()">
+                    <input type="number" id="bonusPtsOverall" value="${bonusPoints.overallWinner}" min="0" max="50" onchange="saveBonusPointValues()">
                 </div>
                 <div class="bonus-input">
                     <label>Per Shotgun (pts)</label>
-                    <input type="number" id="bonusPtsShotgun" value="${bonusPoints.shotgun}" onchange="saveBonusPointValues()">
+                    <input type="number" id="bonusPtsShotgun" value="${bonusPoints.shotgun}" min="0" max="50" onchange="saveBonusPointValues()">
                 </div>
             </div>
         </div>
@@ -212,10 +212,10 @@ function saveBonusPointValues() {
     if (!frontEl || !backEl || !overallEl || !shotgunEl) return;
 
     const bonusPoints = {
-        bestFront: parseInt(frontEl.value) || 0,
-        bestBack: parseInt(backEl.value) || 0,
-        overallWinner: parseInt(overallEl.value) || 0,
-        shotgun: parseInt(shotgunEl.value) || 0
+        bestFront: validateBonusPoints(frontEl.value),
+        bestBack: validateBonusPoints(backEl.value),
+        overallWinner: validateBonusPoints(overallEl.value),
+        shotgun: validateBonusPoints(shotgunEl.value)
     };
     writeToFirebase('bonusPoints', bonusPoints);
 }
@@ -317,7 +317,7 @@ function renderGolfScorecard() {
                 <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <label class="text-silver">Team Shotguns:</label>
                     <input type="number" id="shotguns${teamNum}" value="${teamShotgunCount}"
-                           min="0" style="width: 70px; padding: 10px; border-radius: 5px; border: none;"
+                           min="0" max="18" style="width: 70px; padding: 10px; border-radius: 5px; border: none;"
                            onchange="saveGolfShotguns(${teamNum})" ${!enabled && !isAdmin() ? 'disabled' : ''}>
                 </div>
             `;
@@ -363,7 +363,7 @@ function saveHoleScore(teamNum, hole) {
 function saveGolfShotguns(teamNum) {
     const input = document.getElementById(`shotguns${teamNum}`);
     const shotguns = getGolfShotguns();
-    shotguns[teamNum] = parseInt(input.value) || 0;
+    shotguns[teamNum] = validateShotgunCount(input.value);
     writeToFirebase('golfShotguns', shotguns);
 }
 

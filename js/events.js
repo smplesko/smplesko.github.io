@@ -22,12 +22,16 @@ function createCustomEvent(name, description, scoringMode, roundCount, scheduled
     const events = getCustomEvents();
     const id = 'evt_' + Date.now();
 
+    // Validate scoring mode
+    const validModes = ['individual', 'team_shared', 'individual_to_team'];
+    const validatedMode = validModes.includes(scoringMode) ? scoringMode : 'individual';
+
     const newEvent = {
         id: id,
         name: name,
         description: description || '',
-        scoringMode: scoringMode,
-        roundCount: parseInt(roundCount) || 1,
+        scoringMode: validatedMode,
+        roundCount: validateRoundCount(roundCount),
         locked: false,
         order: Object.keys(events).length + 1,
         scheduledDate: scheduledDate || '',
@@ -73,7 +77,18 @@ function saveEventSchedule(eventId) {
     events[eventId].scheduledTime = timeInput ? timeInput.value : '';
     saveCustomEvents(events);
     showToast('Schedule saved!', 'success');
-    renderCustomEventsAdmin();
+}
+
+function saveEventScoringMode(eventId) {
+    const scoringSelect = document.getElementById(`eventScoring_${eventId}`);
+    if (!scoringSelect) return;
+    const events = getCustomEvents();
+    if (!events[eventId]) return;
+    events[eventId].scoringMode = scoringSelect.value;
+    saveCustomEvents(events);
+    showToast('Scoring mode updated!', 'success');
+    // Re-render the config to show/hide team options based on new mode
+    renderEventRoundConfigs(eventId);
 }
 
 function updateEventRound(eventId, roundNum, updates) {
@@ -178,30 +193,30 @@ function saveEventRoundResults(eventId, roundNum) {
     const results = {};
 
     if (event.scoringMode === 'individual') {
-        // Results: player → position
+        // Results: player → position (validated 1-MAX_PLAYERS)
         const playerList = getPlayerList();
         playerList.forEach(player => {
             const sel = document.getElementById(`ceRes_${eventId}_r${roundNum}_${player.replace(/\s/g, '_')}`);
             if (sel && sel.value) {
-                results[player] = parseInt(sel.value);
+                results[player] = validatePosition(sel.value, MAX_PLAYERS);
             }
         });
     } else if (event.scoringMode === 'team_shared') {
-        // Results: teamNum → score
+        // Results: teamNum → score (validated 0-1000)
         const teams = round.teams || {};
         Object.keys(teams).forEach(teamNum => {
             const input = document.getElementById(`ceRes_${eventId}_r${roundNum}_t${teamNum}`);
             if (input && input.value !== '') {
-                results[teamNum] = parseInt(input.value) || 0;
+                results[teamNum] = validateScore(input.value);
             }
         });
     } else if (event.scoringMode === 'individual_to_team') {
-        // Results: player → individual score
+        // Results: player → individual score (validated 0-1000)
         const playerList = getPlayerList();
         playerList.forEach(player => {
             const input = document.getElementById(`ceRes_${eventId}_r${roundNum}_${player.replace(/\s/g, '_')}`);
             if (input && input.value !== '') {
-                results[player] = parseInt(input.value) || 0;
+                results[player] = validateScore(input.value);
             }
         });
     }
@@ -224,7 +239,7 @@ function saveEventRoundPoints(eventId, roundNum) {
     for (let i = 1; i <= maxPositions; i++) {
         const input = document.getElementById(`cePts_${eventId}_r${roundNum}_p${i}`);
         if (input && input.value !== '') {
-            pointValues[i] = parseInt(input.value) || 0;
+            pointValues[i] = validatePoints(input.value);
         }
     }
 
@@ -239,7 +254,7 @@ function updateEventRoundTeamCount(eventId, roundNum, count) {
     const event = events[eventId];
     if (!event || !event.rounds[roundNum]) return;
 
-    event.rounds[roundNum].teamCount = parseInt(count) || 2;
+    event.rounds[roundNum].teamCount = validateTeamCount(count);
     saveCustomEvents(events);
 }
 
@@ -320,37 +335,37 @@ function renderCustomEventsAdmin() {
             <h2 style="color: var(--gold);">Create New Event</h2>
             <div style="display: grid; gap: 15px;">
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Event Name</label>
+                    <label class="form-label">Event Name</label>
                     <input type="text" id="newEventName" placeholder="e.g., Beer Olympics, Go-Karts"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                           class="form-input">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Description (optional)</label>
+                    <label class="form-label">Description (optional)</label>
                     <input type="text" id="newEventDescription" placeholder="Brief description"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                           class="form-input">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
-                        <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scheduled Date (optional)</label>
+                        <label class="form-label">Scheduled Date (optional)</label>
                         <input type="date" id="newEventDate"
-                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                               class="form-input">
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 5px; color: var(--silver);">Start Time (optional)</label>
+                        <label class="form-label">Start Time (optional)</label>
                         <input type="time" id="newEventTime"
-                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                               class="form-input">
                     </div>
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Scoring Mode</label>
-                    <select id="newEventScoringMode" style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                    <label class="form-label">Scoring Mode</label>
+                    <select id="newEventScoringMode" class="form-input">
                         <option value="individual">Individual (each player scores independently)</option>
                         <option value="team_shared">Team Shared (team score = each member's score)</option>
                         <option value="individual_to_team">Individual-to-Team (individual scores pooled, team rank = shared points)</option>
                     </select>
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; color: var(--silver);">Number of Rounds</label>
+                    <label class="form-label">Number of Rounds</label>
                     <input type="number" id="newEventRoundCount" value="1" min="1" max="20"
                            style="width: 100px; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
                 </div>
@@ -451,7 +466,15 @@ function renderEventRoundConfigs(eventId) {
 
     let html = `
         <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);">
-            <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">Scoring: ${SCORING_LABELS[event.scoringMode]}</p>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Scoring Mode</label>
+                <select id="eventScoring_${eventId}" onchange="saveEventScoringMode('${eventId}')"
+                        style="width: 100%; max-width: 300px; padding: 8px; border: none; border-radius: 5px;">
+                    <option value="individual" ${event.scoringMode === 'individual' ? 'selected' : ''}>Individual (each player scores independently)</option>
+                    <option value="team_shared" ${event.scoringMode === 'team_shared' ? 'selected' : ''}>Team Shared (team score = each member's score)</option>
+                    <option value="individual_to_team" ${event.scoringMode === 'individual_to_team' ? 'selected' : ''}>Individual→Team (individual scores pooled, team rank = shared points)</option>
+                </select>
+            </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
                 <div>
                     <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Scheduled Date</label>
@@ -496,7 +519,7 @@ function renderEventRoundConfigs(eventId) {
                 html += `
                     <div class="point-config-item">
                         <label>${getOrdinal(i)}</label>
-                        <input type="number" id="cePts_${eventId}_r${roundNum}_p${i}" value="${pointValues[i] || 0}" style="width: 60px;">
+                        <input type="number" id="cePts_${eventId}_r${roundNum}_p${i}" value="${pointValues[i] || 0}" min="0" max="100" style="width: 60px;">
                     </div>
                 `;
             }
@@ -567,7 +590,7 @@ function renderEventRoundConfigs(eventId) {
                     <div class="score-input">
                         <label>Team ${t}</label>
                         <small style="display: block; opacity: 0.7; margin-bottom: 5px; font-size: 0.8em;">${teamPlayers.join(', ') || 'No players'}</small>
-                        <input type="number" id="ceRes_${eventId}_r${roundNum}_t${t}" placeholder="Points" value="${results[t] || ''}">
+                        <input type="number" id="ceRes_${eventId}_r${roundNum}_t${t}" placeholder="Points" min="0" max="1000" value="${results[t] || ''}">
                     </div>
                 `;
             }
@@ -579,7 +602,7 @@ function renderEventRoundConfigs(eventId) {
                 html += `
                     <div class="score-input">
                         <label>${player}</label>
-                        <input type="number" id="ceRes_${eventId}_r${roundNum}_${safeId}" placeholder="Score" value="${results[player] || ''}">
+                        <input type="number" id="ceRes_${eventId}_r${roundNum}_${safeId}" placeholder="Score" min="0" max="1000" value="${results[player] || ''}">
                     </div>
                 `;
             });

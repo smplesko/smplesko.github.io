@@ -52,7 +52,7 @@ function closeModal() {
 function submitPassword() {
     const password = document.getElementById('adminPassword').value;
     const slot = document.getElementById('passwordModal').dataset.slot;
-    if (password === '1816') {
+    if (password === APP_CONFIG.adminPassword) {
         const player = getPlayerBySlot(slot);
         setCurrentUser(player.name, slot, true);
         closeModal();

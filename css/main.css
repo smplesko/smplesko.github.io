@@ -860,7 +860,86 @@ input:checked + .toggle-slider:before {
     border-radius: 5px;
 }
 
-/* Responsive */
+/* Responsive - Tablet Large (1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 12px;
+    }
+
+    .player-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .event-links {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .team-assignment {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .scoring-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .point-config {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .bonus-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prediction-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Responsive - Tablet Small (900px) */
+@media (max-width: 900px) {
+    .hero h1 {
+        font-size: 1.6em;
+    }
+
+    .section-card h2 {
+        font-size: 1.2em;
+    }
+
+    .player-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .event-links {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .scoring-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .point-config {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .onboarding-players-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .prediction-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .leaderboard-table {
+        font-size: 0.85em;
+    }
+}
+
+/* Responsive - Mobile (768px) */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
@@ -1443,6 +1522,52 @@ body.is-admin nav .admin-only {
 /* Form Helpers */
 .input-full { width: 100%; padding: 10px; border: none; border-radius: 5px; }
 .label-block { display: block; margin-bottom: 5px; font-size: 0.9em; }
+
+/* Form Label - replaces inline style="display: block; margin-bottom: 5px; color: var(--silver);" */
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--silver);
+}
+
+.form-label-sm {
+    font-size: 0.85em;
+}
+
+/* Spacing Utilities - Margins */
+.mt-5 { margin-top: 5px; }
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-20 { margin-bottom: 20px; }
+.my-15 { margin-top: 15px; margin-bottom: 15px; }
+
+/* Padding Utilities */
+.pt-15 { padding-top: 15px; }
+
+/* Layout Utilities */
+.overflow-auto { overflow-x: auto; }
+.flex-1 { flex: 1; }
+.flex-center { display: flex; align-items: center; gap: 10px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+/* Grid Form Layout */
+.form-grid { display: grid; gap: 15px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Text Utilities */
+.text-sm { font-size: 0.85em; }
+.text-xs { font-size: 0.8em; }
+.text-muted { opacity: 0.7; }
+.text-silver { color: var(--silver); }
+.text-success { color: #2ecc71; }
+.text-error { color: var(--accent-red); }
+.link-gold { cursor: pointer; color: var(--gold); font-size: 0.9em; }
+
+/* Border Utilities */
+.border-top { border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 10px; }
 
 /* Form Input Utilities - replaces inline styles */
 .form-input {

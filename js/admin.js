@@ -62,12 +62,12 @@ function renderSiteSettings() {
             <div>
                 <label class="label-block text-silver">Homepage Title (H1)</label>
                 <input type="text" id="heroTitleInput" value="${settings.heroTitle || ''}"
-                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                       class="form-input">
             </div>
             <div>
                 <label class="label-block text-silver">Homepage Subtitle</label>
                 <input type="text" id="heroSubtitleInput" value="${settings.heroSubtitle || ''}"
-                       style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                       class="form-input">
             </div>
             <div style="border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 5px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -94,31 +94,31 @@ function renderSiteSettings() {
                             <label class="label-block text-silver">Format</label>
                             <input type="text" id="golfFormatInput" value="${settings.golfSettings?.format || 'Scramble'}"
                                    placeholder="e.g., Scramble"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                         <div>
                             <label class="label-block text-silver">Scoring Type</label>
                             <input type="text" id="golfScoringTypeInput" value="${settings.golfSettings?.scoringType || 'Stableford'}"
                                    placeholder="e.g., Stableford"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                     </div>
                     <div>
                         <label class="label-block text-silver">Description (shown on golf page)</label>
                         <input type="text" id="golfDescriptionInput" value="${settings.golfSettings?.description || ''}"
                                placeholder="e.g., 18 holes at Lions Golf Course"
-                               style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                               class="form-input">
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
                             <label class="label-block text-silver">Scheduled Date</label>
                             <input type="date" id="golfScheduledDateInput" value="${settings.golfSettings?.scheduledDate || ''}"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                         <div>
                             <label class="label-block text-silver">Start Time</label>
                             <input type="time" id="golfScheduledTimeInput" value="${settings.golfSettings?.scheduledTime || ''}"
-                                   style="width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
+                                   class="form-input">
                         </div>
                     </div>
                     <button class="btn btn-gold" onclick="saveGolfSettings()">Save Golf Settings</button>
@@ -556,11 +556,9 @@ function updateOnboardingPlayerCount() {
             const input = document.getElementById(`ob_player${i}`);
             if (input) onboardingData.players[i] = input.value;
         }
-        onboardingData.playerCount = parseInt(select.value);
+        onboardingData.playerCount = validatePlayerCount(select.value);
         // Adjust admin slot if needed
-        if (onboardingData.adminSlot > onboardingData.playerCount) {
-            onboardingData.adminSlot = 1;
-        }
+        onboardingData.adminSlot = validateAdminSlot(onboardingData.adminSlot, onboardingData.playerCount);
         renderOnboardingWizard();
     }
 }
@@ -629,6 +627,11 @@ function renderOnboardingStep4() {
             <div class="onboarding-quick-event">
                 <input type="text" id="ob_eventName${idx}" value="${evt.name}" placeholder="Event name">
                 <input type="date" id="ob_eventDate${idx}" value="${evt.date || ''}">
+                <select id="ob_eventScoring${idx}" style="padding: 8px; border-radius: 5px; border: none;">
+                    <option value="individual" ${evt.scoringMode === 'individual' || !evt.scoringMode ? 'selected' : ''}>Individual</option>
+                    <option value="team_shared" ${evt.scoringMode === 'team_shared' ? 'selected' : ''}>Team Shared</option>
+                    <option value="individual_to_team" ${evt.scoringMode === 'individual_to_team' ? 'selected' : ''}>Individual→Team</option>
+                </select>
                 <button class="btn btn-small" onclick="removeOnboardingEvent(${idx})" style="background: var(--accent-red);">×</button>
             </div>
         `;
@@ -667,7 +670,7 @@ function toggleOnboardingEvents() {
 
 function addOnboardingEvent() {
     saveOnboardingEventData();
-    onboardingData.quickEvents.push({ name: '', date: '' });
+    onboardingData.quickEvents.push({ name: '', date: '', scoringMode: 'individual' });
     renderOnboardingWizard();
 }
 
@@ -681,8 +684,10 @@ function saveOnboardingEventData() {
     onboardingData.quickEvents.forEach((evt, idx) => {
         const nameInput = document.getElementById(`ob_eventName${idx}`);
         const dateInput = document.getElementById(`ob_eventDate${idx}`);
+        const scoringInput = document.getElementById(`ob_eventScoring${idx}`);
         if (nameInput) evt.name = nameInput.value;
         if (dateInput) evt.date = dateInput.value;
+        if (scoringInput) evt.scoringMode = scoringInput.value;
     });
 }
 
@@ -804,8 +809,8 @@ function saveOnboardingStepData() {
         case 2:
             const playerCount = document.getElementById('ob_playerCount');
             const adminSlot = document.getElementById('ob_adminSlot');
-            if (playerCount) onboardingData.playerCount = parseInt(playerCount.value);
-            if (adminSlot) onboardingData.adminSlot = parseInt(adminSlot.value);
+            if (playerCount) onboardingData.playerCount = validatePlayerCount(playerCount.value);
+            if (adminSlot) onboardingData.adminSlot = validateAdminSlot(adminSlot.value, onboardingData.playerCount);
             for (let i = 1; i <= 20; i++) {
                 const input = document.getElementById(`ob_player${i}`);
                 if (input) onboardingData.players[i] = input.value;
@@ -917,7 +922,7 @@ function completeOnboarding() {
     if (onboardingData.includeEvents && onboardingData.quickEvents.length > 0) {
         onboardingData.quickEvents.forEach(evt => {
             if (evt.name && evt.name.trim()) {
-                createCustomEvent(evt.name.trim(), '', 'individual', 1, evt.date || '', '');
+                createCustomEvent(evt.name.trim(), '', evt.scoringMode || 'individual', 1, evt.date || '', '');
             }
         });
     }
