@@ -1,6 +1,83 @@
 // Dird Plesk Memorial - Utility Functions
 // Shared helpers - depends on config.js for APP_CONFIG
 
+// ===== INPUT VALIDATION =====
+
+// Validation bounds constants
+const VALIDATION_BOUNDS = {
+    points: { min: 0, max: 100 },      // Point values per position
+    score: { min: 0, max: 1000 },      // Individual/team scores
+    bonusPoints: { min: 0, max: 50 },  // Bonus point awards
+    shotguns: { min: 0, max: 18 },     // Shotgun count (max holes)
+    rounds: { min: 1, max: 20 },       // Event round count
+    teams: { min: 2, max: 12 },        // Team count
+    players: { min: 2, max: 20 },      // Player count
+    triviaPoints: { min: 1, max: 10 }, // Trivia question points
+    predictionPoints: { min: 1, max: 10 } // Prediction question points
+};
+
+// Generic number validator - returns clamped value or default
+function validateNumber(value, min, max, defaultVal) {
+    const num = parseInt(value);
+    if (isNaN(num)) return defaultVal !== undefined ? defaultVal : min;
+    return Math.max(min, Math.min(max, num));
+}
+
+// Validate point values (0-100)
+function validatePoints(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.points.min, VALIDATION_BOUNDS.points.max, 0);
+}
+
+// Validate scores (0-1000)
+function validateScore(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.score.min, VALIDATION_BOUNDS.score.max, 0);
+}
+
+// Validate bonus points (0-50)
+function validateBonusPoints(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.bonusPoints.min, VALIDATION_BOUNDS.bonusPoints.max, 0);
+}
+
+// Validate shotgun count (0-18)
+function validateShotgunCount(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.shotguns.min, VALIDATION_BOUNDS.shotguns.max, 0);
+}
+
+// Validate round count (1-20)
+function validateRoundCount(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.rounds.min, VALIDATION_BOUNDS.rounds.max, 1);
+}
+
+// Validate team count (2-12)
+function validateTeamCount(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.teams.min, VALIDATION_BOUNDS.teams.max, 2);
+}
+
+// Validate player count against allowed values
+function validatePlayerCount(value) {
+    const allowed = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20];
+    const num = parseInt(value);
+    if (isNaN(num) || !allowed.includes(num)) return 12;
+    return num;
+}
+
+// Validate trivia/prediction points (1-10)
+function validateQuestionPoints(value) {
+    return validateNumber(value, VALIDATION_BOUNDS.triviaPoints.min, VALIDATION_BOUNDS.triviaPoints.max, 1);
+}
+
+// Validate position (1 to MAX_PLAYERS)
+function validatePosition(value, maxPositions) {
+    maxPositions = maxPositions || 12;
+    return validateNumber(value, 1, maxPositions, 0);
+}
+
+// Validate admin slot is within player count
+function validateAdminSlot(value, playerCount) {
+    playerCount = playerCount || 12;
+    return validateNumber(value, 1, playerCount, 1);
+}
+
 // ===== SITE PASSWORD GATE =====
 // Password validation (runs after config.js is loaded)
 function checkSitePassword() {

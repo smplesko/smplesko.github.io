@@ -349,7 +349,7 @@ function saveTriviaQuestions() {
         const correctInput = document.getElementById(`triviaQCorrect${i}`);
 
         const text = textInput ? textInput.value.trim() : '';
-        const pts = ptsInput ? parseInt(ptsInput.value) || 1 : 1;
+        const pts = ptsInput ? validateQuestionPoints(ptsInput.value) : 1;
         const category = catInput ? catInput.value.trim() : '';
         const questionType = typeInput ? typeInput.value : 'freeform';
 

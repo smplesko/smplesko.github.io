@@ -408,7 +408,7 @@ function updatePredictionOptionsInput() {
 function handleCreatePrediction() {
     const question = document.getElementById('newPredictionQuestion').value.trim();
     const type = document.getElementById('newPredictionType').value;
-    const pointValue = parseInt(document.getElementById('newPredictionPoints').value) || 1;
+    const pointValue = validateQuestionPoints(document.getElementById('newPredictionPoints').value);
 
     if (!question) {
         showToast('Please enter a question', 'warning');

@@ -860,7 +860,86 @@ input:checked + .toggle-slider:before {
     border-radius: 5px;
 }
 
-/* Responsive */
+/* Responsive - Tablet Large (1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 12px;
+    }
+
+    .player-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .event-links {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .team-assignment {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .scoring-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .point-config {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .bonus-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prediction-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Responsive - Tablet Small (900px) */
+@media (max-width: 900px) {
+    .hero h1 {
+        font-size: 1.6em;
+    }
+
+    .section-card h2 {
+        font-size: 1.2em;
+    }
+
+    .player-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .event-links {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .scoring-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .point-config {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .onboarding-players-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .prediction-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .leaderboard-table {
+        font-size: 0.85em;
+    }
+}
+
+/* Responsive - Mobile (768px) */
 @media (max-width: 768px) {
     .container {
         padding: 10px;

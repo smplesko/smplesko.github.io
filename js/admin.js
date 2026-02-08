@@ -556,11 +556,9 @@ function updateOnboardingPlayerCount() {
             const input = document.getElementById(`ob_player${i}`);
             if (input) onboardingData.players[i] = input.value;
         }
-        onboardingData.playerCount = parseInt(select.value);
+        onboardingData.playerCount = validatePlayerCount(select.value);
         // Adjust admin slot if needed
-        if (onboardingData.adminSlot > onboardingData.playerCount) {
-            onboardingData.adminSlot = 1;
-        }
+        onboardingData.adminSlot = validateAdminSlot(onboardingData.adminSlot, onboardingData.playerCount);
         renderOnboardingWizard();
     }
 }
@@ -811,8 +809,8 @@ function saveOnboardingStepData() {
         case 2:
             const playerCount = document.getElementById('ob_playerCount');
             const adminSlot = document.getElementById('ob_adminSlot');
-            if (playerCount) onboardingData.playerCount = parseInt(playerCount.value);
-            if (adminSlot) onboardingData.adminSlot = parseInt(adminSlot.value);
+            if (playerCount) onboardingData.playerCount = validatePlayerCount(playerCount.value);
+            if (adminSlot) onboardingData.adminSlot = validateAdminSlot(adminSlot.value, onboardingData.playerCount);
             for (let i = 1; i <= 20; i++) {
                 const input = document.getElementById(`ob_player${i}`);
                 if (input) onboardingData.players[i] = input.value;

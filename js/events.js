@@ -22,12 +22,16 @@ function createCustomEvent(name, description, scoringMode, roundCount, scheduled
     const events = getCustomEvents();
     const id = 'evt_' + Date.now();
 
+    // Validate scoring mode
+    const validModes = ['individual', 'team_shared', 'individual_to_team'];
+    const validatedMode = validModes.includes(scoringMode) ? scoringMode : 'individual';
+
     const newEvent = {
         id: id,
         name: name,
         description: description || '',
-        scoringMode: scoringMode,
-        roundCount: parseInt(roundCount) || 1,
+        scoringMode: validatedMode,
+        roundCount: validateRoundCount(roundCount),
         locked: false,
         order: Object.keys(events).length + 1,
         scheduledDate: scheduledDate || '',
@@ -189,30 +193,30 @@ function saveEventRoundResults(eventId, roundNum) {
     const results = {};
 
     if (event.scoringMode === 'individual') {
-        // Results: player → position
+        // Results: player → position (validated 1-MAX_PLAYERS)
         const playerList = getPlayerList();
         playerList.forEach(player => {
             const sel = document.getElementById(`ceRes_${eventId}_r${roundNum}_${player.replace(/\s/g, '_')}`);
             if (sel && sel.value) {
-                results[player] = parseInt(sel.value);
+                results[player] = validatePosition(sel.value, MAX_PLAYERS);
             }
         });
     } else if (event.scoringMode === 'team_shared') {
-        // Results: teamNum → score
+        // Results: teamNum → score (validated 0-1000)
         const teams = round.teams || {};
         Object.keys(teams).forEach(teamNum => {
             const input = document.getElementById(`ceRes_${eventId}_r${roundNum}_t${teamNum}`);
             if (input && input.value !== '') {
-                results[teamNum] = parseInt(input.value) || 0;
+                results[teamNum] = validateScore(input.value);
             }
         });
     } else if (event.scoringMode === 'individual_to_team') {
-        // Results: player → individual score
+        // Results: player → individual score (validated 0-1000)
         const playerList = getPlayerList();
         playerList.forEach(player => {
             const input = document.getElementById(`ceRes_${eventId}_r${roundNum}_${player.replace(/\s/g, '_')}`);
             if (input && input.value !== '') {
-                results[player] = parseInt(input.value) || 0;
+                results[player] = validateScore(input.value);
             }
         });
     }
@@ -235,7 +239,7 @@ function saveEventRoundPoints(eventId, roundNum) {
     for (let i = 1; i <= maxPositions; i++) {
         const input = document.getElementById(`cePts_${eventId}_r${roundNum}_p${i}`);
         if (input && input.value !== '') {
-            pointValues[i] = parseInt(input.value) || 0;
+            pointValues[i] = validatePoints(input.value);
         }
     }
 
@@ -250,7 +254,7 @@ function updateEventRoundTeamCount(eventId, roundNum, count) {
     const event = events[eventId];
     if (!event || !event.rounds[roundNum]) return;
 
-    event.rounds[roundNum].teamCount = parseInt(count) || 2;
+    event.rounds[roundNum].teamCount = validateTeamCount(count);
     saveCustomEvents(events);
 }
 

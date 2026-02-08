@@ -212,10 +212,10 @@ function saveBonusPointValues() {
     if (!frontEl || !backEl || !overallEl || !shotgunEl) return;
 
     const bonusPoints = {
-        bestFront: parseInt(frontEl.value) || 0,
-        bestBack: parseInt(backEl.value) || 0,
-        overallWinner: parseInt(overallEl.value) || 0,
-        shotgun: parseInt(shotgunEl.value) || 0
+        bestFront: validateBonusPoints(frontEl.value),
+        bestBack: validateBonusPoints(backEl.value),
+        overallWinner: validateBonusPoints(overallEl.value),
+        shotgun: validateBonusPoints(shotgunEl.value)
     };
     writeToFirebase('bonusPoints', bonusPoints);
 }
@@ -363,7 +363,7 @@ function saveHoleScore(teamNum, hole) {
 function saveGolfShotguns(teamNum) {
     const input = document.getElementById(`shotguns${teamNum}`);
     const shotguns = getGolfShotguns();
-    shotguns[teamNum] = parseInt(input.value) || 0;
+    shotguns[teamNum] = validateShotgunCount(input.value);
     writeToFirebase('golfShotguns', shotguns);
 }
 
