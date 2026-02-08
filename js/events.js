@@ -519,7 +519,7 @@ function renderEventRoundConfigs(eventId) {
                 html += `
                     <div class="point-config-item">
                         <label>${getOrdinal(i)}</label>
-                        <input type="number" id="cePts_${eventId}_r${roundNum}_p${i}" value="${pointValues[i] || 0}" style="width: 60px;">
+                        <input type="number" id="cePts_${eventId}_r${roundNum}_p${i}" value="${pointValues[i] || 0}" min="0" max="100" style="width: 60px;">
                     </div>
                 `;
             }
@@ -590,7 +590,7 @@ function renderEventRoundConfigs(eventId) {
                     <div class="score-input">
                         <label>Team ${t}</label>
                         <small style="display: block; opacity: 0.7; margin-bottom: 5px; font-size: 0.8em;">${teamPlayers.join(', ') || 'No players'}</small>
-                        <input type="number" id="ceRes_${eventId}_r${roundNum}_t${t}" placeholder="Points" value="${results[t] || ''}">
+                        <input type="number" id="ceRes_${eventId}_r${roundNum}_t${t}" placeholder="Points" min="0" max="1000" value="${results[t] || ''}">
                     </div>
                 `;
             }
@@ -602,7 +602,7 @@ function renderEventRoundConfigs(eventId) {
                 html += `
                     <div class="score-input">
                         <label>${player}</label>
-                        <input type="number" id="ceRes_${eventId}_r${roundNum}_${safeId}" placeholder="Score" value="${results[player] || ''}">
+                        <input type="number" id="ceRes_${eventId}_r${roundNum}_${safeId}" placeholder="Score" min="0" max="1000" value="${results[player] || ''}">
                     </div>
                 `;
             });
