@@ -20,7 +20,8 @@ function getCustomEvent(eventId) {
 
 function createCustomEvent(name, description, scoringMode, roundCount, scheduledDate, scheduledTime) {
     const events = getCustomEvents();
-    const id = 'evt_' + Date.now();
+    // Use timestamp + random suffix to avoid race conditions when creating multiple events
+    const id = 'evt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
 
     // Validate scoring mode
     const validModes = ['individual', 'team_shared', 'individual_to_team'];
@@ -43,7 +44,7 @@ function createCustomEvent(name, description, scoringMode, roundCount, scheduled
         newEvent.rounds[i] = {
             name: `Round ${i}`,
             teamCount: 2,
-            pointValues: scoringMode === 'individual' ? getDefaultPositionPoints() : {},
+            pointValues: validatedMode === 'individual' ? getDefaultPositionPoints() : {},
             teams: {},
             results: {}
         };

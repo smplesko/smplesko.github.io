@@ -919,10 +919,15 @@ function completeOnboarding() {
     }
 
     // Create quick events if any
+    // Try to capture any visible event data one more time (in case user navigated back to step 4)
+    saveOnboardingEventData();
+
     if (onboardingData.includeEvents && onboardingData.quickEvents.length > 0) {
-        onboardingData.quickEvents.forEach(evt => {
+        onboardingData.quickEvents.forEach((evt, idx) => {
             if (evt.name && evt.name.trim()) {
-                createCustomEvent(evt.name.trim(), '', evt.scoringMode || 'individual', 1, evt.date || '', '');
+                // Use the saved scoring mode, default to 'individual' only if truly undefined
+                const scoringMode = evt.scoringMode || 'individual';
+                createCustomEvent(evt.name.trim(), '', scoringMode, 1, evt.date || '', '');
             }
         });
     }
