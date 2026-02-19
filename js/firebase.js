@@ -14,9 +14,8 @@ let dataCache = {
     triviaPoints: null,
     bonusPoints: null,
     golfTeams: null,
-    golfHoleScores: null,
+    golfScores: null,
     golfShotguns: null,
-    golfBonuses: null,
     golfScoringEnabled: null,
     customEvents: null,
     triviaGame: null,
@@ -28,9 +27,9 @@ let firebaseReady = false;
 
 // ===== CONFIGURATION CONSTANTS =====
 const MAX_PLAYERS = 12;
-const HOLE_COUNT = 18;
 const MAX_TRIVIA_QUESTIONS = 16;
 const MAX_PREDICTIONS = 16;
+const GOLF_BASE_POINTS = 18; // Base points per nine when score equals par
 
 // ===== DEFAULT DATA =====
 
@@ -49,16 +48,6 @@ const DEFAULT_PLAYERS = {
     10: { name: 'Matt', isAdmin: false },
     11: { name: 'Pete', isAdmin: false },
     12: { name: 'Will', isAdmin: false }
-};
-
-// Golf scoring options with point values
-const GOLF_SCORES = {
-    'albatross': { label: 'Albatross', points: 5 },
-    'eagle': { label: 'Eagle', points: 4 },
-    'birdie': { label: 'Birdie', points: 3 },
-    'par': { label: 'Par', points: 2 },
-    'bogey': { label: 'Bogey', points: 1 },
-    'ohshit': { label: 'Oh Shit', points: 0 }
 };
 
 // Default point values for ranking-based events (12 positions)
@@ -104,7 +93,9 @@ const DEFAULT_SITE_SETTINGS = {
         description: '',
         scheduledDate: '',
         scheduledTime: '',
-        enabled: true
+        enabled: true,
+        front9Par: 36,
+        back9Par: 36
     }
 };
 
@@ -136,9 +127,8 @@ function setupFirebaseListeners() {
         { path: 'triviaPoints', default: DEFAULT_TRIVIA_POINTS },
         { path: 'bonusPoints', default: DEFAULT_BONUS_POINTS },
         { path: 'golfTeams', default: {} },
-        { path: 'golfHoleScores', default: {} },
+        { path: 'golfScores', default: {} },
         { path: 'golfShotguns', default: {} },
-        { path: 'golfBonuses', default: { bestFront: '', bestBack: '', overallWinner: '' } },
         { path: 'golfScoringEnabled', default: {} },
         { path: 'customEvents', default: {} },
         { path: 'triviaGame', default: DEFAULT_TRIVIA_GAME },
@@ -306,22 +296,20 @@ function getBonusPoints() {
 }
 
 // All golf state in one call - use destructuring at call site:
-// const { teams, holeScores, shotguns, bonuses, scoringEnabled } = getGolfData();
+// const { teams, scores, shotguns, scoringEnabled } = getGolfData();
 function getGolfData() {
     return {
         teams: dataCache.golfTeams || {},
-        holeScores: dataCache.golfHoleScores || {},
+        scores: dataCache.golfScores || {},
         shotguns: dataCache.golfShotguns || {},
-        bonuses: dataCache.golfBonuses || { bestFront: '', bestBack: '', overallWinner: '' },
         scoringEnabled: dataCache.golfScoringEnabled || {}
     };
 }
 
 // Individual accessors (convenience for callers that only need one piece)
 function getGolfTeams() { return getGolfData().teams; }
-function getGolfHoleScores() { return getGolfData().holeScores; }
+function getGolfScores() { return getGolfData().scores; }
 function getGolfShotguns() { return getGolfData().shotguns; }
-function getGolfBonuses() { return getGolfData().bonuses; }
 function getGolfScoringEnabled() { return getGolfData().scoringEnabled; }
 
 function getSiteSettings() {
@@ -364,11 +352,12 @@ function saveTriviaDescription() {
 function getCompletedEvents() {
     const completed = { golf: false, trivia: false };
 
-    // Golf: Check if any team has hole scores
-    const holeScores = getGolfHoleScores();
-    if (Object.keys(holeScores).length > 0) {
-        for (const teamNum of Object.keys(holeScores)) {
-            if (Object.keys(holeScores[teamNum]).length > 0) {
+    // Golf: Check if any team has scores entered
+    const golfScores = getGolfScores();
+    if (Object.keys(golfScores).length > 0) {
+        for (const teamNum of Object.keys(golfScores)) {
+            const ts = golfScores[teamNum] || {};
+            if (ts.front9 != null && ts.front9 !== '' || ts.back9 != null && ts.back9 !== '') {
                 completed.golf = true;
                 break;
             }
@@ -402,26 +391,115 @@ function getCompletedEvents() {
     return completed;
 }
 
-// Calculate golf team total from hole scores
-function calculateGolfTeamTotal(teamNum) {
-    const holeScores = getGolfHoleScores();
-    const teamScores = holeScores[teamNum] || {};
+// Get golf par settings from site settings
+function getGolfParSettings() {
+    const settings = getSiteSettings();
+    const golf = settings.golfSettings || {};
+    return {
+        front9Par: golf.front9Par || 36,
+        back9Par: golf.back9Par || 36
+    };
+}
+
+// Calculate points for a nine: base 18 adjusted by strokes vs par
+function calculateNinePoints(score, par) {
+    if (score == null || score === '') return 0;
+    return GOLF_BASE_POINTS - (score - par);
+}
+
+// Determine which teams win each bonus (lowest raw score wins)
+// Returns arrays to handle ties — all tied teams receive the bonus
+function calculateGolfBonusWinners() {
+    const { teams, scores } = getGolfData();
+
+    let bestFront = { teams: [], score: Infinity };
+    let bestBack = { teams: [], score: Infinity };
+    let bestOverall = { teams: [], score: Infinity };
+
+    Object.keys(teams).forEach(teamNum => {
+        const ts = scores[teamNum] || {};
+        const front9 = ts.front9;
+        const back9 = ts.back9;
+
+        if (front9 != null && front9 !== '') {
+            if (front9 < bestFront.score) {
+                bestFront = { teams: [String(teamNum)], score: front9 };
+            } else if (front9 === bestFront.score) {
+                bestFront.teams.push(String(teamNum));
+            }
+        }
+
+        if (back9 != null && back9 !== '') {
+            if (back9 < bestBack.score) {
+                bestBack = { teams: [String(teamNum)], score: back9 };
+            } else if (back9 === bestBack.score) {
+                bestBack.teams.push(String(teamNum));
+            }
+        }
+
+        if (front9 != null && front9 !== '' && back9 != null && back9 !== '') {
+            const total = front9 + back9;
+            if (total < bestOverall.score) {
+                bestOverall = { teams: [String(teamNum)], score: total };
+            } else if (total === bestOverall.score) {
+                bestOverall.teams.push(String(teamNum));
+            }
+        }
+    });
+
+    return {
+        bestFront: bestFront.teams,
+        bestBack: bestBack.teams,
+        overallWinner: bestOverall.teams
+    };
+}
+
+// Full breakdown of a team's golf scoring
+function getGolfTeamBreakdown(teamNum) {
+    const scores = getGolfScores();
     const shotguns = getGolfShotguns();
     const bonusPoints = getBonusPoints();
+    const par = getGolfParSettings();
+    const bonusWinners = calculateGolfBonusWinners();
 
-    let total = 0;
-    for (let hole = 1; hole <= HOLE_COUNT; hole++) {
-        const score = teamScores[hole];
-        if (score && GOLF_SCORES[score]) {
-            total += GOLF_SCORES[score].points;
-        }
-    }
+    const ts = scores[teamNum] || {};
+    const front9Score = ts.front9;
+    const back9Score = ts.back9;
 
-    // Add shotgun bonus
+    const front9Points = calculateNinePoints(front9Score, par.front9Par);
+    const back9Points = calculateNinePoints(back9Score, par.back9Par);
+    const totalPoints = front9Points + back9Points;
+
+    const teamStr = String(teamNum);
+    const frontBonus = bonusWinners.bestFront.includes(teamStr) ? bonusPoints.bestFront : 0;
+    const backBonus = bonusWinners.bestBack.includes(teamStr) ? bonusPoints.bestBack : 0;
+    const overallBonus = bonusWinners.overallWinner.includes(teamStr) ? bonusPoints.overallWinner : 0;
+
     const teamShotguns = shotguns[teamNum] || 0;
-    total += teamShotguns * bonusPoints.shotgun;
+    const shotgunPoints = teamShotguns * bonusPoints.shotgun;
 
-    return total;
+    const grandTotal = totalPoints + frontBonus + backBonus + overallBonus + shotgunPoints;
+
+    return {
+        front9Score: front9Score,
+        back9Score: back9Score,
+        totalScore: (front9Score != null && front9Score !== '' ? front9Score : 0) +
+                    (back9Score != null && back9Score !== '' ? back9Score : 0),
+        front9Points,
+        back9Points,
+        totalPoints,
+        frontBonus,
+        backBonus,
+        overallBonus,
+        shotgunCount: teamShotguns,
+        shotgunPoints,
+        grandTotal
+    };
+}
+
+// Calculate golf team grand total (used by leaderboard)
+function calculateGolfTeamTotal(teamNum) {
+    return getGolfTeamBreakdown(teamNum).grandTotal;
 }
 
 // Predictions data accessors

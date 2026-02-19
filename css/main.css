@@ -685,44 +685,73 @@ body.is-admin footer .admin-only {
     color: var(--gold);
     margin-bottom: 12px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.hole-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 8px;
+.team-grand-total {
+    background: var(--accent-red);
+    color: var(--white);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    white-space: nowrap;
 }
 
-.hole-input {
+.scorecard-table {
+    width: 100%;
+    border-collapse: collapse;
     text-align: center;
 }
 
-.hole-input label {
-    display: block;
-    font-size: 0.75em;
-    color: var(--silver);
-    margin-bottom: 4px;
+.scorecard-table th,
+.scorecard-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--card-border);
 }
 
-.hole-input select {
-    width: 100%;
-    padding: 8px 4px;
+.scorecard-table thead th {
+    color: var(--gold);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.scorecard-table .row-label {
+    text-align: left;
+    font-weight: bold;
+    color: var(--silver);
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.score-input {
+    width: 80px;
+    padding: 8px;
     border: none;
     border-radius: 5px;
-    font-size: 0.85em;
+    text-align: center;
+    font-size: 1em;
     background: var(--white);
 }
 
-.hole-total {
-    background: var(--accent-red);
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    margin-top: 12px;
+.score-input:disabled {
+    opacity: 0.5;
 }
 
-.hole-total span {
-    font-size: 1.5em;
+.computed-value {
+    font-size: 1.05em;
+}
+
+.total-value {
+    font-weight: bold;
+}
+
+.bonus-highlight {
+    color: var(--gold);
     font-weight: bold;
 }
 
@@ -1018,14 +1047,16 @@ input:checked + .toggle-slider:before {
         padding: 8px 4px;
     }
 
-    .hole-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 5px;
+    .score-input {
+        width: 65px;
+        padding: 6px;
+        font-size: 0.9em;
     }
 
-    .hole-input select {
-        font-size: 0.75em;
-        padding: 6px 2px;
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 8px 4px;
+        font-size: 0.85em;
     }
 
     .profile-stats {
@@ -1104,10 +1135,6 @@ input:checked + .toggle-slider:before {
 
     .event-links {
         grid-template-columns: 1fr;
-    }
-
-    .hole-grid {
-        grid-template-columns: repeat(3, 1fr);
     }
 
     .team-assignment {
@@ -1467,10 +1494,6 @@ body.is-admin nav .admin-only {
 
 [data-theme="light"] .placeholder-box {
     border-color: var(--card-border);
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .hole-input label {
     color: var(--text-secondary);
 }
 

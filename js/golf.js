@@ -2,13 +2,6 @@
 // Golf admin UI, scorecard rendering, scoring controls
 // Depends on: utils.js, firebase.js, auth.js
 
-// Build team dropdown options with selected value
-function buildTeamOptions(teams, selectedValue) {
-    return Object.keys(teams).map(t =>
-        `<option value="${t}" ${String(selectedValue) === String(t) ? 'selected' : ''}>Team ${t}</option>`
-    ).join('');
-}
-
 // Golf Admin
 function openGolfAdmin() {
     document.getElementById('golfAdminSection').style.display = 'block';
@@ -23,7 +16,7 @@ function loadGolfFormatSettings() {
     if (!container) return;
 
     const settings = getSiteSettings();
-    const golf = settings.golfSettings || { format: 'Scramble', scoringType: 'Stableford', description: '' };
+    const golf = settings.golfSettings || {};
 
     container.innerHTML = `
         <h4 class="text-gold mb-15">Golf Format & Scoring</h4>
@@ -44,6 +37,18 @@ function loadGolfFormatSettings() {
                     <option value="Stroke" ${golf.scoringType === 'Stroke' ? 'selected' : ''}>Stroke (Low Score Wins)</option>
                 </select>
             </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label class="label-block text-silver">Front 9 Par</label>
+                    <input type="number" id="golfFront9ParInput" value="${golf.front9Par || 36}" min="27" max="45"
+                           style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
+                </div>
+                <div>
+                    <label class="label-block text-silver">Back 9 Par</label>
+                    <input type="number" id="golfBack9ParInput" value="${golf.back9Par || 36}" min="27" max="45"
+                           style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
+                </div>
+            </div>
             <div>
                 <label class="label-block text-silver">Description / Rules</label>
                 <textarea id="golfDescriptionInput" placeholder="e.g., 18-hole scramble at XYZ Course"
@@ -56,10 +61,11 @@ function loadGolfFormatSettings() {
 
 function saveGolfFormatSettings() {
     const settings = getSiteSettings();
-    // Preserve existing settings (like scheduledDate/Time) while updating format settings
     if (!settings.golfSettings) settings.golfSettings = {};
     settings.golfSettings.format = document.getElementById('golfFormatInput').value;
     settings.golfSettings.scoringType = document.getElementById('golfScoringTypeInput').value;
+    settings.golfSettings.front9Par = validateNumber(document.getElementById('golfFront9ParInput').value, 27, 45, 36);
+    settings.golfSettings.back9Par = validateNumber(document.getElementById('golfBack9ParInput').value, 27, 45, 36);
     settings.golfSettings.description = document.getElementById('golfDescriptionInput').value.trim();
     saveSiteSettings(settings);
     showToast('Golf settings saved!', 'success');
@@ -141,7 +147,7 @@ function loadGolfBonusInputs() {
     const container = document.getElementById('golfBonusInputs');
     if (!container) return;
 
-    const { teams, bonuses } = getGolfData();
+    const { teams } = getGolfData();
     const bonusPoints = getBonusPoints();
 
     if (Object.keys(teams).length === 0) {
@@ -149,20 +155,19 @@ function loadGolfBonusInputs() {
         return;
     }
 
-    const teamOptionsFront = buildTeamOptions(teams, bonuses.bestFront);
-    const teamOptionsBack = buildTeamOptions(teams, bonuses.bestBack);
-    const teamOptionsOverall = buildTeamOptions(teams, bonuses.overallWinner);
-
     container.innerHTML = `
         <div class="bonus-section">
             <h4>Bonus Point Values</h4>
+            <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">
+                Bonuses are auto-awarded to the team with the lowest score on each nine and overall.
+            </p>
             <div class="bonus-grid">
                 <div class="bonus-input">
-                    <label>Best Front (pts)</label>
+                    <label>Best Front 9 (pts)</label>
                     <input type="number" id="bonusPtsFront" value="${bonusPoints.bestFront}" min="0" max="50" onchange="saveBonusPointValues()">
                 </div>
                 <div class="bonus-input">
-                    <label>Best Back (pts)</label>
+                    <label>Best Back 9 (pts)</label>
                     <input type="number" id="bonusPtsBack" value="${bonusPoints.bestBack}" min="0" max="50" onchange="saveBonusPointValues()">
                 </div>
                 <div class="bonus-input">
@@ -172,32 +177,6 @@ function loadGolfBonusInputs() {
                 <div class="bonus-input">
                     <label>Per Shotgun (pts)</label>
                     <input type="number" id="bonusPtsShotgun" value="${bonusPoints.shotgun}" min="0" max="50" onchange="saveBonusPointValues()">
-                </div>
-            </div>
-        </div>
-        <div class="bonus-section" style="margin-top: 15px;">
-            <h4>Award Bonuses</h4>
-            <div class="bonus-grid">
-                <div class="bonus-input">
-                    <label>Best Front 9</label>
-                    <select id="bonusBestFront" onchange="saveGolfBonuses()">
-                        <option value="">-- Select --</option>
-                        ${teamOptionsFront}
-                    </select>
-                </div>
-                <div class="bonus-input">
-                    <label>Best Back 9</label>
-                    <select id="bonusBestBack" onchange="saveGolfBonuses()">
-                        <option value="">-- Select --</option>
-                        ${teamOptionsBack}
-                    </select>
-                </div>
-                <div class="bonus-input">
-                    <label>Overall Winner</label>
-                    <select id="bonusOverallWinner" onchange="saveGolfBonuses()">
-                        <option value="">-- Select --</option>
-                        ${teamOptionsOverall}
-                    </select>
                 </div>
             </div>
         </div>
@@ -218,20 +197,6 @@ function saveBonusPointValues() {
         shotgun: validateBonusPoints(shotgunEl.value)
     };
     writeToFirebase('bonusPoints', bonusPoints);
-}
-
-function saveGolfBonuses() {
-    const frontEl = document.getElementById('bonusBestFront');
-    const backEl = document.getElementById('bonusBestBack');
-    const overallEl = document.getElementById('bonusOverallWinner');
-    if (!frontEl || !backEl || !overallEl) return;
-
-    const bonuses = {
-        bestFront: frontEl.value,
-        bestBack: backEl.value,
-        overallWinner: overallEl.value
-    };
-    writeToFirebase('golfBonuses', bonuses);
 }
 
 // Golf Scorecard (for players)
@@ -257,7 +222,7 @@ function renderGolfScorecard() {
     }
 
     const user = getCurrentUser();
-    const { teams, holeScores, shotguns, scoringEnabled } = getGolfData();
+    const { teams, scores, shotguns, scoringEnabled } = getGolfData();
 
     // Find user's team
     let userTeam = null;
@@ -280,51 +245,73 @@ function renderGolfScorecard() {
         return;
     }
 
+    // Render scoring guide
+    renderScoringGuide();
+
     container.innerHTML = '';
 
     teamsToShow.forEach(teamNum => {
         if (!teamNum) return;
         const enabled = scoringEnabled[teamNum] !== false;
-        const teamScores = holeScores[teamNum] || {};
-        const teamShotgunCount = shotguns[teamNum] || 0;
+        const teamScores = scores[teamNum] || {};
+        const breakdown = getGolfTeamBreakdown(teamNum);
+        const bonusPoints = getBonusPoints();
 
         const scorecard = document.createElement('div');
         scorecard.className = 'scorecard';
 
-        let html = `<h4>Team ${teamNum}: ${teams[teamNum].join(', ')}</h4>`;
+        let html = `<h4>Team ${teamNum}: ${teams[teamNum].join(', ')} <span class="team-grand-total">${breakdown.grandTotal} pts</span></h4>`;
 
         if (!enabled && !isAdmin()) {
             html += '<div class="scoring-locked"><p>Scoring is currently locked for this team</p></div>';
         } else {
-            // Front 9
-            html += '<p class="text-gold mt-10 mb-5">Front 9</p>';
-            html += '<div class="hole-grid">';
-            for (let hole = 1; hole <= 9; hole++) {
-                html += createHoleInput(teamNum, hole, teamScores[hole], enabled || isAdmin());
-            }
-            html += '</div>';
+            // Score entry and breakdown table
+            html += '<table class="scorecard-table">';
+            html += '<thead><tr><th></th><th>Front 9</th><th>Back 9</th><th>Total</th></tr></thead>';
+            html += '<tbody>';
 
-            // Back 9
-            html += '<p class="text-gold mt-15 mb-5">Back 9</p>';
-            html += '<div class="hole-grid">';
-            for (let hole = 10; hole <= HOLE_COUNT; hole++) {
-                html += createHoleInput(teamNum, hole, teamScores[hole], enabled || isAdmin());
-            }
-            html += '</div>';
+            // Row 1: Scores (with inputs)
+            const front9Val = teamScores.front9 != null && teamScores.front9 !== '' ? teamScores.front9 : '';
+            const back9Val = teamScores.back9 != null && teamScores.back9 !== '' ? teamScores.back9 : '';
+            const canEdit = enabled || isAdmin();
+            html += `<tr>
+                <td class="row-label">Score</td>
+                <td><input type="number" id="front9_${teamNum}" value="${front9Val}" min="20" max="99"
+                           class="score-input" onchange="saveGolfScore(${teamNum})" ${!canEdit ? 'disabled' : ''}></td>
+                <td><input type="number" id="back9_${teamNum}" value="${back9Val}" min="20" max="99"
+                           class="score-input" onchange="saveGolfScore(${teamNum})" ${!canEdit ? 'disabled' : ''}></td>
+                <td class="computed-value">${breakdown.totalScore || '--'}</td>
+            </tr>`;
 
-            // Shotguns
-            html += `
-                <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <label class="text-silver">Team Shotguns:</label>
-                    <input type="number" id="shotguns${teamNum}" value="${teamShotgunCount}"
-                           min="0" max="18" style="width: 70px; padding: 10px; border-radius: 5px; border: none;"
-                           onchange="saveGolfShotguns(${teamNum})" ${!enabled && !isAdmin() ? 'disabled' : ''}>
-                </div>
-            `;
+            // Row 2: Points
+            html += `<tr>
+                <td class="row-label">Points</td>
+                <td class="computed-value">${front9Val !== '' ? breakdown.front9Points : '--'}</td>
+                <td class="computed-value">${back9Val !== '' ? breakdown.back9Points : '--'}</td>
+                <td class="computed-value total-value">${front9Val !== '' || back9Val !== '' ? breakdown.totalPoints : '--'}</td>
+            </tr>`;
 
-            // Total
-            const total = calculateGolfTeamTotal(teamNum);
-            html += `<div class="hole-total"><span>Total: ${total} pts</span></div>`;
+            // Row 3: Bonuses (front bonus, back bonus, overall winner bonus — NOT a sum)
+            html += `<tr>
+                <td class="row-label">Bonus</td>
+                <td class="computed-value ${breakdown.frontBonus > 0 ? 'bonus-highlight' : ''}">${breakdown.frontBonus}</td>
+                <td class="computed-value ${breakdown.backBonus > 0 ? 'bonus-highlight' : ''}">${breakdown.backBonus}</td>
+                <td class="computed-value ${breakdown.overallBonus > 0 ? 'bonus-highlight' : ''}">${breakdown.overallBonus}</td>
+            </tr>`;
+
+            // Row 4: Shotguns
+            html += `<tr>
+                <td class="row-label">Shotguns</td>
+                <td colspan="2">
+                    <input type="number" id="shotguns${teamNum}" value="${breakdown.shotgunCount}"
+                           min="0" max="18" class="score-input" style="width: 70px;"
+                           onchange="saveGolfShotguns(${teamNum})" ${!canEdit ? 'disabled' : ''}>
+                    <span class="text-silver" style="font-size: 0.85em; margin-left: 5px;">&times; ${bonusPoints.shotgun} = ${breakdown.shotgunPoints} pts</span>
+                </td>
+                <td class="computed-value">${breakdown.shotgunPoints}</td>
+            </tr>`;
+
+            html += '</tbody></table>';
         }
 
         scorecard.innerHTML = html;
@@ -332,32 +319,22 @@ function renderGolfScorecard() {
     });
 }
 
-function createHoleInput(teamNum, hole, currentScore, enabled) {
-    const options = Object.entries(GOLF_SCORES).map(([key, val]) =>
-        `<option value="${key}" ${currentScore === key ? 'selected' : ''}>${val.label} (${val.points})</option>`
-    ).join('');
+function saveGolfScore(teamNum) {
+    const front9El = document.getElementById(`front9_${teamNum}`);
+    const back9El = document.getElementById(`back9_${teamNum}`);
+    const scores = getGolfScores();
 
-    return `
-        <div class="hole-input">
-            <label>Hole ${hole}</label>
-            <select id="hole${teamNum}_${hole}" onchange="saveHoleScore(${teamNum}, ${hole})" ${!enabled ? 'disabled' : ''}>
-                <option value="">--</option>
-                ${options}
-            </select>
-        </div>
-    `;
-}
-
-function saveHoleScore(teamNum, hole) {
-    const select = document.getElementById(`hole${teamNum}_${hole}`);
-    const holeScores = getGolfHoleScores();
-
-    if (!holeScores[teamNum]) {
-        holeScores[teamNum] = {};
+    if (!scores[teamNum]) {
+        scores[teamNum] = {};
     }
 
-    holeScores[teamNum][hole] = select.value;
-    writeToFirebase('golfHoleScores', holeScores);
+    const front9Val = front9El.value.trim();
+    const back9Val = back9El.value.trim();
+
+    scores[teamNum].front9 = front9Val !== '' ? parseInt(front9Val) : '';
+    scores[teamNum].back9 = back9Val !== '' ? parseInt(back9Val) : '';
+
+    writeToFirebase('golfScores', scores);
 }
 
 function saveGolfShotguns(teamNum) {
@@ -367,23 +344,38 @@ function saveGolfShotguns(teamNum) {
     writeToFirebase('golfShotguns', shotguns);
 }
 
-// Generate scoring guide table from GOLF_SCORES constant
+// Generate scoring guide from admin settings
 function renderScoringGuide() {
-    const tbody = document.querySelector('#scoringGuide tbody');
-    if (!tbody) return;
+    const container = document.getElementById('scoringGuide');
+    if (!container) return;
 
-    const scoreDescriptions = {
-        'albatross': '3 under',
-        'eagle': '2 under',
-        'birdie': '1 under',
-        'par': '',
-        'bogey': '1 over',
-        'ohshit': '2+ over'
-    };
+    const settings = getSiteSettings();
+    const golf = settings.golfSettings || {};
+    const par = getGolfParSettings();
+    const bonusPoints = getBonusPoints();
 
-    tbody.innerHTML = Object.entries(GOLF_SCORES).map(([key, val]) => {
-        const desc = scoreDescriptions[key] ? ` (${scoreDescriptions[key]})` : '';
-        const pts = val.points === 1 ? 'pt' : 'pts';
-        return `<tr><td>${val.label}${desc}</td><td>${val.points} ${pts}</td></tr>`;
-    }).join('');
+    container.innerHTML = `
+        <p style="margin-bottom: 12px;">
+            <strong>Format:</strong> ${golf.format || 'Scramble'} &nbsp;|&nbsp;
+            <strong>Scoring:</strong> ${golf.scoringType || 'Stableford'}
+        </p>
+        <table class="leaderboard-table" style="margin-bottom: 15px;">
+            <thead>
+                <tr><th></th><th>Front 9</th><th>Back 9</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Par</strong></td><td>${par.front9Par}</td><td>${par.back9Par}</td></tr>
+                <tr><td><strong>Base Points</strong></td><td>${GOLF_BASE_POINTS}</td><td>${GOLF_BASE_POINTS}</td></tr>
+            </tbody>
+        </table>
+        <p style="margin-bottom: 8px;">
+            Each nine starts at <strong>${GOLF_BASE_POINTS} base points</strong> (score = par).
+            Every stroke <strong>under par</strong> adds 1 point. Every stroke <strong>over par</strong> subtracts 1 point.
+        </p>
+        <p class="text-muted" style="font-size: 0.9em;">
+            <strong>Bonuses:</strong> Best Front 9 (+${bonusPoints.bestFront}), Best Back 9 (+${bonusPoints.bestBack}),
+            Overall Winner (+${bonusPoints.overallWinner}) &mdash; awarded to lowest score.<br>
+            <strong>Shotguns:</strong> Each full team shotgun = +${bonusPoints.shotgun} pt${bonusPoints.shotgun !== 1 ? 's' : ''}.
+        </p>
+    `;
 }

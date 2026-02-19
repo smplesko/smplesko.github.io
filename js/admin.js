@@ -103,6 +103,18 @@ function renderSiteSettings() {
                                    class="form-input">
                         </div>
                     </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="label-block text-silver">Front 9 Par</label>
+                            <input type="number" id="golfFront9ParInput" value="${settings.golfSettings?.front9Par || 36}"
+                                   min="27" max="45" class="form-input">
+                        </div>
+                        <div>
+                            <label class="label-block text-silver">Back 9 Par</label>
+                            <input type="number" id="golfBack9ParInput" value="${settings.golfSettings?.back9Par || 36}"
+                                   min="27" max="45" class="form-input">
+                        </div>
+                    </div>
                     <div>
                         <label class="label-block text-silver">Description (shown on golf page)</label>
                         <input type="text" id="golfDescriptionInput" value="${settings.golfSettings?.description || ''}"
@@ -235,6 +247,8 @@ function saveSiteSettingsForm() {
 function saveGolfSettings() {
     const format = document.getElementById('golfFormatInput').value.trim();
     const scoringType = document.getElementById('golfScoringTypeInput').value.trim();
+    const front9Par = document.getElementById('golfFront9ParInput');
+    const back9Par = document.getElementById('golfBack9ParInput');
     const description = document.getElementById('golfDescriptionInput').value.trim();
     const scheduledDate = document.getElementById('golfScheduledDateInput').value;
     const scheduledTime = document.getElementById('golfScheduledTimeInput').value;
@@ -245,6 +259,8 @@ function saveGolfSettings() {
     }
     settings.golfSettings.format = format || 'Scramble';
     settings.golfSettings.scoringType = scoringType || 'Stableford';
+    settings.golfSettings.front9Par = front9Par ? validateNumber(front9Par.value, 27, 45, 36) : 36;
+    settings.golfSettings.back9Par = back9Par ? validateNumber(back9Par.value, 27, 45, 36) : 36;
     settings.golfSettings.description = description;
     settings.golfSettings.scheduledDate = scheduledDate;
     settings.golfSettings.scheduledTime = scheduledTime;
@@ -281,9 +297,8 @@ function exportData() {
     const data = {
         players: getPlayers(),
         golfTeams: getGolfTeams(),
-        golfHoleScores: getGolfHoleScores(),
+        golfScores: getGolfScores(),
         golfShotguns: getGolfShotguns(),
-        golfBonuses: getGolfBonuses(),
         golfScoringEnabled: getGolfScoringEnabled(),
         bonusPoints: getBonusPoints(),
         customEvents: getCustomEvents(),
@@ -308,9 +323,8 @@ function confirmResetData() {
             writeToFirebase('triviaPoints', DEFAULT_TRIVIA_POINTS);
             writeToFirebase('bonusPoints', DEFAULT_BONUS_POINTS);
             writeToFirebase('golfTeams', {});
-            writeToFirebase('golfHoleScores', {});
+            writeToFirebase('golfScores', {});
             writeToFirebase('golfShotguns', {});
-            writeToFirebase('golfBonuses', { bestFront: '', bestBack: '', overallWinner: '' });
             writeToFirebase('golfScoringEnabled', {});
             writeToFirebase('customEvents', {});
             writeToFirebase('triviaGame', DEFAULT_TRIVIA_GAME);
@@ -376,6 +390,8 @@ function startOnboarding() {
         golfTime: '',
         golfFormat: 'Scramble',
         golfScoringType: 'Stableford',
+        golfFront9Par: 36,
+        golfBack9Par: 36,
         // Step 4: Custom Events
         includeEvents: false,
         quickEvents: [],
@@ -398,6 +414,8 @@ function startOnboarding() {
     onboardingData.golfTime = settings.golfSettings?.scheduledTime || '';
     onboardingData.golfFormat = settings.golfSettings?.format || 'Scramble';
     onboardingData.golfScoringType = settings.golfSettings?.scoringType || 'Stableford';
+    onboardingData.golfFront9Par = settings.golfSettings?.front9Par || 36;
+    onboardingData.golfBack9Par = settings.golfSettings?.back9Par || 36;
     onboardingData.triviaDate = triviaGame.scheduledDate || '';
     onboardingData.triviaTime = triviaGame.scheduledTime || '';
 
@@ -603,6 +621,16 @@ function renderOnboardingStep3() {
                             <option value="Stableford" ${onboardingData.golfScoringType === 'Stableford' ? 'selected' : ''}>Stableford</option>
                             <option value="Stroke" ${onboardingData.golfScoringType === 'Stroke' ? 'selected' : ''}>Stroke</option>
                         </select>
+                    </div>
+                </div>
+                <div class="onboarding-field-row">
+                    <div class="onboarding-field">
+                        <label>Front 9 Par</label>
+                        <input type="number" id="ob_golfFront9Par" value="${onboardingData.golfFront9Par}" min="27" max="45">
+                    </div>
+                    <div class="onboarding-field">
+                        <label>Back 9 Par</label>
+                        <input type="number" id="ob_golfBack9Par" value="${onboardingData.golfBack9Par}" min="27" max="45">
                     </div>
                 </div>
             </div>
@@ -822,11 +850,15 @@ function saveOnboardingStepData() {
             const golfTime = document.getElementById('ob_golfTime');
             const golfFormat = document.getElementById('ob_golfFormat');
             const golfScoringType = document.getElementById('ob_golfScoringType');
+            const golfFront9Par = document.getElementById('ob_golfFront9Par');
+            const golfBack9Par = document.getElementById('ob_golfBack9Par');
             if (includeGolf) onboardingData.includeGolf = includeGolf.checked;
             if (golfDate) onboardingData.golfDate = golfDate.value;
             if (golfTime) onboardingData.golfTime = golfTime.value;
             if (golfFormat) onboardingData.golfFormat = golfFormat.value;
             if (golfScoringType) onboardingData.golfScoringType = golfScoringType.value;
+            if (golfFront9Par) onboardingData.golfFront9Par = validateNumber(golfFront9Par.value, 27, 45, 36);
+            if (golfBack9Par) onboardingData.golfBack9Par = validateNumber(golfBack9Par.value, 27, 45, 36);
             break;
         case 4:
             const includeEvents = document.getElementById('ob_includeEvents');
@@ -885,6 +917,8 @@ function completeOnboarding() {
         settings.golfSettings.scheduledTime = onboardingData.golfTime;
         settings.golfSettings.format = onboardingData.golfFormat;
         settings.golfSettings.scoringType = onboardingData.golfScoringType;
+        settings.golfSettings.front9Par = onboardingData.golfFront9Par || 36;
+        settings.golfSettings.back9Par = onboardingData.golfBack9Par || 36;
         settings.golfSettings.enabled = true;
     } else {
         settings.golfSettings.enabled = false;
