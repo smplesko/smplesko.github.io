@@ -18,35 +18,14 @@ function calculatePlayerPoints() {
         playerPoints[player] = pts;
     });
 
-    // Golf points (from hole-by-hole scoring)
-    const { teams: golfTeams, bonuses: golfBonuses } = getGolfData();
-    const bonusPoints = getBonusPoints();
-
-    const teamTotals = {};
-    Object.keys(golfTeams).forEach(teamNum => {
-        teamTotals[teamNum] = calculateGolfTeamTotal(teamNum);
-    });
-
-    if (golfBonuses.bestFront && golfTeams[golfBonuses.bestFront]) {
-        golfTeams[golfBonuses.bestFront].forEach(player => {
-            if (playerPoints[player]) playerPoints[player].golf += bonusPoints.bestFront;
-        });
-    }
-    if (golfBonuses.bestBack && golfTeams[golfBonuses.bestBack]) {
-        golfTeams[golfBonuses.bestBack].forEach(player => {
-            if (playerPoints[player]) playerPoints[player].golf += bonusPoints.bestBack;
-        });
-    }
-    if (golfBonuses.overallWinner && golfTeams[golfBonuses.overallWinner]) {
-        golfTeams[golfBonuses.overallWinner].forEach(player => {
-            if (playerPoints[player]) playerPoints[player].golf += bonusPoints.overallWinner;
-        });
-    }
+    // Golf points (team total includes base points, bonuses, and shotguns)
+    const golfTeams = getGolfTeams();
 
     Object.keys(golfTeams).forEach(teamNum => {
+        const teamTotal = calculateGolfTeamTotal(teamNum);
         const teamPlayers = golfTeams[teamNum] || [];
         teamPlayers.forEach(player => {
-            if (playerPoints[player]) playerPoints[player].golf += teamTotals[teamNum] || 0;
+            if (playerPoints[player]) playerPoints[player].golf += teamTotal;
         });
     });
 
@@ -347,29 +326,36 @@ function renderGolfLeaderboard() {
     const teams = getGolfTeams();
 
     if (Object.keys(teams).length === 0) {
-        tbody.innerHTML = emptyTableRow(4, 'No golf results yet');
+        tbody.innerHTML = emptyTableRow(7, 'No golf results yet');
         return;
     }
 
-    // Calculate team totals
-    const teamData = Object.keys(teams).map(teamNum => ({
-        teamNum,
-        players: teams[teamNum],
-        total: calculateGolfTeamTotal(teamNum)
-    }));
+    // Build team data with full breakdown
+    const teamData = Object.keys(teams).map(teamNum => {
+        const breakdown = getGolfTeamBreakdown(teamNum);
+        return {
+            teamNum,
+            players: teams[teamNum],
+            breakdown
+        };
+    });
 
-    teamData.sort((a, b) => b.total - a.total);
+    teamData.sort((a, b) => b.breakdown.grandTotal - a.breakdown.grandTotal);
 
     tbody.innerHTML = '';
     teamData.forEach((team, idx) => {
         const rank = idx + 1;
         const rankClass = rank <= 3 ? `rank-${rank}` : '';
+        const b = team.breakdown;
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="${rankClass}">${rank}</td>
             <td>Team ${team.teamNum}</td>
             <td>${team.players.join(', ')}</td>
-            <td>${team.total}</td>
+            <td>${b.totalScore || '--'}</td>
+            <td>${b.totalPoints}</td>
+            <td>${b.frontBonus + b.backBonus + b.overallBonus + b.shotgunPoints}</td>
+            <td style="font-weight: bold;">${b.grandTotal}</td>
         `;
         tbody.appendChild(tr);
     });
