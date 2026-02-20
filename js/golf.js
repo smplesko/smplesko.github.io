@@ -8,6 +8,7 @@ function openGolfAdmin() {
     updateGolfTeamInputs();
     loadGolfScoringControls();
     loadGolfBonusInputs();
+    loadGolfIndividualBonusInputs();
     loadGolfFormatSettings();
 }
 
@@ -17,6 +18,7 @@ function loadGolfFormatSettings() {
 
     const settings = getSiteSettings();
     const golf = settings.golfSettings || {};
+    const basePoints = golf.basePointsPer9 || DEFAULT_GOLF_BASE_POINTS;
 
     container.innerHTML = `
         <h4 class="text-gold mb-15">Golf Format & Scoring</h4>
@@ -37,7 +39,7 @@ function loadGolfFormatSettings() {
                     <option value="Stroke" ${golf.scoringType === 'Stroke' ? 'selected' : ''}>Stroke (Low Score Wins)</option>
                 </select>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                 <div>
                     <label class="label-block text-silver">Front 9 Par</label>
                     <input type="number" id="golfFront9ParInput" value="${golf.front9Par || 36}" min="27" max="45"
@@ -46,6 +48,11 @@ function loadGolfFormatSettings() {
                 <div>
                     <label class="label-block text-silver">Back 9 Par</label>
                     <input type="number" id="golfBack9ParInput" value="${golf.back9Par || 36}" min="27" max="45"
+                           style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
+                </div>
+                <div>
+                    <label class="label-block text-silver">Even Par Pts/9</label>
+                    <input type="number" id="golfBasePointsInput" value="${basePoints}" min="1" max="50"
                            style="width: 100%; padding: 10px; border: none; border-radius: 5px;">
                 </div>
             </div>
@@ -66,6 +73,7 @@ function saveGolfFormatSettings() {
     settings.golfSettings.scoringType = document.getElementById('golfScoringTypeInput').value;
     settings.golfSettings.front9Par = validateNumber(document.getElementById('golfFront9ParInput').value, 27, 45, 36);
     settings.golfSettings.back9Par = validateNumber(document.getElementById('golfBack9ParInput').value, 27, 45, 36);
+    settings.golfSettings.basePointsPer9 = validateNumber(document.getElementById('golfBasePointsInput').value, 1, 50, DEFAULT_GOLF_BASE_POINTS);
     settings.golfSettings.description = document.getElementById('golfDescriptionInput').value.trim();
     saveSiteSettings(settings);
     showToast('Golf settings saved!', 'success');
@@ -157,7 +165,7 @@ function loadGolfBonusInputs() {
 
     container.innerHTML = `
         <div class="bonus-section">
-            <h4>Bonus Point Values</h4>
+            <h4>Team Bonus Point Values</h4>
             <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">
                 Bonuses are auto-awarded to the team with the lowest score on each nine and overall.
             </p>
@@ -197,6 +205,69 @@ function saveBonusPointValues() {
         shotgun: validateBonusPoints(shotgunEl.value)
     };
     writeToFirebase('bonusPoints', bonusPoints);
+}
+
+// Individual Bonus Admin
+function loadGolfIndividualBonusInputs() {
+    const container = document.getElementById('golfIndividualBonusInputs');
+    if (!container) return;
+
+    const bonuses = getGolfIndividualBonuses();
+    const playerList = getPlayerList();
+
+    const playerOptions = playerList.map(name =>
+        `<option value="${name}">${name}</option>`
+    ).join('');
+
+    function buildPlayerSelect(id, selected) {
+        return `<select id="${id}" style="width: 100%; padding: 10px; border: none; border-radius: 5px;" onchange="saveGolfIndividualBonuses()">
+            <option value="">-- None --</option>
+            ${playerList.map(name =>
+                `<option value="${name}" ${selected === name ? 'selected' : ''}>${name}</option>`
+            ).join('')}
+        </select>`;
+    }
+
+    container.innerHTML = `
+        <div class="bonus-section">
+            <h4>Individual Bonus Awards</h4>
+            <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">
+                Assign individual bonus points to specific players.
+            </p>
+            <div class="bonus-grid">
+                <div class="bonus-input">
+                    <label>Long Drive Winner</label>
+                    ${buildPlayerSelect('indBonusLongDrivePlayer', bonuses.longDrive.player)}
+                </div>
+                <div class="bonus-input">
+                    <label>Long Drive Pts</label>
+                    <input type="number" id="indBonusLongDrivePts" value="${bonuses.longDrive.points}" min="0" max="50" onchange="saveGolfIndividualBonuses()">
+                </div>
+                <div class="bonus-input">
+                    <label>Closest to Pin Winner</label>
+                    ${buildPlayerSelect('indBonusClosestPinPlayer', bonuses.closestPin.player)}
+                </div>
+                <div class="bonus-input">
+                    <label>Closest to Pin Pts</label>
+                    <input type="number" id="indBonusClosestPinPts" value="${bonuses.closestPin.points}" min="0" max="50" onchange="saveGolfIndividualBonuses()">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function saveGolfIndividualBonuses() {
+    const bonuses = {
+        longDrive: {
+            player: document.getElementById('indBonusLongDrivePlayer').value,
+            points: validateBonusPoints(document.getElementById('indBonusLongDrivePts').value)
+        },
+        closestPin: {
+            player: document.getElementById('indBonusClosestPinPlayer').value,
+            points: validateBonusPoints(document.getElementById('indBonusClosestPinPts').value)
+        }
+    };
+    writeToFirebase('golfIndividualBonuses', bonuses);
 }
 
 // Golf Scorecard (for players)
@@ -317,6 +388,9 @@ function renderGolfScorecard() {
         scorecard.innerHTML = html;
         container.appendChild(scorecard);
     });
+
+    // Render individual bonuses section
+    renderGolfIndividualBonuses();
 }
 
 function saveGolfScore(teamNum) {
@@ -353,6 +427,7 @@ function renderScoringGuide() {
     const golf = settings.golfSettings || {};
     const par = getGolfParSettings();
     const bonusPoints = getBonusPoints();
+    const indBonuses = getGolfIndividualBonuses();
 
     container.innerHTML = `
         <p style="margin-bottom: 12px;">
@@ -365,17 +440,54 @@ function renderScoringGuide() {
             </thead>
             <tbody>
                 <tr><td><strong>Par</strong></td><td>${par.front9Par}</td><td>${par.back9Par}</td></tr>
-                <tr><td><strong>Base Points</strong></td><td>${GOLF_BASE_POINTS}</td><td>${GOLF_BASE_POINTS}</td></tr>
+                <tr><td><strong>Base Points</strong></td><td>${par.basePointsPer9}</td><td>${par.basePointsPer9}</td></tr>
             </tbody>
         </table>
         <p style="margin-bottom: 8px;">
-            Each nine starts at <strong>${GOLF_BASE_POINTS} base points</strong> (score = par).
+            Each nine starts at <strong>${par.basePointsPer9} base points</strong> (score = par).
             Every stroke <strong>under par</strong> adds 1 point. Every stroke <strong>over par</strong> subtracts 1 point.
         </p>
         <p class="text-muted" style="font-size: 0.9em;">
-            <strong>Bonuses:</strong> Best Front 9 (+${bonusPoints.bestFront}), Best Back 9 (+${bonusPoints.bestBack}),
+            <strong>Team Bonuses:</strong> Best Front 9 (+${bonusPoints.bestFront}), Best Back 9 (+${bonusPoints.bestBack}),
             Overall Winner (+${bonusPoints.overallWinner}) &mdash; awarded to lowest score.<br>
-            <strong>Shotguns:</strong> Each full team shotgun = +${bonusPoints.shotgun} pt${bonusPoints.shotgun !== 1 ? 's' : ''}.
+            <strong>Shotguns:</strong> Each full team shotgun = +${bonusPoints.shotgun} pt${bonusPoints.shotgun !== 1 ? 's' : ''}.<br>
+            <strong>Individual:</strong> Long Drive (+${indBonuses.longDrive.points}), Closest to Pin (+${indBonuses.closestPin.points}).
         </p>
     `;
+}
+
+// Render individual bonus awards on golf page
+function renderGolfIndividualBonuses() {
+    const container = document.getElementById('golfIndividualBonuses');
+    if (!container) return;
+
+    const bonuses = getGolfIndividualBonuses();
+    const hasLongDrive = bonuses.longDrive.player && bonuses.longDrive.player !== '';
+    const hasClosestPin = bonuses.closestPin.player && bonuses.closestPin.player !== '';
+
+    if (!hasLongDrive && !hasClosestPin) {
+        container.innerHTML = '<p class="text-muted">No individual awards assigned yet.</p>';
+        return;
+    }
+
+    let html = '<div class="individual-bonus-list">';
+
+    if (hasLongDrive) {
+        html += `<div class="individual-bonus-item">
+            <span class="individual-bonus-label">Long Drive</span>
+            <span class="individual-bonus-winner">${bonuses.longDrive.player}</span>
+            <span class="individual-bonus-pts">+${bonuses.longDrive.points} pts</span>
+        </div>`;
+    }
+
+    if (hasClosestPin) {
+        html += `<div class="individual-bonus-item">
+            <span class="individual-bonus-label">Closest to Pin</span>
+            <span class="individual-bonus-winner">${bonuses.closestPin.player}</span>
+            <span class="individual-bonus-pts">+${bonuses.closestPin.points} pts</span>
+        </div>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
 }

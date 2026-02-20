@@ -755,6 +755,38 @@ body.is-admin footer .admin-only {
     font-weight: bold;
 }
 
+/* Individual Bonus Awards */
+.individual-bonus-list {
+    display: grid;
+    gap: 12px;
+}
+
+.individual-bonus-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--overlay-bg);
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+
+.individual-bonus-label {
+    color: var(--silver);
+    font-size: 0.9em;
+    min-width: 110px;
+}
+
+.individual-bonus-winner {
+    font-weight: bold;
+    flex: 1;
+}
+
+.individual-bonus-pts {
+    color: var(--gold);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
 /* Profile Stats */
 .profile-stats {
     display: grid;
