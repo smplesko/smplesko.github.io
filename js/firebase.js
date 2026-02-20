@@ -17,6 +17,7 @@ let dataCache = {
     golfScores: null,
     golfShotguns: null,
     golfScoringEnabled: null,
+    golfIndividualBonuses: null,
     customEvents: null,
     triviaGame: null,
     siteSettings: null,
@@ -29,7 +30,7 @@ let firebaseReady = false;
 const MAX_PLAYERS = 12;
 const MAX_TRIVIA_QUESTIONS = 16;
 const MAX_PREDICTIONS = 16;
-const GOLF_BASE_POINTS = 18; // Base points per nine when score equals par
+const DEFAULT_GOLF_BASE_POINTS = 10; // Default base points per nine when score equals par
 
 // ===== DEFAULT DATA =====
 
@@ -95,7 +96,8 @@ const DEFAULT_SITE_SETTINGS = {
         scheduledTime: '',
         enabled: true,
         front9Par: 36,
-        back9Par: 36
+        back9Par: 36,
+        basePointsPer9: 10
     }
 };
 
@@ -130,6 +132,7 @@ function setupFirebaseListeners() {
         { path: 'golfScores', default: {} },
         { path: 'golfShotguns', default: {} },
         { path: 'golfScoringEnabled', default: {} },
+        { path: 'golfIndividualBonuses', default: { longDrive: { player: '', points: 5 }, closestPin: { player: '', points: 5 } } },
         { path: 'customEvents', default: {} },
         { path: 'triviaGame', default: DEFAULT_TRIVIA_GAME },
         { path: 'siteSettings', default: DEFAULT_SITE_SETTINGS },
@@ -178,6 +181,9 @@ function onDataChange(path) {
     }
     if ((path === 'siteSettings' || path === 'triviaGame' || path === 'customEvents') && isHomePage()) {
         renderWeekendSchedule();
+    }
+    if (path === 'siteSettings' && isHomePage()) {
+        renderPodium();
     }
 
     // Update leaderboards
@@ -311,6 +317,9 @@ function getGolfTeams() { return getGolfData().teams; }
 function getGolfScores() { return getGolfData().scores; }
 function getGolfShotguns() { return getGolfData().shotguns; }
 function getGolfScoringEnabled() { return getGolfData().scoringEnabled; }
+function getGolfIndividualBonuses() {
+    return dataCache.golfIndividualBonuses || { longDrive: { player: '', points: 5 }, closestPin: { player: '', points: 5 } };
+}
 
 function getSiteSettings() {
     return dataCache.siteSettings || DEFAULT_SITE_SETTINGS;
@@ -391,20 +400,21 @@ function getCompletedEvents() {
     return completed;
 }
 
-// Get golf par settings from site settings
+// Get golf par and scoring settings
 function getGolfParSettings() {
     const settings = getSiteSettings();
     const golf = settings.golfSettings || {};
     return {
         front9Par: golf.front9Par || 36,
-        back9Par: golf.back9Par || 36
+        back9Par: golf.back9Par || 36,
+        basePointsPer9: golf.basePointsPer9 || DEFAULT_GOLF_BASE_POINTS
     };
 }
 
-// Calculate points for a nine: base 18 adjusted by strokes vs par
-function calculateNinePoints(score, par) {
+// Calculate points for a nine: base points adjusted by strokes vs par
+function calculateNinePoints(score, par, basePoints) {
     if (score == null || score === '') return 0;
-    return GOLF_BASE_POINTS - (score - par);
+    return basePoints - (score - par);
 }
 
 // Determine which teams win each bonus (lowest raw score wins)
@@ -466,8 +476,8 @@ function getGolfTeamBreakdown(teamNum) {
     const front9Score = ts.front9;
     const back9Score = ts.back9;
 
-    const front9Points = calculateNinePoints(front9Score, par.front9Par);
-    const back9Points = calculateNinePoints(back9Score, par.back9Par);
+    const front9Points = calculateNinePoints(front9Score, par.front9Par, par.basePointsPer9);
+    const back9Points = calculateNinePoints(back9Score, par.back9Par, par.basePointsPer9);
     const totalPoints = front9Points + back9Points;
 
     const teamStr = String(teamNum);

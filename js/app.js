@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (isHomePage()) {
         renderPlayerGrid();
         renderWeekendSchedule();
+        renderPodium();
     }
 
     if (isPage('admin')) {

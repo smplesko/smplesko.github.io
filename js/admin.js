@@ -103,7 +103,7 @@ function renderSiteSettings() {
                                    class="form-input">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                         <div>
                             <label class="label-block text-silver">Front 9 Par</label>
                             <input type="number" id="golfFront9ParInput" value="${settings.golfSettings?.front9Par || 36}"
@@ -113,6 +113,11 @@ function renderSiteSettings() {
                             <label class="label-block text-silver">Back 9 Par</label>
                             <input type="number" id="golfBack9ParInput" value="${settings.golfSettings?.back9Par || 36}"
                                    min="27" max="45" class="form-input">
+                        </div>
+                        <div>
+                            <label class="label-block text-silver">Even Par Pts/9</label>
+                            <input type="number" id="golfBasePointsInput" value="${settings.golfSettings?.basePointsPer9 || 10}"
+                                   min="1" max="50" class="form-input">
                         </div>
                     </div>
                     <div>
@@ -249,6 +254,7 @@ function saveGolfSettings() {
     const scoringType = document.getElementById('golfScoringTypeInput').value.trim();
     const front9Par = document.getElementById('golfFront9ParInput');
     const back9Par = document.getElementById('golfBack9ParInput');
+    const basePointsEl = document.getElementById('golfBasePointsInput');
     const description = document.getElementById('golfDescriptionInput').value.trim();
     const scheduledDate = document.getElementById('golfScheduledDateInput').value;
     const scheduledTime = document.getElementById('golfScheduledTimeInput').value;
@@ -261,6 +267,7 @@ function saveGolfSettings() {
     settings.golfSettings.scoringType = scoringType || 'Stableford';
     settings.golfSettings.front9Par = front9Par ? validateNumber(front9Par.value, 27, 45, 36) : 36;
     settings.golfSettings.back9Par = back9Par ? validateNumber(back9Par.value, 27, 45, 36) : 36;
+    settings.golfSettings.basePointsPer9 = basePointsEl ? validateNumber(basePointsEl.value, 1, 50, 10) : 10;
     settings.golfSettings.description = description;
     settings.golfSettings.scheduledDate = scheduledDate;
     settings.golfSettings.scheduledTime = scheduledTime;
@@ -300,6 +307,7 @@ function exportData() {
         golfScores: getGolfScores(),
         golfShotguns: getGolfShotguns(),
         golfScoringEnabled: getGolfScoringEnabled(),
+        golfIndividualBonuses: getGolfIndividualBonuses(),
         bonusPoints: getBonusPoints(),
         customEvents: getCustomEvents(),
         triviaGame: getTriviaGame(),
@@ -326,6 +334,7 @@ function confirmResetData() {
             writeToFirebase('golfScores', {});
             writeToFirebase('golfShotguns', {});
             writeToFirebase('golfScoringEnabled', {});
+            writeToFirebase('golfIndividualBonuses', { longDrive: { player: '', points: 5 }, closestPin: { player: '', points: 5 } });
             writeToFirebase('customEvents', {});
             writeToFirebase('triviaGame', DEFAULT_TRIVIA_GAME);
             writeToFirebase('siteSettings', DEFAULT_SITE_SETTINGS);

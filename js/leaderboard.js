@@ -29,6 +29,15 @@ function calculatePlayerPoints() {
         });
     });
 
+    // Golf individual bonuses (long drive, closest to pin)
+    const indBonuses = getGolfIndividualBonuses();
+    if (indBonuses.longDrive.player && playerPoints[indBonuses.longDrive.player]) {
+        playerPoints[indBonuses.longDrive.player].golf += indBonuses.longDrive.points || 0;
+    }
+    if (indBonuses.closestPin.player && playerPoints[indBonuses.closestPin.player]) {
+        playerPoints[indBonuses.closestPin.player].golf += indBonuses.closestPin.points || 0;
+    }
+
     // Custom event points
     eventList.forEach(event => {
         const eventPlayerPoints = calculateCustomEventPlayerPoints(event);
