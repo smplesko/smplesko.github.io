@@ -438,11 +438,14 @@ function renderTriviaGameControls() {
         }
     } else if (game.status === 'active') {
         const qNum = game.currentQuestion;
+        const question = game.questions[qNum - 1];
         const responses = game.responses[qNum] || {};
         const responseCount = Object.keys(responses).length;
         const joinedCount = joinedPlayers.length;
 
         html += `<div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin: 15px 0;">`;
+        html += `<p style="margin-bottom: 8px; color: var(--gold); font-weight: bold;">Q${qNum}: ${question.text}</p>`;
+        html += `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">${question.type === 'multiple_choice' ? 'Multiple Choice' : 'Freeform'} | ${question.pointValue} pt${question.pointValue > 1 ? 's' : ''}${question.category ? ' | ' + question.category : ''}</p>`;
         html += `<p style="margin-bottom: 10px;">Responses received: <strong>${responseCount}/${joinedCount}</strong></p>`;
 
         // Show who has responded
@@ -458,7 +461,7 @@ function renderTriviaGameControls() {
         html += `</div>`;
 
         html += `<button class="btn btn-gold" onclick="triviaRevealResponses()">Reveal Responses for Q${game.currentQuestion}</button>`;
-        html += `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">You can reveal responses even if not everyone has answered</p>`;
+        html += `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">You can reveal even if not everyone has answered</p>`;
     } else if (game.status === 'reviewing') {
         html += renderTriviaResponseReview();
         if (game.currentQuestion < totalQuestions) {
@@ -597,10 +600,19 @@ function triviaRevealResponses() {
     const game = getTriviaGame();
     const qNum = game.currentQuestion;
     const question = game.questions[qNum - 1];
+    const joinedPlayers = Object.keys(game.joinedPlayers || {});
+    const responses = game.responses[qNum] || {};
+
+    // Check for players who haven't submitted
+    const notResponded = joinedPlayers.filter(p => !responses[p]);
+    if (notResponded.length > 0) {
+        if (!confirm(`The following players haven't answered yet:\n\n${notResponded.join(', ')}\n\nReveal answers anyway?`)) {
+            return;
+        }
+    }
 
     // Auto-approve correct multiple choice answers on reveal
     if (question.options && question.options.length > 0 && question.correctAnswer) {
-        const responses = game.responses[qNum] || {};
         Object.keys(responses).forEach(player => {
             responses[player].approved = parseInt(responses[player].answer) === question.correctAnswer;
         });
@@ -630,6 +642,9 @@ function triviaToggleBonus(qNum, player) {
 }
 
 function triviaComplete() {
+    if (!confirm('Are you sure you want to finish trivia? This will end the game and show final results to all players.')) {
+        return;
+    }
     const game = getTriviaGame();
     game.status = 'complete';
     saveTriviaGame(game);
@@ -706,7 +721,6 @@ function renderTriviaPage() {
         // Trivia performance
         const triviaPoints = calculateTriviaPlayerPoints();
         const myTriviaPoints = triviaPoints[user] || 0;
-        const possiblePoints = getTotalPossibleTriviaPoints();
 
         html += `
             <div class="trivia-stats-header" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px;">
@@ -1022,6 +1036,17 @@ function submitTriviaAnswer() {
     const game = getTriviaGame();
     const qNum = game.currentQuestion;
     const question = game.questions[qNum - 1];
+    const hasOptions = question.options && question.options.length > 0;
+
+    // Validate answer is not empty
+    if (!answer) {
+        if (hasOptions) {
+            showToast('Please select an answer before submitting.', 'warning');
+        } else {
+            showToast('Please type an answer before submitting.', 'warning');
+        }
+        return;
+    }
 
     if (!game.responses[qNum]) {
         game.responses[qNum] = {};
