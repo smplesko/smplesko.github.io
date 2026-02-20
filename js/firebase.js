@@ -182,6 +182,9 @@ function onDataChange(path) {
     if ((path === 'siteSettings' || path === 'triviaGame' || path === 'customEvents') && isHomePage()) {
         renderWeekendSchedule();
     }
+    if (path === 'siteSettings' && isHomePage()) {
+        renderPodium();
+    }
 
     // Update leaderboards
     if (isPage('leaderboard')) {

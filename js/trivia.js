@@ -25,11 +25,12 @@ function calculateTriviaPlayerPoints() {
             const qResponses = game.responses[qNum];
             Object.keys(qResponses).forEach(playerName => {
                 const response = qResponses[playerName];
-                if (response.approved && playerPoints.hasOwnProperty(playerName)) {
+                if (!playerPoints.hasOwnProperty(playerName)) return;
+                if (response.approved) {
                     playerPoints[playerName] += question.pointValue;
-                    if (response.bonus) {
-                        playerPoints[playerName] += 1; // Bonus is always 1 point
-                    }
+                }
+                if (response.bonus) {
+                    playerPoints[playerName] += 1; // Bonus is always +1, independent of approval
                 }
             });
         });
@@ -477,14 +478,14 @@ function renderTriviaResponseReview() {
     const qNum = game.currentQuestion;
     const responses = game.responses[qNum] || {};
     const question = game.questions[qNum - 1];
-    const hasOptions = question.options && question.options.length > 0;
+    const isMultipleChoice = question.options && question.options.length > 0;
 
     let html = `<div style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin: 15px 0;">`;
     html += `<h5 class="text-gold mb-10">Q${qNum}: ${question.text}</h5>`;
     html += `<p style="font-size: 0.85em; color: var(--silver); margin-bottom: 15px;">Point value: ${question.pointValue}${question.category ? ` | Category: ${question.category}` : ''}</p>`;
 
     // Show correct answer for multiple choice
-    if (hasOptions && question.correctAnswer) {
+    if (isMultipleChoice && question.correctAnswer) {
         html += `<div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2ecc71;">
             <strong style="color: #2ecc71;">Correct Answer:</strong> ${question.correctAnswer}. ${question.options[question.correctAnswer - 1]}
         </div>`;
@@ -500,39 +501,80 @@ function renderTriviaResponseReview() {
             const resp = responses[player];
             if (!resp) return;
 
-            const approvedClass = resp.approved ? 'style="background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71;"' : 'style="background: rgba(231, 76, 60, 0.1);"';
+            const escapedPlayer = player.replace(/'/g, "\\'");
 
-            // Format answer display for multiple choice
-            let answerDisplay = resp.answer || '(no answer)';
-            if (hasOptions && resp.answer) {
+            if (isMultipleChoice) {
+                // Multiple choice: auto-graded, no approve/deny buttons
+                const isCorrect = resp.approved;
+                const bgStyle = isCorrect
+                    ? 'background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71;'
+                    : 'background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.4);';
+                let answerDisplay = resp.answer || '(no answer)';
                 const optIdx = parseInt(resp.answer) - 1;
                 if (question.options[optIdx]) {
                     answerDisplay = `${resp.answer}. ${question.options[optIdx]}`;
                 }
-            }
 
-            html += `
-                <div ${approvedClass} style="padding: 10px; border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div>
-                            <strong>${player}</strong>
-                            <p style="margin: 5px 0; font-style: italic;">"${answerDisplay}"</p>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <button class="btn ${resp.approved ? 'btn-gold' : ''}" onclick="triviaApproveAnswer(${qNum}, '${player.replace(/'/g, "\\'")}', true)"
-                                    style="padding: 6px 12px; font-size: 0.85em;">Approve</button>
-                            <button class="btn" onclick="triviaApproveAnswer(${qNum}, '${player.replace(/'/g, "\\'")}', false)"
-                                    style="padding: 6px 12px; font-size: 0.85em; ${!resp.approved ? 'background: var(--accent-red);' : ''}">Deny</button>
-                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
-                                <input type="checkbox" ${resp.bonus ? 'checked' : ''} onchange="triviaToggleBonus(${qNum}, '${player.replace(/'/g, "\\'")}')">
-                                +1 Bonus
-                            </label>
+                html += `
+                    <div style="${bgStyle} padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <strong>${player}</strong>
+                                <span style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'}; margin-left: 8px;">${isCorrect ? '✓ Correct' : '✗ Wrong'}</span>
+                                ${resp.bonus ? '<span style="color: var(--gold); margin-left: 5px; font-weight: bold;">(+1)</span>' : ''}
+                                <p style="margin: 5px 0; font-style: italic;">"${answerDisplay}"</p>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                    <input type="checkbox" ${resp.bonus ? 'checked' : ''} onchange="triviaToggleBonus(${qNum}, '${escapedPlayer}')">
+                                    +1 Bonus
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // Freeform: admin approves/denies manually
+                const reviewed = resp.approved === true || resp.approved === false;
+                let bgStyle = 'background: rgba(255, 255, 255, 0.05);';
+                if (resp.approved === true) {
+                    bgStyle = 'background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71;';
+                } else if (reviewed && resp.approved === false) {
+                    bgStyle = 'background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.4);';
+                }
+
+                html += `
+                    <div style="${bgStyle} padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <strong>${player}</strong>
+                                ${resp.bonus ? '<span style="color: var(--gold); margin-left: 5px; font-weight: bold;">(+1)</span>' : ''}
+                                <p style="margin: 5px 0; font-style: italic;">"${resp.answer || '(no answer)'}"</p>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button class="btn ${resp.approved === true ? 'btn-gold' : ''}" onclick="triviaApproveAnswer(${qNum}, '${escapedPlayer}', true)"
+                                        style="padding: 6px 12px; font-size: 0.85em;">Approve</button>
+                                <button class="btn" onclick="triviaApproveAnswer(${qNum}, '${escapedPlayer}', false)"
+                                        style="padding: 6px 12px; font-size: 0.85em; ${resp.approved === false ? 'background: var(--accent-red);' : ''}">Deny</button>
+                                <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                    <input type="checkbox" ${resp.bonus ? 'checked' : ''} onchange="triviaToggleBonus(${qNum}, '${escapedPlayer}')">
+                                    +1 Bonus
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         });
         html += '</div>';
+
+        // For MC, show summary of who got it right
+        if (isMultipleChoice) {
+            const correctPlayers = playerList.filter(p => responses[p] && responses[p].approved);
+            if (correctPlayers.length > 0) {
+                html += `<p style="margin-top: 10px; font-size: 0.9em; color: #2ecc71;">Got it right (${correctPlayers.length}): ${correctPlayers.join(', ')}</p>`;
+            }
+        }
     }
 
     html += '</div>';
@@ -553,6 +595,17 @@ function triviaShowQuestion(qNum) {
 
 function triviaRevealResponses() {
     const game = getTriviaGame();
+    const qNum = game.currentQuestion;
+    const question = game.questions[qNum - 1];
+
+    // Auto-approve correct multiple choice answers on reveal
+    if (question.options && question.options.length > 0 && question.correctAnswer) {
+        const responses = game.responses[qNum] || {};
+        Object.keys(responses).forEach(player => {
+            responses[player].approved = parseInt(responses[player].answer) === question.correctAnswer;
+        });
+    }
+
     game.status = 'reviewing';
     saveTriviaGame(game);
     renderTriviaGameControls();
@@ -667,7 +720,7 @@ function renderTriviaPage() {
                 </div>
                 <div class="stat-card">
                     <h4>Trivia Score</h4>
-                    <div class="value">${myTriviaPoints}/${possiblePoints}</div>
+                    <div class="value">${myTriviaPoints}</div>
                 </div>
             </div>
         `;
@@ -782,28 +835,145 @@ function renderTriviaPage() {
     } else if (game.status === 'reviewing') {
         const qNum = game.currentQuestion;
         const question = game.questions[qNum - 1];
-        const myResponse = game.responses[qNum] && game.responses[qNum][user];
-        const hasOptions = question.options && question.options.length > 0;
+        const allResponses = game.responses[qNum] || {};
+        const myResponse = allResponses[user];
+        const isMultipleChoice = question.options && question.options.length > 0;
 
-        // Format answer for display
-        let answerDisplay = myResponse ? myResponse.answer : '(none)';
-        if (hasOptions && myResponse && myResponse.answer) {
-            const optIdx = parseInt(myResponse.answer) - 1;
-            if (question.options[optIdx]) {
-                answerDisplay = `${myResponse.answer}. ${question.options[optIdx]}`;
+        html += `
+            <div class="trivia-reviewing" style="padding: 20px;">
+                ${question.category ? `<p style="margin-bottom: 10px; text-align: center;"><span style="background: var(--accent-red); padding: 3px 10px; border-radius: 12px; font-size: 0.85em;">${question.category}</span></p>` : ''}
+                <h3 class="text-gold" style="text-align: center;">Q${qNum}: ${question.text}</h3>
+        `;
+
+        if (isMultipleChoice) {
+            // MC: Show correct answer, player's result, and who got it right
+            html += `
+                <div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 8px; margin: 15px 0; border: 1px solid #2ecc71; text-align: center;">
+                    <strong style="color: #2ecc71;">Correct Answer:</strong> ${question.correctAnswer}. ${question.options[question.correctAnswer - 1]}
+                </div>
+            `;
+
+            // Show player's own answer
+            if (myResponse) {
+                const isCorrect = myResponse.approved;
+                let myAnswerDisplay = myResponse.answer || '(none)';
+                const optIdx = parseInt(myResponse.answer) - 1;
+                if (question.options[optIdx]) {
+                    myAnswerDisplay = `${myResponse.answer}. ${question.options[optIdx]}`;
+                }
+                html += `
+                    <div style="text-align: center; margin: 15px 0; padding: 12px; border-radius: 8px; ${isCorrect ? 'background: rgba(46, 204, 113, 0.15);' : 'background: rgba(231, 76, 60, 0.1);'}">
+                        <p>Your answer: <strong>"${myAnswerDisplay}"</strong>
+                            <span style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'}; font-weight: bold; margin-left: 8px;">${isCorrect ? '✓ Correct!' : '✗ Wrong'}</span>
+                            ${myResponse.bonus ? '<span style="color: var(--gold); font-weight: bold; margin-left: 5px;">(+1)</span>' : ''}
+                        </p>
+                    </div>
+                `;
+            }
+
+            // Show all players' results
+            const playerList = getPlayerList();
+            const correctPlayers = [];
+            const wrongPlayers = [];
+            playerList.forEach(p => {
+                const resp = allResponses[p];
+                if (!resp) return;
+                let ansDisplay = resp.answer || '?';
+                const oi = parseInt(resp.answer) - 1;
+                if (question.options[oi]) ansDisplay = `${resp.answer}. ${question.options[oi]}`;
+                const entry = { name: p, answer: ansDisplay, bonus: resp.bonus };
+                if (resp.approved) {
+                    correctPlayers.push(entry);
+                } else {
+                    wrongPlayers.push(entry);
+                }
+            });
+
+            if (correctPlayers.length > 0) {
+                html += `<div style="margin-top: 15px;">
+                    <p style="color: #2ecc71; font-weight: bold; margin-bottom: 8px;">✓ Got it right (${correctPlayers.length}):</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">`;
+                correctPlayers.forEach(p => {
+                    html += `<span style="background: rgba(46, 204, 113, 0.2); padding: 4px 12px; border-radius: 15px; font-size: 0.9em;">${p.name}${p.bonus ? ' <span style="color: var(--gold); font-weight: bold;">(+1)</span>' : ''}</span>`;
+                });
+                html += `</div></div>`;
+            }
+
+            if (wrongPlayers.length > 0) {
+                html += `<div style="margin-top: 10px;">
+                    <p style="color: #e74c3c; font-weight: bold; margin-bottom: 8px;">✗ Got it wrong (${wrongPlayers.length}):</p>
+                    <div style="display: grid; gap: 4px;">`;
+                wrongPlayers.forEach(p => {
+                    html += `<span style="font-size: 0.9em; opacity: 0.85;">${p.name}: "${p.answer}"${p.bonus ? ' <span style="color: var(--gold); font-weight: bold;">(+1)</span>' : ''}</span>`;
+                });
+                html += `</div></div>`;
+            }
+        } else {
+            // Freeform: Show all answers grouped by approved/denied/pending
+            const playerList = getPlayerList();
+            const approved = [];
+            const denied = [];
+            const pending = [];
+
+            playerList.forEach(p => {
+                const resp = allResponses[p];
+                if (!resp) return;
+                const entry = { name: p, answer: resp.answer || '(no answer)', bonus: resp.bonus, isMe: p === user };
+                if (resp.approved === true) {
+                    approved.push(entry);
+                } else if (resp.approved === false) {
+                    denied.push(entry);
+                } else {
+                    pending.push(entry);
+                }
+            });
+
+            // Show player's own answer first
+            if (myResponse) {
+                const status = myResponse.approved === true ? '✓ Approved' : myResponse.approved === false ? '✗ Denied' : 'Pending review...';
+                const statusColor = myResponse.approved === true ? '#2ecc71' : myResponse.approved === false ? '#e74c3c' : 'var(--silver)';
+                html += `
+                    <div style="text-align: center; margin: 15px 0; padding: 12px; border-radius: 8px; background: var(--overlay-bg);">
+                        <p>Your answer: <strong>"${myResponse.answer || '(none)'}"</strong>
+                            <span style="color: ${statusColor}; font-weight: bold; margin-left: 8px;">${status}</span>
+                            ${myResponse.bonus ? '<span style="color: var(--gold); font-weight: bold; margin-left: 5px;">(+1)</span>' : ''}
+                        </p>
+                    </div>
+                `;
+            }
+
+            if (approved.length > 0) {
+                html += `<div style="margin-top: 15px;">
+                    <p style="color: #2ecc71; font-weight: bold; margin-bottom: 8px;">✓ Approved (${approved.length}):</p>
+                    <div style="display: grid; gap: 4px;">`;
+                approved.forEach(p => {
+                    html += `<span style="font-size: 0.9em; ${p.isMe ? 'font-weight: bold;' : ''}">${p.name}: "${p.answer}"${p.bonus ? ' <span style="color: var(--gold); font-weight: bold;">(+1)</span>' : ''}</span>`;
+                });
+                html += `</div></div>`;
+            }
+
+            if (denied.length > 0) {
+                html += `<div style="margin-top: 10px;">
+                    <p style="color: #e74c3c; font-weight: bold; margin-bottom: 8px;">✗ Denied (${denied.length}):</p>
+                    <div style="display: grid; gap: 4px;">`;
+                denied.forEach(p => {
+                    html += `<span style="font-size: 0.9em; opacity: 0.85; ${p.isMe ? 'font-weight: bold;' : ''}">${p.name}: "${p.answer}"${p.bonus ? ' <span style="color: var(--gold); font-weight: bold;">(+1)</span>' : ''}</span>`;
+                });
+                html += `</div></div>`;
+            }
+
+            if (pending.length > 0) {
+                html += `<div style="margin-top: 10px;">
+                    <p style="color: var(--silver); font-weight: bold; margin-bottom: 8px;">Pending (${pending.length}):</p>
+                    <div style="display: grid; gap: 4px;">`;
+                pending.forEach(p => {
+                    html += `<span style="font-size: 0.9em; opacity: 0.6; ${p.isMe ? 'font-weight: bold;' : ''}">${p.name}: Waiting for review...</span>`;
+                });
+                html += `</div></div>`;
             }
         }
 
-        html += `
-            <div class="trivia-reviewing" style="text-align: center; padding: 30px 20px;">
-                ${question.category ? `<p style="margin-bottom: 10px;"><span style="background: var(--accent-red); padding: 3px 10px; border-radius: 12px; font-size: 0.85em;">${question.category}</span></p>` : ''}
-                <h3 class="text-gold">Q${qNum}: ${question.text}</h3>
-                <p style="margin: 15px 0;">Your answer: <strong>"${answerDisplay}"</strong></p>
-                ${myResponse && myResponse.approved
-                    ? '<p style="color: #2ecc71;"><strong>Correct!</strong></p>'
-                    : '<p class="text-muted">Waiting for admin to review answers...</p>'}
-            </div>
-        `;
+        html += `</div>`;
     } else if (game.status === 'complete') {
         // Show final results
         const triviaPoints = calculateTriviaPlayerPoints();
@@ -816,7 +986,7 @@ function renderTriviaPage() {
                     <thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead>
                     <tbody>${buildRankedTableBody(sorted, { highlightPlayer: user })}</tbody>
                 </table>
-                <a href="/leaderboard" class="btn btn-gold" style="margin-top: 25px; display: inline-block;">See Final Weekend Results</a>
+                <a href="/leaderboard" class="btn btn-gold" style="margin-top: 25px; display: inline-block;">Go to Leaderboard</a>
             </div>
         `;
     }
@@ -857,15 +1027,9 @@ function submitTriviaAnswer() {
         game.responses[qNum] = {};
     }
 
-    // For multiple choice, auto-approve if correct
-    let approved = false;
-    if (question.options && question.options.length > 0 && question.correctAnswer) {
-        approved = parseInt(answer) === question.correctAnswer;
-    }
-
     game.responses[qNum][user] = {
         answer: answer.substring(0, 255), // Enforce max length
-        approved: approved,
+        approved: null, // null = pending, true = approved, false = denied
         bonus: false
     };
 
