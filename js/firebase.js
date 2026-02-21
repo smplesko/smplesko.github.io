@@ -191,8 +191,9 @@ function onDataChange(path) {
         renderLeaderboards();
     }
 
-    // Update golf scorecard
-    if (path.startsWith('golf') && isPage('golf')) {
+    // Update golf scorecard (golf* paths for scores/teams, siteSettings for format/scoring config)
+    if ((path.startsWith('golf') || path === 'siteSettings') && isPage('golf')) {
+        renderScoringGuide();
         renderGolfScorecard();
     }
 
