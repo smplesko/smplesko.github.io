@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Theme Preview - Dird Plesk Memorial</title>
+<title>Championship Green Dark Mode Variants</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Sora:wght@300;400;500;600;700&family=Russo+One&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,7 +24,7 @@
     gap: 15px;
     align-items: center;
     flex-wrap: wrap;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Sora', sans-serif;
     color: #fff;
 }
 .controls label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 1px; }
@@ -39,12 +39,19 @@
 }
 .controls .divider { width: 1px; height: 30px; background: #333; }
 .control-group { display: flex; flex-direction: column; gap: 4px; }
+.variant-desc {
+    font-size: 0.75em;
+    color: #aaa;
+    max-width: 350px;
+    line-height: 1.4;
+}
 
 /* ===== BASE LAYOUT ===== */
 body {
-    padding-top: 80px;
+    padding-top: 90px;
     min-height: 100vh;
     transition: background 0.5s, color 0.4s;
+    font-family: 'Sora', sans-serif;
 }
 .container { max-width: 900px; margin: 0 auto; padding: 15px; }
 
@@ -52,7 +59,7 @@ body {
 nav {
     padding: 12px 0;
     position: sticky;
-    top: 80px;
+    top: 90px;
     z-index: 100;
     transition: all 0.4s;
 }
@@ -81,7 +88,7 @@ nav ul li a {
     margin-bottom: 20px;
     transition: all 0.5s;
 }
-.hero h1 { font-size: 1.8em; margin-bottom: 8px; font-weight: 700; transition: all 0.3s; }
+.hero h1 { font-family: 'Russo One', sans-serif; font-size: 1.8em; margin-bottom: 8px; font-weight: 700; transition: all 0.3s; letter-spacing: 1px; }
 .hero p { font-size: 1.1em; opacity: 0.9; transition: all 0.3s; }
 
 .notes-section {
@@ -99,10 +106,12 @@ nav ul li a {
     transition: all 0.5s;
 }
 .section-card h2 {
+    font-family: 'Russo One', sans-serif;
     margin-bottom: 15px;
     padding-bottom: 10px;
     font-size: 1.3em;
     transition: all 0.3s;
+    letter-spacing: 1px;
 }
 
 .login-section {
@@ -111,7 +120,7 @@ nav ul li a {
     margin-bottom: 25px;
     transition: all 0.5s;
 }
-.login-section h2 { text-align: center; margin-bottom: 20px; transition: all 0.3s; }
+.login-section h2 { font-family: 'Russo One', sans-serif; text-align: center; margin-bottom: 20px; transition: all 0.3s; letter-spacing: 1px; }
 
 .player-grid {
     display: grid;
@@ -128,6 +137,7 @@ nav ul li a {
     font-weight: bold;
     transition: all 0.3s;
     text-align: center;
+    font-family: 'Sora', sans-serif;
 }
 .player-btn:hover { transform: translateY(-2px); }
 .player-btn.admin-btn { font-style: italic; }
@@ -147,7 +157,7 @@ nav ul li a {
     border: 2px solid;
 }
 .event-link:hover { transform: translateY(-3px); }
-.event-link h3 { margin-bottom: 8px; transition: all 0.3s; }
+.event-link h3 { font-family: 'Russo One', sans-serif; margin-bottom: 8px; transition: all 0.3s; }
 .event-link p { font-size: 0.85em; opacity: 0.8; }
 
 .schedule-item {
@@ -157,7 +167,7 @@ nav ul li a {
     border-left: 4px solid;
     transition: all 0.5s;
 }
-.schedule-item h4 { margin-bottom: 5px; transition: all 0.3s; }
+.schedule-item h4 { font-family: 'Russo One', sans-serif; margin-bottom: 5px; transition: all 0.3s; }
 .schedule-item p { font-size: 0.9em; opacity: 0.85; }
 .schedule-item .time { font-weight: bold; font-size: 0.85em; }
 
@@ -170,153 +180,139 @@ footer {
     transition: all 0.5s;
 }
 
-/* ================================================================
-   THEME 1: SPORTS BROADCAST — DARK
-   ================================================================ */
-.theme-broadcast-dark {
-    background: #111111;
-    color: #f0f0f0;
+.font-label {
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+    opacity: 0.6;
+    border-bottom: 1px solid rgba(128,128,128,0.2);
 }
-.theme-broadcast-dark nav { background: #000; border-bottom: 3px solid #ff3c00; }
-.theme-broadcast-dark nav a { color: #ccc; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
-.theme-broadcast-dark nav a:hover { background: #ff3c00; color: #fff; }
-.theme-broadcast-dark .hero { background: linear-gradient(135deg, #ff3c00 0%, #ff6b35 100%); border-radius: 0; margin-left: -15px; margin-right: -15px; border-bottom: 4px solid #ffd700; }
-.theme-broadcast-dark .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); }
-.theme-broadcast-dark .hero p { color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 3px; font-size: 0.9em; }
-.theme-broadcast-dark .notes-section { background: #1a1a1a; border-left-color: #ffd700; border-radius: 0; }
-.theme-broadcast-dark .login-section { background: #1a1a1a; border: none; border-top: 3px solid #ff3c00; border-radius: 0; }
-.theme-broadcast-dark .login-section h2 { color: #ff3c00; text-transform: uppercase; letter-spacing: 2px; }
-.theme-broadcast-dark .player-btn { background: #222; border-color: #444; color: #fff; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8em; }
-.theme-broadcast-dark .player-btn:hover { background: #ff3c00; border-color: #ff3c00; box-shadow: 0 0 15px rgba(255,60,0,0.4); }
-.theme-broadcast-dark .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
-.theme-broadcast-dark .section-card { background: #1a1a1a; border: none; border-left: 4px solid #ff3c00; border-radius: 0; }
-.theme-broadcast-dark .section-card h2 { color: #ffd700; border-bottom: 2px solid #333; text-transform: uppercase; letter-spacing: 1px; }
-.theme-broadcast-dark .event-link { background: #222; border-color: #333; color: #fff; border-radius: 4px; }
-.theme-broadcast-dark .event-link:hover { border-color: #ff3c00; background: #2a1a1a; }
-.theme-broadcast-dark .event-link h3 { color: #ff3c00; text-transform: uppercase; letter-spacing: 1px; }
-.theme-broadcast-dark .schedule-item { background: #1e1e1e; border-left-color: #ffd700; border-radius: 0; }
-.theme-broadcast-dark .schedule-item h4 { color: #ff3c00; text-transform: uppercase; }
-.theme-broadcast-dark .schedule-item .time { color: #ffd700; }
-.theme-broadcast-dark footer { border-top-color: #333; color: #666; }
 
 /* ================================================================
-   THEME 1: SPORTS BROADCAST — LIGHT
+   VARIANT A: "TRUE BLACK" — Pure black bg, green only in hero/accents
+   Maximum contrast. Clean and sharp. Green is an accent, not the bg.
    ================================================================ */
-.theme-broadcast-light {
-    background: #f4f4f4;
-    color: #1a1a1a;
+.theme-green-a {
+    background: #0a0a0a;
+    color: #e8e8e8;
 }
-.theme-broadcast-light nav { background: #fff; border-bottom: 3px solid #ff3c00; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.theme-broadcast-light nav a { color: #555; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
-.theme-broadcast-light nav a:hover { background: #ff3c00; color: #fff; }
-.theme-broadcast-light .hero { background: linear-gradient(135deg, #ff3c00 0%, #ff6b35 100%); border-radius: 0; margin-left: -15px; margin-right: -15px; border-bottom: 4px solid #ffd700; }
-.theme-broadcast-light .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 3px 6px rgba(0,0,0,0.3); }
-.theme-broadcast-light .hero p { color: rgba(255,255,255,0.95); text-transform: uppercase; letter-spacing: 3px; font-size: 0.9em; }
-.theme-broadcast-light .notes-section { background: #fff; border-left-color: #ffd700; border-radius: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.theme-broadcast-light .login-section { background: #fff; border: none; border-top: 3px solid #ff3c00; border-radius: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.theme-broadcast-light .login-section h2 { color: #ff3c00; text-transform: uppercase; letter-spacing: 2px; }
-.theme-broadcast-light .player-btn { background: #f9f9f9; border-color: #ddd; color: #222; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8em; }
-.theme-broadcast-light .player-btn:hover { background: #ff3c00; border-color: #ff3c00; color: #fff; box-shadow: 0 0 15px rgba(255,60,0,0.25); }
-.theme-broadcast-light .player-btn.admin-btn { border-color: #b8860b; color: #b8860b; }
-.theme-broadcast-light .section-card { background: #fff; border: none; border-left: 4px solid #ff3c00; border-radius: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.theme-broadcast-light .section-card h2 { color: #b8860b; border-bottom: 2px solid #eee; text-transform: uppercase; letter-spacing: 1px; }
-.theme-broadcast-light .event-link { background: #fff; border-color: #ddd; color: #222; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-.theme-broadcast-light .event-link:hover { border-color: #ff3c00; background: #fff5f2; }
-.theme-broadcast-light .event-link h3 { color: #ff3c00; text-transform: uppercase; letter-spacing: 1px; }
-.theme-broadcast-light .schedule-item { background: #fff; border-left-color: #ffd700; border-radius: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.theme-broadcast-light .schedule-item h4 { color: #ff3c00; text-transform: uppercase; }
-.theme-broadcast-light .schedule-item .time { color: #b8860b; }
-.theme-broadcast-light footer { border-top-color: #ddd; color: #999; }
+.theme-green-a nav { background: #050505; border-bottom: 2px solid #1a6b2a; }
+.theme-green-a nav a { color: #aaa; letter-spacing: 1px; }
+.theme-green-a nav a:hover { background: #1a6b2a; color: #fff; }
+.theme-green-a .hero { background: linear-gradient(135deg, #145520 0%, #1a6b2a 50%, #145520 100%); border: 1px solid rgba(201,162,39,0.4); box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.theme-green-a .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.theme-green-a .hero p { color: rgba(255,255,255,0.85); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-a .notes-section { background: #141414; border-left-color: #ffd700; }
+.theme-green-a .login-section { background: #141414; border: 1px solid #222; }
+.theme-green-a .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-a .player-btn { background: #1a1a1a; border-color: #333; color: #ddd; }
+.theme-green-a .player-btn:hover { border-color: #ffd700; background: rgba(26,107,42,0.2); box-shadow: 0 0 12px rgba(26,107,42,0.3); }
+.theme-green-a .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-a .section-card { background: #141414; border: 1px solid #222; }
+.theme-green-a .section-card h2 { color: #ffd700; border-bottom: 1px solid #2a2a2a; letter-spacing: 1px; }
+.theme-green-a .event-link { background: #1a1a1a; border-color: #2a2a2a; color: #ddd; }
+.theme-green-a .event-link:hover { border-color: #1a6b2a; box-shadow: 0 0 15px rgba(26,107,42,0.2); background: #1a1a1a; }
+.theme-green-a .event-link h3 { color: #4caf50; }
+.theme-green-a .schedule-item { background: #161616; border-left-color: #1a6b2a; }
+.theme-green-a .schedule-item h4 { color: #4caf50; }
+.theme-green-a .schedule-item .time { color: #ffd700; }
+.theme-green-a footer { border-top-color: #222; color: #555; }
 
 /* ================================================================
-   THEME 2: LUXURY PREMIUM — DARK
+   VARIANT B: "DARK FOREST" — Very dark with faint green tint
+   Cards slightly lifted off background. Green present but subtle.
    ================================================================ */
-.theme-luxury-dark {
-    background: linear-gradient(180deg, #0a0a0a 0%, #1a1510 100%);
-    color: #e8dcc8;
+.theme-green-b {
+    background: #0b0f0b;
+    color: #e4e8e2;
 }
-.theme-luxury-dark nav { background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(201,162,39,0.3); }
-.theme-luxury-dark nav a { color: rgba(232,220,200,0.6); letter-spacing: 1px; }
-.theme-luxury-dark nav a:hover { background: transparent; color: #c9a227; }
-.theme-luxury-dark .hero { background: transparent; border: 2px solid rgba(201,162,39,0.4); box-shadow: 0 0 40px rgba(201,162,39,0.08); }
-.theme-luxury-dark .hero h1 { color: #c9a227; letter-spacing: 3px; font-weight: 300; }
-.theme-luxury-dark .hero p { color: rgba(232,220,200,0.6); letter-spacing: 4px; font-size: 0.9em; }
-.theme-luxury-dark .notes-section { background: rgba(201,162,39,0.05); border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.15); border-left: 4px solid #c9a227; }
-.theme-luxury-dark .login-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.2); }
-.theme-luxury-dark .login-section h2 { color: #c9a227; letter-spacing: 2px; font-weight: 400; }
-.theme-luxury-dark .player-btn { background: transparent; border-color: rgba(201,162,39,0.25); color: #e8dcc8; }
-.theme-luxury-dark .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.15); }
-.theme-luxury-dark .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
-.theme-luxury-dark .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.15); }
-.theme-luxury-dark .section-card h2 { color: #c9a227; border-bottom: 1px solid rgba(201,162,39,0.2); letter-spacing: 1px; }
-.theme-luxury-dark .event-link { background: rgba(201,162,39,0.04); border-color: rgba(201,162,39,0.2); color: #e8dcc8; }
-.theme-luxury-dark .event-link:hover { border-color: #c9a227; box-shadow: 0 0 30px rgba(201,162,39,0.1); }
-.theme-luxury-dark .event-link h3 { color: #c9a227; }
-.theme-luxury-dark .schedule-item { background: rgba(201,162,39,0.04); border-left-color: #c9a227; }
-.theme-luxury-dark .schedule-item h4 { color: #c9a227; }
-.theme-luxury-dark .schedule-item .time { color: rgba(201,162,39,0.8); }
-.theme-luxury-dark footer { border-top-color: rgba(201,162,39,0.15); color: rgba(232,220,200,0.4); }
+.theme-green-b nav { background: rgba(5,8,5,0.95); border-bottom: 2px solid #227832; }
+.theme-green-b nav a { color: #a8b0a4; letter-spacing: 1px; }
+.theme-green-b nav a:hover { background: #227832; color: #fff; }
+.theme-green-b .hero { background: linear-gradient(135deg, #16522a 0%, #1c6e34 50%, #16522a 100%); border: 1px solid rgba(201,162,39,0.35); box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.theme-green-b .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.theme-green-b .hero p { color: rgba(255,255,255,0.85); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-b .notes-section { background: #131813; border-left-color: #ffd700; border: 1px solid rgba(34,120,50,0.15); border-left: 4px solid #ffd700; }
+.theme-green-b .login-section { background: #131813; border: 1px solid rgba(34,120,50,0.18); }
+.theme-green-b .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-b .player-btn { background: #171c17; border-color: rgba(34,120,50,0.25); color: #dde0da; }
+.theme-green-b .player-btn:hover { border-color: #ffd700; background: rgba(34,120,50,0.15); box-shadow: 0 0 12px rgba(34,120,50,0.25); }
+.theme-green-b .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-b .section-card { background: #131813; border: 1px solid rgba(34,120,50,0.18); }
+.theme-green-b .section-card h2 { color: #ffd700; border-bottom: 1px solid rgba(34,120,50,0.2); letter-spacing: 1px; }
+.theme-green-b .event-link { background: #161b16; border-color: rgba(34,120,50,0.22); color: #dde0da; }
+.theme-green-b .event-link:hover { border-color: #227832; box-shadow: 0 0 15px rgba(34,120,50,0.15); background: rgba(34,120,50,0.08); }
+.theme-green-b .event-link h3 { color: #4caf50; }
+.theme-green-b .schedule-item { background: #141914; border-left-color: #227832; }
+.theme-green-b .schedule-item h4 { color: #66bb6a; }
+.theme-green-b .schedule-item .time { color: #ffd700; }
+.theme-green-b footer { border-top-color: rgba(34,120,50,0.2); color: #5a6458; }
 
 /* ================================================================
-   THEME 2: LUXURY PREMIUM — LIGHT
+   VARIANT C: "MASTERS NIGHT" — Rich dark green, bolder green accents
+   The most "green" version while still being very readable.
+   Green glow on hero, green tinted cards with good text contrast.
    ================================================================ */
-.theme-luxury-light {
-    background: linear-gradient(180deg, #faf8f5 0%, #f0ece4 100%);
-    color: #2a2520;
+.theme-green-c {
+    background: #080e09;
+    color: #eaeee8;
 }
-.theme-luxury-light nav { background: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(201,162,39,0.35); backdrop-filter: blur(10px); }
-.theme-luxury-light nav a { color: rgba(42,37,32,0.5); letter-spacing: 1px; }
-.theme-luxury-light nav a:hover { background: transparent; color: #a08020; }
-.theme-luxury-light .hero { background: transparent; border: 2px solid rgba(201,162,39,0.5); box-shadow: 0 0 40px rgba(201,162,39,0.06); }
-.theme-luxury-light .hero h1 { color: #8b6f1a; letter-spacing: 3px; font-weight: 300; }
-.theme-luxury-light .hero p { color: rgba(42,37,32,0.55); letter-spacing: 4px; font-size: 0.9em; }
-.theme-luxury-light .notes-section { background: rgba(201,162,39,0.06); border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.2); border-left: 4px solid #c9a227; }
-.theme-luxury-light .login-section { background: rgba(255,255,255,0.7); border: 1px solid rgba(201,162,39,0.25); }
-.theme-luxury-light .login-section h2 { color: #8b6f1a; letter-spacing: 2px; font-weight: 400; }
-.theme-luxury-light .player-btn { background: transparent; border-color: rgba(201,162,39,0.3); color: #2a2520; }
-.theme-luxury-light .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.12); background: rgba(201,162,39,0.05); }
-.theme-luxury-light .player-btn.admin-btn { border-color: #c9a227; color: #8b6f1a; }
-.theme-luxury-light .section-card { background: rgba(255,255,255,0.6); border: 1px solid rgba(201,162,39,0.2); }
-.theme-luxury-light .section-card h2 { color: #8b6f1a; border-bottom: 1px solid rgba(201,162,39,0.25); letter-spacing: 1px; }
-.theme-luxury-light .event-link { background: rgba(255,255,255,0.5); border-color: rgba(201,162,39,0.25); color: #2a2520; }
-.theme-luxury-light .event-link:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.08); background: rgba(255,255,255,0.8); }
-.theme-luxury-light .event-link h3 { color: #8b6f1a; }
-.theme-luxury-light .schedule-item { background: rgba(255,255,255,0.5); border-left-color: #c9a227; }
-.theme-luxury-light .schedule-item h4 { color: #8b6f1a; }
-.theme-luxury-light .schedule-item .time { color: #a08020; }
-.theme-luxury-light footer { border-top-color: rgba(201,162,39,0.2); color: rgba(42,37,32,0.4); }
+.theme-green-c nav { background: rgba(4,8,5,0.95); border-bottom: 2px solid #2a8c3e; }
+.theme-green-c nav a { color: #98a894; letter-spacing: 1px; }
+.theme-green-c nav a:hover { background: #2a8c3e; color: #fff; }
+.theme-green-c .hero { background: linear-gradient(135deg, #1a6630 0%, #228b3a 50%, #1a6630 100%); border: 1px solid rgba(201,162,39,0.4); box-shadow: 0 4px 40px rgba(34,139,58,0.15), 0 0 80px rgba(34,139,58,0.06); }
+.theme-green-c .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.theme-green-c .hero p { color: rgba(255,255,255,0.9); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-c .notes-section { background: rgba(34,139,58,0.06); border-left-color: #ffd700; border: 1px solid rgba(34,139,58,0.12); border-left: 4px solid #ffd700; }
+.theme-green-c .login-section { background: rgba(34,139,58,0.05); border: 1px solid rgba(34,139,58,0.14); }
+.theme-green-c .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-c .player-btn { background: rgba(34,139,58,0.07); border-color: rgba(34,139,58,0.22); color: #e0e4de; }
+.theme-green-c .player-btn:hover { border-color: #ffd700; background: rgba(34,139,58,0.15); box-shadow: 0 0 15px rgba(34,139,58,0.2); }
+.theme-green-c .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-c .section-card { background: rgba(34,139,58,0.05); border: 1px solid rgba(34,139,58,0.14); }
+.theme-green-c .section-card h2 { color: #ffd700; border-bottom: 1px solid rgba(34,139,58,0.18); letter-spacing: 1px; }
+.theme-green-c .event-link { background: rgba(34,139,58,0.06); border-color: rgba(34,139,58,0.18); color: #e0e4de; }
+.theme-green-c .event-link:hover { border-color: #2a8c3e; box-shadow: 0 0 20px rgba(34,139,58,0.12); background: rgba(34,139,58,0.1); }
+.theme-green-c .event-link h3 { color: #66bb6a; }
+.theme-green-c .schedule-item { background: rgba(34,139,58,0.05); border-left-color: #2a8c3e; }
+.theme-green-c .schedule-item h4 { color: #66bb6a; }
+.theme-green-c .schedule-item .time { color: #ffd700; }
+.theme-green-c footer { border-top-color: rgba(34,139,58,0.15); color: #4e5c4a; }
 
 /* ================================================================
-   THEME 3: CHAMPIONSHIP GREEN (Augusta vibes) — DARK
+   VARIANT D: "CLUBHOUSE" — Black with green & gold pinstripe feel
+   Slightly elevated cards, warm gold touches, green as borders only.
+   Premium club aesthetic — think private clubhouse scoreboard.
    ================================================================ */
-.theme-green-dark {
-    background: linear-gradient(180deg, #0a120a 0%, #0d1a10 100%);
-    color: #d4dcc8;
+.theme-green-d {
+    background: #0c0c0c;
+    color: #e6e2dc;
 }
-.theme-green-dark nav { background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(34,120,50,0.5); }
-.theme-green-dark nav a { color: rgba(212,220,200,0.6); letter-spacing: 1px; }
-.theme-green-dark nav a:hover { background: rgba(34,120,50,0.3); color: #fff; }
-.theme-green-dark .hero { background: linear-gradient(135deg, #1a5c28 0%, #227832 50%, #1a5c28 100%); border: 1px solid rgba(201,162,39,0.3); box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
-.theme-green-dark .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-.theme-green-dark .hero p { color: rgba(255,255,255,0.8); letter-spacing: 3px; font-size: 0.9em; }
-.theme-green-dark .notes-section { background: rgba(34,120,50,0.1); border-left-color: #ffd700; border: 1px solid rgba(34,120,50,0.2); border-left: 4px solid #ffd700; }
-.theme-green-dark .login-section { background: rgba(255,255,255,0.04); border: 1px solid rgba(34,120,50,0.25); }
-.theme-green-dark .login-section h2 { color: #ffd700; letter-spacing: 2px; }
-.theme-green-dark .player-btn { background: rgba(34,120,50,0.15); border-color: rgba(34,120,50,0.4); color: #d4dcc8; }
-.theme-green-dark .player-btn:hover { border-color: #ffd700; background: rgba(34,120,50,0.3); box-shadow: 0 0 15px rgba(34,120,50,0.3); }
-.theme-green-dark .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
-.theme-green-dark .section-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(34,120,50,0.2); }
-.theme-green-dark .section-card h2 { color: #ffd700; border-bottom: 1px solid rgba(34,120,50,0.3); letter-spacing: 1px; }
-.theme-green-dark .event-link { background: rgba(34,120,50,0.1); border-color: rgba(34,120,50,0.3); color: #d4dcc8; }
-.theme-green-dark .event-link:hover { border-color: #ffd700; box-shadow: 0 0 20px rgba(34,120,50,0.2); background: rgba(34,120,50,0.2); }
-.theme-green-dark .event-link h3 { color: #ffd700; }
-.theme-green-dark .schedule-item { background: rgba(34,120,50,0.08); border-left-color: #ffd700; }
-.theme-green-dark .schedule-item h4 { color: #4caf50; }
-.theme-green-dark .schedule-item .time { color: #ffd700; }
-.theme-green-dark footer { border-top-color: rgba(34,120,50,0.25); color: rgba(212,220,200,0.4); }
+.theme-green-d nav { background: #080808; border-bottom: 1px solid rgba(201,162,39,0.35); }
+.theme-green-d nav a { color: rgba(230,226,220,0.55); letter-spacing: 1.5px; }
+.theme-green-d nav a:hover { color: #c9a227; background: transparent; }
+.theme-green-d .hero { background: linear-gradient(135deg, #145520 0%, #1a6b2a 50%, #145520 100%); border: 2px solid rgba(201,162,39,0.5); box-shadow: 0 0 50px rgba(201,162,39,0.06), 0 4px 30px rgba(0,0,0,0.5); }
+.theme-green-d .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.theme-green-d .hero p { color: rgba(255,255,255,0.8); letter-spacing: 4px; font-size: 0.9em; }
+.theme-green-d .notes-section { background: #141414; border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.12); border-left: 4px solid #c9a227; }
+.theme-green-d .login-section { background: #141414; border: 1px solid rgba(201,162,39,0.15); }
+.theme-green-d .login-section h2 { color: #c9a227; letter-spacing: 2px; }
+.theme-green-d .player-btn { background: #181818; border-color: rgba(201,162,39,0.18); color: #d8d4cc; }
+.theme-green-d .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 15px rgba(201,162,39,0.12); }
+.theme-green-d .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
+.theme-green-d .section-card { background: #141414; border: 1px solid rgba(201,162,39,0.12); }
+.theme-green-d .section-card h2 { color: #c9a227; border-bottom: 1px solid rgba(201,162,39,0.15); letter-spacing: 1px; }
+.theme-green-d .event-link { background: #181818; border-color: rgba(201,162,39,0.15); color: #d8d4cc; }
+.theme-green-d .event-link:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.08); }
+.theme-green-d .event-link h3 { color: #4caf50; }
+.theme-green-d .schedule-item { background: #161616; border-left-color: #1a6b2a; }
+.theme-green-d .schedule-item h4 { color: #4caf50; }
+.theme-green-d .schedule-item .time { color: #c9a227; }
+.theme-green-d footer { border-top-color: rgba(201,162,39,0.12); color: rgba(230,226,220,0.35); }
 
 /* ================================================================
-   THEME 3: CHAMPIONSHIP GREEN — LIGHT
+   LIGHT MODE (keeping the one you already like)
    ================================================================ */
 .theme-green-light {
     background: linear-gradient(180deg, #f0f5ec 0%, #e6ede0 100%);
@@ -344,82 +340,57 @@ footer {
 .theme-green-light .schedule-item .time { color: #8b6f1a; }
 .theme-green-light footer { border-top-color: rgba(34,120,50,0.15); color: rgba(26,46,26,0.4); }
 
-/* ================================================================
-   THEME 4: CARBON STEALTH (matte black + red accents) — DARK
-   ================================================================ */
-.theme-carbon-dark {
-    background: #0e0e0e;
-    color: #e0e0e0;
+/* ===== ANIMATIONS ===== */
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
 }
-.theme-carbon-dark nav { background: #080808; border-bottom: 2px solid #c8102e; }
-.theme-carbon-dark nav a { color: #888; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.8em; }
-.theme-carbon-dark nav a:hover { color: #c8102e; background: rgba(200,16,46,0.1); }
-.theme-carbon-dark .hero { background: repeating-linear-gradient(45deg, #141414, #141414 10px, #181818 10px, #181818 20px); border: 1px solid #2a2a2a; border-bottom: 3px solid #c8102e; }
-.theme-carbon-dark .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 3px; }
-.theme-carbon-dark .hero p { color: #c8102e; text-transform: uppercase; letter-spacing: 4px; font-size: 0.85em; }
-.theme-carbon-dark .notes-section { background: #141414; border-left-color: #c8102e; border-radius: 0; }
-.theme-carbon-dark .login-section { background: #141414; border: 1px solid #222; border-top: 2px solid #c8102e; }
-.theme-carbon-dark .login-section h2 { color: #c8102e; text-transform: uppercase; letter-spacing: 3px; }
-.theme-carbon-dark .player-btn { background: #1a1a1a; border-color: #2a2a2a; color: #ccc; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
-.theme-carbon-dark .player-btn:hover { border-color: #c8102e; color: #fff; box-shadow: 0 0 10px rgba(200,16,46,0.3); }
-.theme-carbon-dark .player-btn.admin-btn { border-color: #c8102e; color: #c8102e; }
-.theme-carbon-dark .section-card { background: #141414; border: 1px solid #222; border-radius: 4px; }
-.theme-carbon-dark .section-card h2 { color: #c8102e; border-bottom: 1px solid #222; text-transform: uppercase; letter-spacing: 2px; }
-.theme-carbon-dark .event-link { background: #1a1a1a; border-color: #2a2a2a; color: #ccc; border-radius: 4px; }
-.theme-carbon-dark .event-link:hover { border-color: #c8102e; box-shadow: 0 0 15px rgba(200,16,46,0.15); }
-.theme-carbon-dark .event-link h3 { color: #c8102e; text-transform: uppercase; letter-spacing: 1px; }
-.theme-carbon-dark .schedule-item { background: #161616; border-left-color: #c8102e; border-radius: 0; }
-.theme-carbon-dark .schedule-item h4 { color: #fff; text-transform: uppercase; }
-.theme-carbon-dark .schedule-item .time { color: #c8102e; }
-.theme-carbon-dark footer { border-top-color: #222; color: #555; }
-
-/* ================================================================
-   THEME 4: CARBON STEALTH — LIGHT
-   ================================================================ */
-.theme-carbon-light {
-    background: #f0f0f0;
-    color: #1a1a1a;
+.shimmer-text {
+    background: linear-gradient(90deg, currentColor 0%, rgba(255,215,0,0.8) 25%, currentColor 50%, rgba(255,215,0,0.8) 75%, currentColor 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+    font-size: 1.4em;
+    font-weight: bold;
 }
-.theme-carbon-light nav { background: #fff; border-bottom: 2px solid #c8102e; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.theme-carbon-light nav a { color: #666; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.8em; }
-.theme-carbon-light nav a:hover { color: #c8102e; background: rgba(200,16,46,0.06); }
-.theme-carbon-light .hero { background: repeating-linear-gradient(45deg, #e8e8e8, #e8e8e8 10px, #ededed 10px, #ededed 20px); border: 1px solid #ddd; border-bottom: 3px solid #c8102e; }
-.theme-carbon-light .hero h1 { color: #1a1a1a; text-transform: uppercase; letter-spacing: 3px; }
-.theme-carbon-light .hero p { color: #c8102e; text-transform: uppercase; letter-spacing: 4px; font-size: 0.85em; }
-.theme-carbon-light .notes-section { background: #fff; border-left-color: #c8102e; border-radius: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.theme-carbon-light .login-section { background: #fff; border: 1px solid #e0e0e0; border-top: 2px solid #c8102e; }
-.theme-carbon-light .login-section h2 { color: #c8102e; text-transform: uppercase; letter-spacing: 3px; }
-.theme-carbon-light .player-btn { background: #fafafa; border-color: #ddd; color: #333; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
-.theme-carbon-light .player-btn:hover { border-color: #c8102e; color: #c8102e; box-shadow: 0 0 10px rgba(200,16,46,0.15); }
-.theme-carbon-light .player-btn.admin-btn { border-color: #c8102e; color: #c8102e; }
-.theme-carbon-light .section-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.theme-carbon-light .section-card h2 { color: #c8102e; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: 2px; }
-.theme-carbon-light .event-link { background: #fff; border-color: #e0e0e0; color: #333; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.theme-carbon-light .event-link:hover { border-color: #c8102e; box-shadow: 0 0 12px rgba(200,16,46,0.1); }
-.theme-carbon-light .event-link h3 { color: #c8102e; text-transform: uppercase; letter-spacing: 1px; }
-.theme-carbon-light .schedule-item { background: #fff; border-left-color: #c8102e; border-radius: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-.theme-carbon-light .schedule-item h4 { color: #1a1a1a; text-transform: uppercase; }
-.theme-carbon-light .schedule-item .time { color: #c8102e; }
-.theme-carbon-light footer { border-top-color: #e0e0e0; color: #999; }
 
-/* ===== FONT PAIRINGS ===== */
-.fonts-russo-chakra .hero h1, .fonts-russo-chakra .section-card h2, .fonts-russo-chakra .login-section h2 { font-family: 'Russo One', sans-serif; letter-spacing: 1px; }
-.fonts-russo-chakra .event-link h3, .fonts-russo-chakra .schedule-item h4 { font-family: 'Russo One', sans-serif; }
-.fonts-russo-chakra { font-family: 'Chakra Petch', sans-serif; }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+.fade-in-up.d1 { animation-delay: 0.1s; opacity: 0; }
+.fade-in-up.d2 { animation-delay: 0.2s; opacity: 0; }
+.fade-in-up.d3 { animation-delay: 0.3s; opacity: 0; }
+.fade-in-up.d4 { animation-delay: 0.4s; opacity: 0; }
 
-.fonts-orbitron-sora .hero h1, .fonts-orbitron-sora .section-card h2, .fonts-orbitron-sora .login-section h2 { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.5em; letter-spacing: 2px; }
-.fonts-orbitron-sora .event-link h3, .fonts-orbitron-sora .schedule-item h4 { font-family: 'Orbitron', sans-serif; font-weight: 500; font-size: 0.95em; }
-.fonts-orbitron-sora { font-family: 'Sora', sans-serif; }
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(201,162,39,0.3); }
+    50% { box-shadow: 0 0 20px rgba(201,162,39,0.6), 0 0 40px rgba(201,162,39,0.2); }
+}
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
 
-.fonts-tourney900-chakra .hero h1, .fonts-tourney900-chakra .section-card h2, .fonts-tourney900-chakra .login-section h2 { font-family: 'Tourney', cursive; font-weight: 900; font-style: normal; letter-spacing: 2px; }
-.fonts-tourney900-chakra .event-link h3, .fonts-tourney900-chakra .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 900; font-size: 1.05em; }
-.fonts-tourney900-chakra { font-family: 'Chakra Petch', sans-serif; }
+@keyframes scalePop {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.scale-pop { animation: scalePop 0.5s ease-out forwards; }
 
-.fonts-tourney900-sora .hero h1, .fonts-tourney900-sora .section-card h2, .fonts-tourney900-sora .login-section h2 { font-family: 'Tourney', cursive; font-weight: 900; font-style: normal; letter-spacing: 2px; }
-.fonts-tourney900-sora .event-link h3, .fonts-tourney900-sora .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 900; font-size: 1.05em; }
-.fonts-tourney900-sora { font-family: 'Sora', sans-serif; }
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.slide-in-left { animation: slideInLeft 0.5s ease-out forwards; }
 
-/* ===== ANIMATIONS SECTION ===== */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+.float { animation: float 3s ease-in-out infinite; }
+
 .anim-section {
     margin-top: 40px;
     padding: 30px 20px;
@@ -427,6 +398,7 @@ footer {
     border: 2px dashed rgba(128,128,128,0.3);
 }
 .anim-section h2 {
+    font-family: 'Russo One', sans-serif;
     text-align: center;
     margin-bottom: 25px;
     font-size: 1.3em;
@@ -443,7 +415,7 @@ footer {
     background: rgba(128,128,128,0.08);
     border: 1px solid rgba(128,128,128,0.15);
 }
-.anim-card h4 { margin-bottom: 8px; opacity: 0.9; }
+.anim-card h4 { font-family: 'Russo One', sans-serif; margin-bottom: 8px; opacity: 0.9; }
 .anim-card p { font-size: 0.8em; opacity: 0.6; margin-bottom: 15px; }
 .anim-demo { padding: 15px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
 .anim-card button {
@@ -455,127 +427,30 @@ footer {
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.8em;
-}
-
-/* Shimmer */
-@keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-}
-.shimmer-text {
-    background: linear-gradient(90deg, currentColor 0%, rgba(255,215,0,0.8) 25%, currentColor 50%, rgba(255,215,0,0.8) 75%, currentColor 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 4s linear infinite;
-    font-size: 1.4em;
-    font-weight: bold;
-}
-
-/* Fade In Up */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
-.fade-in-up.d1 { animation-delay: 0.1s; opacity: 0; }
-.fade-in-up.d2 { animation-delay: 0.2s; opacity: 0; }
-.fade-in-up.d3 { animation-delay: 0.3s; opacity: 0; }
-.fade-in-up.d4 { animation-delay: 0.4s; opacity: 0; }
-
-/* Pulse Glow */
-@keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 5px rgba(201,162,39,0.3); }
-    50% { box-shadow: 0 0 20px rgba(201,162,39,0.6), 0 0 40px rgba(201,162,39,0.2); }
-}
-.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
-
-/* Scale Pop */
-@keyframes scalePop {
-    0% { transform: scale(0.8); opacity: 0; }
-    60% { transform: scale(1.05); }
-    100% { transform: scale(1); opacity: 1; }
-}
-.scale-pop { animation: scalePop 0.5s ease-out forwards; }
-
-/* Slide In Left */
-@keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-.slide-in-left { animation: slideInLeft 0.5s ease-out forwards; }
-
-/* Gentle float */
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-}
-.float { animation: float 3s ease-in-out infinite; }
-
-.font-label {
-    text-align: center;
-    padding: 8px;
-    margin-bottom: 10px;
-    font-size: 0.85em;
-    opacity: 0.6;
-    border-bottom: 1px solid rgba(128,128,128,0.2);
-}
-
-/* Mode indicator badge */
-.mode-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.7em;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-left: 10px;
-    vertical-align: middle;
-    background: rgba(128,128,128,0.2);
-    border: 1px solid rgba(128,128,128,0.3);
+    font-family: 'Sora', sans-serif;
 }
 </style>
 </head>
-<body class="theme-broadcast-dark fonts-russo-chakra">
+<body class="theme-green-a">
 
 <!-- CONTROL BAR -->
 <div class="controls">
     <div class="control-group">
-        <label>Theme</label>
+        <label>Dark Mode Variant</label>
         <select id="themeSelect" onchange="switchTheme(this.value)">
-            <optgroup label="Sports Broadcast">
-                <option value="broadcast-dark" selected>Sports Broadcast — Dark</option>
-                <option value="broadcast-light">Sports Broadcast — Light</option>
+            <optgroup label="Dark Mode Variants">
+                <option value="green-a" selected>A: True Black — green as accent only</option>
+                <option value="green-b">B: Dark Forest — faint green tint</option>
+                <option value="green-c">C: Masters Night — richer green, green glow</option>
+                <option value="green-d">D: Clubhouse — black + gold & green borders</option>
             </optgroup>
-            <optgroup label="Luxury Premium">
-                <option value="luxury-dark">Luxury Premium — Dark</option>
-                <option value="luxury-light">Luxury Premium — Light</option>
-            </optgroup>
-            <optgroup label="Championship Green">
-                <option value="green-dark">Championship Green — Dark</option>
-                <option value="green-light">Championship Green — Light</option>
-            </optgroup>
-            <optgroup label="Carbon Stealth">
-                <option value="carbon-dark">Carbon Stealth — Dark</option>
-                <option value="carbon-light">Carbon Stealth — Light</option>
+            <optgroup label="Light Mode">
+                <option value="green-light">Light Mode (for reference)</option>
             </optgroup>
         </select>
     </div>
     <div class="divider"></div>
-    <div class="control-group">
-        <label>Fonts</label>
-        <select id="fontSelect" onchange="switchFont(this.value)">
-            <optgroup label="Your Favorites">
-                <option value="russo-chakra" selected>Russo One + Chakra Petch</option>
-                <option value="orbitron-sora">Orbitron + Sora</option>
-            </optgroup>
-            <optgroup label="Tourney 900 (Full Black)">
-                <option value="tourney900-chakra">Tourney 900 + Chakra Petch</option>
-                <option value="tourney900-sora">Tourney 900 + Sora</option>
-            </optgroup>
-        </select>
-    </div>
+    <div class="variant-desc" id="variantDesc">Pure black background. Green lives only in the hero banner and accent colors. Maximum contrast and readability.</div>
 </div>
 
 <!-- PAGE CONTENT -->
@@ -591,7 +466,7 @@ footer {
 </nav>
 
 <div class="container">
-    <div class="font-label" id="fontLabel">Headers: Russo One | Body: Chakra Petch</div>
+    <div class="font-label">Font: Russo One (headers) + Sora (body)</div>
 
     <div class="hero">
         <h1>Dird Plesk Memorial Open Invitational of Champions</h1>
@@ -728,20 +603,17 @@ footer {
 </div>
 
 <script>
-const fontLabels = {
-    'russo-chakra': 'Headers: Russo One | Body: Chakra Petch',
-    'orbitron-sora': 'Headers: Orbitron | Body: Sora',
-    'tourney900-chakra': 'Headers: Tourney 900 (Full Black) | Body: Chakra Petch',
-    'tourney900-sora': 'Headers: Tourney 900 (Full Black) | Body: Sora',
+const variantDescs = {
+    'green-a': 'Pure black background. Green lives only in the hero banner and accent colors. Maximum contrast and readability.',
+    'green-b': 'Very dark with a faint green tint. Cards slightly lifted off background. Green is present but subtle — like looking at a course at dusk.',
+    'green-c': 'The richest green option. Subtle green glow on the hero, green-tinted cards. Most "Masters" feel while keeping white text sharp.',
+    'green-d': 'Black base with gold borders and green accents. Private clubhouse scoreboard vibe. Luxury meets Augusta — elegant restraint.',
+    'green-light': 'Light mode — soft sage/cream background with green hero and gold accents.'
 };
 
 function switchTheme(theme) {
-    document.body.className = document.body.className.replace(/theme-\S+/, `theme-${theme}`);
-}
-
-function switchFont(font) {
-    document.body.className = document.body.className.replace(/fonts-\S+/, `fonts-${font}`);
-    document.getElementById('fontLabel').textContent = fontLabels[font] || '';
+    document.body.className = `theme-${theme}`;
+    document.getElementById('variantDesc').textContent = variantDescs[theme] || '';
 }
 
 function replayFade() {
