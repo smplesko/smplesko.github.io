@@ -40,11 +40,12 @@ function createCustomEvent(name, description, scoringMode, roundCount, scheduled
         rounds: {}
     };
 
+    const needsDefaultPoints = validatedMode === 'individual' || validatedMode === 'individual_to_team';
     for (let i = 1; i <= newEvent.roundCount; i++) {
         newEvent.rounds[i] = {
             name: `Round ${i}`,
             teamCount: 2,
-            pointValues: validatedMode === 'individual' ? getDefaultPositionPoints() : {},
+            pointValues: needsDefaultPoints ? getDefaultPositionPoints() : {},
             teams: {},
             results: {}
         };
@@ -57,9 +58,11 @@ function createCustomEvent(name, description, scoringMode, roundCount, scheduled
 
 function deleteCustomEvent(eventId) {
     if (!confirm('Are you sure you want to delete this event and all its data?')) return;
+    expandedEventConfigs.delete(eventId);
     const events = getCustomEvents();
     delete events[eventId];
     saveCustomEvents(events);
+    renderCustomEventsAdmin();
 }
 
 function updateCustomEventField(eventId, field, value) {
@@ -118,10 +121,11 @@ function addEventRound(eventId) {
     const nextRound = roundKeys.length > 0 ? Math.max(...roundKeys) + 1 : 1;
 
     if (!event.rounds) event.rounds = {};
+    const needsDefaults = event.scoringMode === 'individual' || event.scoringMode === 'individual_to_team';
     event.rounds[nextRound] = {
         name: `Round ${nextRound}`,
         teamCount: 2,
-        pointValues: event.scoringMode === 'individual' ? getDefaultPositionPoints() : {},
+        pointValues: needsDefaults ? getDefaultPositionPoints() : {},
         teams: {},
         results: {}
     };
@@ -164,7 +168,7 @@ function copyPreviousRoundTeams(eventId, roundNum) {
     showToast(`Teams copied from ${prevRound.name || 'Round ' + prevRoundNum}!`, 'success');
 }
 
-// Save round teams from checkbox UI
+// Save round teams from checkbox UI (also saves round name and team count)
 function saveEventRoundTeams(eventId, roundNum) {
     const events = getCustomEvents();
     const event = events[eventId];
@@ -172,6 +176,10 @@ function saveEventRoundTeams(eventId, roundNum) {
 
     const round = event.rounds[roundNum];
     if (!round) return;
+
+    // Save round name
+    const nameInput = document.getElementById(`ceRoundName_${eventId}_r${roundNum}`);
+    if (nameInput) round.name = nameInput.value.trim() || `Round ${roundNum}`;
 
     const teamCount = round.teamCount || 2;
     const teams = {};
@@ -184,13 +192,18 @@ function saveEventRoundTeams(eventId, roundNum) {
     showToast(`Round ${roundNum} teams saved!`, 'success');
 }
 
-// Save round results from input UI
+// Save round results from input UI (also saves round name)
 function saveEventRoundResults(eventId, roundNum) {
     const events = getCustomEvents();
     const event = events[eventId];
     if (!event || !event.rounds[roundNum]) return;
 
     const round = event.rounds[roundNum];
+
+    // Save round name
+    const nameInput = document.getElementById(`ceRoundName_${eventId}_r${roundNum}`);
+    if (nameInput) round.name = nameInput.value.trim() || `Round ${roundNum}`;
+
     const results = {};
 
     if (event.scoringMode === 'individual') {
@@ -295,24 +308,25 @@ function calculateCustomEventPlayerPoints(event) {
                 });
             });
         } else if (event.scoringMode === 'individual_to_team') {
-            // Each player's placement gives points via pointValues
-            // Sum those points per team; each team member gets team total
+            // Sum individual raw scores per team, rank teams, award points by rank
             const teamTotals = {};
             Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
                 teamTotals[teamNum] = 0;
                 (teamPlayers || []).forEach(player => {
-                    const placement = parseInt(results[player]) || 0;
-                    const pts = parseInt(pointValues[placement]) || 0;
-                    teamTotals[teamNum] += pts;
+                    teamTotals[teamNum] += parseInt(results[player]) || 0;
                 });
             });
 
-            // Each team member gets their team's total points
-            Object.entries(teams).forEach(([teamNum, teamPlayers]) => {
-                const teamPts = teamTotals[teamNum] || 0;
-                (teamPlayers || []).forEach(player => {
+            // Rank teams by total score (highest first)
+            const sortedTeams = Object.entries(teamTotals).sort((a, b) => b[1] - a[1]);
+
+            // Each team member gets points based on team rank
+            sortedTeams.forEach(([teamNum, total], idx) => {
+                const rank = idx + 1;
+                const pts = parseInt(pointValues[rank]) || 0;
+                (teams[teamNum] || []).forEach(player => {
                     if (playerPoints.hasOwnProperty(player)) {
-                        playerPoints[player] += teamPts;
+                        playerPoints[player] += pts;
                     }
                 });
             });
@@ -323,6 +337,9 @@ function calculateCustomEventPlayerPoints(event) {
 }
 
 // ===== CUSTOM EVENTS ADMIN UI =====
+
+// Track which event configs are expanded to prevent collapse on Firebase sync
+const expandedEventConfigs = new Set();
 
 function renderCustomEventsAdmin() {
     const container = document.getElementById('customEventsAdminContainer');
@@ -415,6 +432,15 @@ function renderCustomEventsAdmin() {
     }
 
     container.innerHTML = html;
+
+    // Restore expanded event configs after re-render
+    expandedEventConfigs.forEach(eventId => {
+        const configDiv = document.getElementById(`eventConfig_${eventId}`);
+        if (configDiv) {
+            configDiv.style.display = 'block';
+            renderEventRoundConfigs(eventId);
+        }
+    });
 }
 
 function handleCreateCustomEvent() {
@@ -444,11 +470,13 @@ function toggleCustomEventExpand(eventId) {
     const configDiv = document.getElementById(`eventConfig_${eventId}`);
     if (!configDiv) return;
 
-    if (configDiv.style.display === 'none') {
+    if (expandedEventConfigs.has(eventId)) {
+        expandedEventConfigs.delete(eventId);
+        configDiv.style.display = 'none';
+    } else {
+        expandedEventConfigs.add(eventId);
         configDiv.style.display = 'block';
         renderEventRoundConfigs(eventId);
-    } else {
-        configDiv.style.display = 'none';
     }
 }
 
@@ -469,12 +497,15 @@ function renderEventRoundConfigs(eventId) {
         <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border);">
             <div style="margin-bottom: 15px;">
                 <label style="display: block; font-size: 0.85em; color: var(--silver); margin-bottom: 5px;">Scoring Mode</label>
-                <select id="eventScoring_${eventId}" onchange="saveEventScoringMode('${eventId}')"
-                        style="width: 100%; max-width: 300px; padding: 8px; border: none; border-radius: 5px;">
-                    <option value="individual" ${event.scoringMode === 'individual' ? 'selected' : ''}>Individual (each player scores independently)</option>
-                    <option value="team_shared" ${event.scoringMode === 'team_shared' ? 'selected' : ''}>Team Shared (team score = each member's score)</option>
-                    <option value="individual_to_team" ${event.scoringMode === 'individual_to_team' ? 'selected' : ''}>Individual→Team (individual scores pooled, team rank = shared points)</option>
-                </select>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="eventScoring_${eventId}"
+                            style="flex: 1; max-width: 300px; padding: 8px; border: none; border-radius: 5px;">
+                        <option value="individual" ${event.scoringMode === 'individual' ? 'selected' : ''}>Individual (each player scores independently)</option>
+                        <option value="team_shared" ${event.scoringMode === 'team_shared' ? 'selected' : ''}>Team Shared (team score = each member's score)</option>
+                        <option value="individual_to_team" ${event.scoringMode === 'individual_to_team' ? 'selected' : ''}>Individual→Team (individual scores pooled, team rank = shared points)</option>
+                    </select>
+                    <button class="btn btn-small" onclick="saveEventScoringMode('${eventId}')">Save</button>
+                </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;">
                 <div>
@@ -505,7 +536,6 @@ function renderEventRoundConfigs(eventId) {
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;">
                         <input type="text" id="ceRoundName_${eventId}_r${roundNum}" value="${roundName}"
-                               onchange="saveEventRoundName('${eventId}', ${roundNum})"
                                style="padding: 8px; border: none; border-radius: 5px; font-size: 0.95em; flex: 1;">
                     </div>
                     <button class="btn btn-small" onclick="removeEventRound('${eventId}', ${roundNum})" style="background: var(--accent-red); font-size: 0.8em;">Remove Round</button>
@@ -514,7 +544,8 @@ function renderEventRoundConfigs(eventId) {
 
         // Point values (for individual or individual_to_team)
         if (needsPositionPoints) {
-            html += `<details style="margin-bottom: 10px;"><summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Point Values (per position)</summary>`;
+            const pointLabel = event.scoringMode === 'individual_to_team' ? 'Point Values (per team rank)' : 'Point Values (per position)';
+            html += `<details style="margin-bottom: 10px;"><summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">${pointLabel}</summary>`;
             html += '<div class="point-config" style="margin-top: 8px;">';
             for (let i = 1; i <= MAX_PLAYERS; i++) {
                 html += `

@@ -92,15 +92,19 @@ function renderSiteSettings() {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
                             <label class="label-block text-silver">Format</label>
-                            <input type="text" id="golfFormatInput" value="${settings.golfSettings?.format || 'Scramble'}"
-                                   placeholder="e.g., Scramble"
-                                   class="form-input">
+                            <select id="golfFormatInput" class="form-input">
+                                ${['Scramble', 'Best Ball', 'Alternate Shot', 'Stroke Play', 'Match Play'].map(f =>
+                                    `<option value="${f}" ${(settings.golfSettings?.format || 'Scramble') === f ? 'selected' : ''}>${f}</option>`
+                                ).join('')}
+                            </select>
                         </div>
                         <div>
                             <label class="label-block text-silver">Scoring Type</label>
-                            <input type="text" id="golfScoringTypeInput" value="${settings.golfSettings?.scoringType || 'Stableford'}"
-                                   placeholder="e.g., Stableford"
-                                   class="form-input">
+                            <select id="golfScoringTypeInput" class="form-input">
+                                ${['Stableford', 'Stroke', 'Points', 'Match'].map(s =>
+                                    `<option value="${s}" ${(settings.golfSettings?.scoringType || 'Stableford') === s ? 'selected' : ''}>${s}</option>`
+                                ).join('')}
+                            </select>
                         </div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
@@ -620,6 +624,7 @@ function renderOnboardingStep3() {
                         <select id="ob_golfFormat">
                             <option value="Scramble" ${onboardingData.golfFormat === 'Scramble' ? 'selected' : ''}>Scramble</option>
                             <option value="Best Ball" ${onboardingData.golfFormat === 'Best Ball' ? 'selected' : ''}>Best Ball</option>
+                            <option value="Alternate Shot" ${onboardingData.golfFormat === 'Alternate Shot' ? 'selected' : ''}>Alternate Shot</option>
                             <option value="Stroke Play" ${onboardingData.golfFormat === 'Stroke Play' ? 'selected' : ''}>Stroke Play</option>
                             <option value="Match Play" ${onboardingData.golfFormat === 'Match Play' ? 'selected' : ''}>Match Play</option>
                         </select>
@@ -629,6 +634,8 @@ function renderOnboardingStep3() {
                         <select id="ob_golfScoringType">
                             <option value="Stableford" ${onboardingData.golfScoringType === 'Stableford' ? 'selected' : ''}>Stableford</option>
                             <option value="Stroke" ${onboardingData.golfScoringType === 'Stroke' ? 'selected' : ''}>Stroke</option>
+                            <option value="Points" ${onboardingData.golfScoringType === 'Points' ? 'selected' : ''}>Points</option>
+                            <option value="Match" ${onboardingData.golfScoringType === 'Match' ? 'selected' : ''}>Match</option>
                         </select>
                     </div>
                 </div>

@@ -213,7 +213,7 @@ function onDataChange(path) {
     if (isPage('admin')) {
         if (path === 'players') renderPlayerList();
         if (path === 'siteSettings') renderSiteSettings();
-        if (path === 'customEvents') renderCustomEventsAdmin();
+        if (path === 'customEvents' && typeof expandedEventConfigs !== 'undefined' && expandedEventConfigs.size === 0) renderCustomEventsAdmin();
         if (path === 'triviaGame') {
             renderTriviaQuestionAdmin();
             renderTriviaGameControls();
