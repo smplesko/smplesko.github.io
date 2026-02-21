@@ -6,7 +6,7 @@
 <title>Theme Preview - Dird Plesk Memorial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Russo+One&family=Teko:wght@300;400;500;600;700&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -170,180 +170,261 @@ footer {
     transition: all 0.5s;
 }
 
-/* ===== THEME 1: CURRENT (Red + Navy) ===== */
-.theme-current {
-    background: linear-gradient(135deg, #0a1628 0%, #0d2137 100%);
-    color: #ffffff;
-}
-.theme-current nav { background: rgba(0,0,0,0.4); border-bottom: 2px solid #c8102e; }
-.theme-current nav a { color: #d4dce4; }
-.theme-current nav a:hover { background: #c8102e; color: #fff; }
-.theme-current .hero { background: #c8102e; box-shadow: 0 4px 20px rgba(200,16,46,0.3); }
-.theme-current .hero h1 { color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-.theme-current .hero p { color: rgba(255,255,255,0.85); }
-.theme-current .notes-section { background: rgba(255,255,255,0.08); border-left-color: #c9a227; }
-.theme-current .login-section { background: rgba(255,255,255,0.08); border: 1px solid #1a3a5c; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
-.theme-current .login-section h2 { color: #c8102e; }
-.theme-current .player-btn { background: linear-gradient(135deg, #1a3a5c, #0d2137); border-color: #c8102e; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-.theme-current .player-btn:hover { background: #c8102e; box-shadow: 0 4px 15px rgba(200,16,46,0.4); }
-.theme-current .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
-.theme-current .section-card { background: rgba(255,255,255,0.08); border: 1px solid #1a3a5c; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
-.theme-current .section-card h2 { color: #c8102e; border-bottom: 2px solid #c8102e; }
-.theme-current .event-link { background: linear-gradient(135deg, #1a3a5c, #0d2137); border-color: #c8102e; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.theme-current .event-link:hover { border-color: #c9a227; }
-.theme-current .event-link h3 { color: #c8102e; }
-.theme-current .schedule-item { background: rgba(0,0,0,0.3); border-left-color: #c8102e; }
-.theme-current .schedule-item h4 { color: #c9a227; }
-.theme-current .schedule-item .time { color: #c8102e; }
-.theme-current footer { border-top-color: rgba(255,255,255,0.1); color: #a8b8c8; }
-
-/* ===== THEME 2: GLASSMORPHISM ===== */
-.theme-glass {
-    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    color: #e8e8f0;
-}
-.theme-glass nav { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); }
-.theme-glass nav a { color: rgba(255,255,255,0.7); }
-.theme-glass nav a:hover { background: rgba(255,255,255,0.15); color: #fff; }
-.theme-glass .hero { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-.theme-glass .hero h1 { color: #fff; background: linear-gradient(135deg, #fff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.theme-glass .hero p { color: rgba(255,255,255,0.7); }
-.theme-glass .notes-section { background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border-left-color: #a78bfa; border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid #a78bfa; }
-.theme-glass .login-section { background: rgba(255,255,255,0.06); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.12); }
-.theme-glass .login-section h2 { color: #a78bfa; }
-.theme-glass .player-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #e8e8f0; backdrop-filter: blur(5px); }
-.theme-glass .player-btn:hover { background: rgba(167,139,250,0.3); border-color: #a78bfa; box-shadow: 0 0 20px rgba(167,139,250,0.2); }
-.theme-glass .player-btn.admin-btn { border-color: #fbbf24; color: #fbbf24; }
-.theme-glass .section-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.12); }
-.theme-glass .section-card h2 { color: #a78bfa; border-bottom: 1px solid rgba(167,139,250,0.3); }
-.theme-glass .event-link { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: #e8e8f0; backdrop-filter: blur(10px); }
-.theme-glass .event-link:hover { border-color: #a78bfa; box-shadow: 0 8px 32px rgba(167,139,250,0.15); background: rgba(167,139,250,0.1); }
-.theme-glass .event-link h3 { color: #a78bfa; }
-.theme-glass .schedule-item { background: rgba(255,255,255,0.04); border-left-color: #a78bfa; }
-.theme-glass .schedule-item h4 { color: #fbbf24; }
-.theme-glass .schedule-item .time { color: #a78bfa; }
-.theme-glass footer { border-top-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-
-/* ===== THEME 3: SPORTS BROADCAST ===== */
-.theme-broadcast {
+/* ================================================================
+   THEME 1: SPORTS BROADCAST — DARK
+   ================================================================ */
+.theme-broadcast-dark {
     background: #111111;
     color: #f0f0f0;
 }
-.theme-broadcast nav { background: #000; border-bottom: 3px solid #ff3c00; }
-.theme-broadcast nav a { color: #ccc; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
-.theme-broadcast nav a:hover { background: #ff3c00; color: #fff; }
-.theme-broadcast .hero { background: linear-gradient(135deg, #ff3c00 0%, #ff6b35 100%); border-radius: 0; margin-left: -15px; margin-right: -15px; border-bottom: 4px solid #ffd700; }
-.theme-broadcast .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); }
-.theme-broadcast .hero p { color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 3px; font-size: 0.9em; }
-.theme-broadcast .notes-section { background: #1a1a1a; border-left-color: #ffd700; border-radius: 0; }
-.theme-broadcast .login-section { background: #1a1a1a; border: none; border-top: 3px solid #ff3c00; border-radius: 0; }
-.theme-broadcast .login-section h2 { color: #ff3c00; text-transform: uppercase; letter-spacing: 2px; }
-.theme-broadcast .player-btn { background: #222; border-color: #444; color: #fff; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8em; }
-.theme-broadcast .player-btn:hover { background: #ff3c00; border-color: #ff3c00; box-shadow: 0 0 15px rgba(255,60,0,0.4); }
-.theme-broadcast .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
-.theme-broadcast .section-card { background: #1a1a1a; border: none; border-left: 4px solid #ff3c00; border-radius: 0; }
-.theme-broadcast .section-card h2 { color: #ffd700; border-bottom: 2px solid #333; text-transform: uppercase; letter-spacing: 1px; }
-.theme-broadcast .event-link { background: #222; border-color: #333; color: #fff; border-radius: 4px; }
-.theme-broadcast .event-link:hover { border-color: #ff3c00; background: #2a1a1a; }
-.theme-broadcast .event-link h3 { color: #ff3c00; text-transform: uppercase; letter-spacing: 1px; }
-.theme-broadcast .schedule-item { background: #1e1e1e; border-left-color: #ffd700; border-radius: 0; }
-.theme-broadcast .schedule-item h4 { color: #ff3c00; text-transform: uppercase; }
-.theme-broadcast .schedule-item .time { color: #ffd700; }
-.theme-broadcast footer { border-top-color: #333; color: #666; }
+.theme-broadcast-dark nav { background: #000; border-bottom: 3px solid #ff3c00; }
+.theme-broadcast-dark nav a { color: #ccc; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
+.theme-broadcast-dark nav a:hover { background: #ff3c00; color: #fff; }
+.theme-broadcast-dark .hero { background: linear-gradient(135deg, #ff3c00 0%, #ff6b35 100%); border-radius: 0; margin-left: -15px; margin-right: -15px; border-bottom: 4px solid #ffd700; }
+.theme-broadcast-dark .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); }
+.theme-broadcast-dark .hero p { color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 3px; font-size: 0.9em; }
+.theme-broadcast-dark .notes-section { background: #1a1a1a; border-left-color: #ffd700; border-radius: 0; }
+.theme-broadcast-dark .login-section { background: #1a1a1a; border: none; border-top: 3px solid #ff3c00; border-radius: 0; }
+.theme-broadcast-dark .login-section h2 { color: #ff3c00; text-transform: uppercase; letter-spacing: 2px; }
+.theme-broadcast-dark .player-btn { background: #222; border-color: #444; color: #fff; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8em; }
+.theme-broadcast-dark .player-btn:hover { background: #ff3c00; border-color: #ff3c00; box-shadow: 0 0 15px rgba(255,60,0,0.4); }
+.theme-broadcast-dark .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-broadcast-dark .section-card { background: #1a1a1a; border: none; border-left: 4px solid #ff3c00; border-radius: 0; }
+.theme-broadcast-dark .section-card h2 { color: #ffd700; border-bottom: 2px solid #333; text-transform: uppercase; letter-spacing: 1px; }
+.theme-broadcast-dark .event-link { background: #222; border-color: #333; color: #fff; border-radius: 4px; }
+.theme-broadcast-dark .event-link:hover { border-color: #ff3c00; background: #2a1a1a; }
+.theme-broadcast-dark .event-link h3 { color: #ff3c00; text-transform: uppercase; letter-spacing: 1px; }
+.theme-broadcast-dark .schedule-item { background: #1e1e1e; border-left-color: #ffd700; border-radius: 0; }
+.theme-broadcast-dark .schedule-item h4 { color: #ff3c00; text-transform: uppercase; }
+.theme-broadcast-dark .schedule-item .time { color: #ffd700; }
+.theme-broadcast-dark footer { border-top-color: #333; color: #666; }
 
-/* ===== THEME 4: LUXURY ===== */
-.theme-luxury {
+/* ================================================================
+   THEME 1: SPORTS BROADCAST — LIGHT
+   ================================================================ */
+.theme-broadcast-light {
+    background: #f4f4f4;
+    color: #1a1a1a;
+}
+.theme-broadcast-light nav { background: #fff; border-bottom: 3px solid #ff3c00; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.theme-broadcast-light nav a { color: #555; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
+.theme-broadcast-light nav a:hover { background: #ff3c00; color: #fff; }
+.theme-broadcast-light .hero { background: linear-gradient(135deg, #ff3c00 0%, #ff6b35 100%); border-radius: 0; margin-left: -15px; margin-right: -15px; border-bottom: 4px solid #ffd700; }
+.theme-broadcast-light .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 3px 6px rgba(0,0,0,0.3); }
+.theme-broadcast-light .hero p { color: rgba(255,255,255,0.95); text-transform: uppercase; letter-spacing: 3px; font-size: 0.9em; }
+.theme-broadcast-light .notes-section { background: #fff; border-left-color: #ffd700; border-radius: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.theme-broadcast-light .login-section { background: #fff; border: none; border-top: 3px solid #ff3c00; border-radius: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.theme-broadcast-light .login-section h2 { color: #ff3c00; text-transform: uppercase; letter-spacing: 2px; }
+.theme-broadcast-light .player-btn { background: #f9f9f9; border-color: #ddd; color: #222; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8em; }
+.theme-broadcast-light .player-btn:hover { background: #ff3c00; border-color: #ff3c00; color: #fff; box-shadow: 0 0 15px rgba(255,60,0,0.25); }
+.theme-broadcast-light .player-btn.admin-btn { border-color: #b8860b; color: #b8860b; }
+.theme-broadcast-light .section-card { background: #fff; border: none; border-left: 4px solid #ff3c00; border-radius: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.theme-broadcast-light .section-card h2 { color: #b8860b; border-bottom: 2px solid #eee; text-transform: uppercase; letter-spacing: 1px; }
+.theme-broadcast-light .event-link { background: #fff; border-color: #ddd; color: #222; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.theme-broadcast-light .event-link:hover { border-color: #ff3c00; background: #fff5f2; }
+.theme-broadcast-light .event-link h3 { color: #ff3c00; text-transform: uppercase; letter-spacing: 1px; }
+.theme-broadcast-light .schedule-item { background: #fff; border-left-color: #ffd700; border-radius: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.theme-broadcast-light .schedule-item h4 { color: #ff3c00; text-transform: uppercase; }
+.theme-broadcast-light .schedule-item .time { color: #b8860b; }
+.theme-broadcast-light footer { border-top-color: #ddd; color: #999; }
+
+/* ================================================================
+   THEME 2: LUXURY PREMIUM — DARK
+   ================================================================ */
+.theme-luxury-dark {
     background: linear-gradient(180deg, #0a0a0a 0%, #1a1510 100%);
     color: #e8dcc8;
 }
-.theme-luxury nav { background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(201,162,39,0.3); }
-.theme-luxury nav a { color: rgba(232,220,200,0.6); letter-spacing: 1px; }
-.theme-luxury nav a:hover { background: transparent; color: #c9a227; }
-.theme-luxury .hero { background: transparent; border: 2px solid rgba(201,162,39,0.4); box-shadow: 0 0 40px rgba(201,162,39,0.08); }
-.theme-luxury .hero h1 { color: #c9a227; letter-spacing: 3px; font-weight: 300; }
-.theme-luxury .hero p { color: rgba(232,220,200,0.6); letter-spacing: 4px; font-size: 0.9em; }
-.theme-luxury .notes-section { background: rgba(201,162,39,0.05); border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.15); border-left: 4px solid #c9a227; }
-.theme-luxury .login-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.2); }
-.theme-luxury .login-section h2 { color: #c9a227; letter-spacing: 2px; font-weight: 400; }
-.theme-luxury .player-btn { background: transparent; border-color: rgba(201,162,39,0.25); color: #e8dcc8; }
-.theme-luxury .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.15); }
-.theme-luxury .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
-.theme-luxury .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.15); }
-.theme-luxury .section-card h2 { color: #c9a227; border-bottom: 1px solid rgba(201,162,39,0.2); letter-spacing: 1px; }
-.theme-luxury .event-link { background: rgba(201,162,39,0.04); border-color: rgba(201,162,39,0.2); color: #e8dcc8; }
-.theme-luxury .event-link:hover { border-color: #c9a227; box-shadow: 0 0 30px rgba(201,162,39,0.1); }
-.theme-luxury .event-link h3 { color: #c9a227; }
-.theme-luxury .schedule-item { background: rgba(201,162,39,0.04); border-left-color: #c9a227; }
-.theme-luxury .schedule-item h4 { color: #c9a227; }
-.theme-luxury .schedule-item .time { color: rgba(201,162,39,0.8); }
-.theme-luxury footer { border-top-color: rgba(201,162,39,0.15); color: rgba(232,220,200,0.4); }
+.theme-luxury-dark nav { background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(201,162,39,0.3); }
+.theme-luxury-dark nav a { color: rgba(232,220,200,0.6); letter-spacing: 1px; }
+.theme-luxury-dark nav a:hover { background: transparent; color: #c9a227; }
+.theme-luxury-dark .hero { background: transparent; border: 2px solid rgba(201,162,39,0.4); box-shadow: 0 0 40px rgba(201,162,39,0.08); }
+.theme-luxury-dark .hero h1 { color: #c9a227; letter-spacing: 3px; font-weight: 300; }
+.theme-luxury-dark .hero p { color: rgba(232,220,200,0.6); letter-spacing: 4px; font-size: 0.9em; }
+.theme-luxury-dark .notes-section { background: rgba(201,162,39,0.05); border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.15); border-left: 4px solid #c9a227; }
+.theme-luxury-dark .login-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.2); }
+.theme-luxury-dark .login-section h2 { color: #c9a227; letter-spacing: 2px; font-weight: 400; }
+.theme-luxury-dark .player-btn { background: transparent; border-color: rgba(201,162,39,0.25); color: #e8dcc8; }
+.theme-luxury-dark .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.15); }
+.theme-luxury-dark .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
+.theme-luxury-dark .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.15); }
+.theme-luxury-dark .section-card h2 { color: #c9a227; border-bottom: 1px solid rgba(201,162,39,0.2); letter-spacing: 1px; }
+.theme-luxury-dark .event-link { background: rgba(201,162,39,0.04); border-color: rgba(201,162,39,0.2); color: #e8dcc8; }
+.theme-luxury-dark .event-link:hover { border-color: #c9a227; box-shadow: 0 0 30px rgba(201,162,39,0.1); }
+.theme-luxury-dark .event-link h3 { color: #c9a227; }
+.theme-luxury-dark .schedule-item { background: rgba(201,162,39,0.04); border-left-color: #c9a227; }
+.theme-luxury-dark .schedule-item h4 { color: #c9a227; }
+.theme-luxury-dark .schedule-item .time { color: rgba(201,162,39,0.8); }
+.theme-luxury-dark footer { border-top-color: rgba(201,162,39,0.15); color: rgba(232,220,200,0.4); }
+
+/* ================================================================
+   THEME 2: LUXURY PREMIUM — LIGHT
+   ================================================================ */
+.theme-luxury-light {
+    background: linear-gradient(180deg, #faf8f5 0%, #f0ece4 100%);
+    color: #2a2520;
+}
+.theme-luxury-light nav { background: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(201,162,39,0.35); backdrop-filter: blur(10px); }
+.theme-luxury-light nav a { color: rgba(42,37,32,0.5); letter-spacing: 1px; }
+.theme-luxury-light nav a:hover { background: transparent; color: #a08020; }
+.theme-luxury-light .hero { background: transparent; border: 2px solid rgba(201,162,39,0.5); box-shadow: 0 0 40px rgba(201,162,39,0.06); }
+.theme-luxury-light .hero h1 { color: #8b6f1a; letter-spacing: 3px; font-weight: 300; }
+.theme-luxury-light .hero p { color: rgba(42,37,32,0.55); letter-spacing: 4px; font-size: 0.9em; }
+.theme-luxury-light .notes-section { background: rgba(201,162,39,0.06); border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.2); border-left: 4px solid #c9a227; }
+.theme-luxury-light .login-section { background: rgba(255,255,255,0.7); border: 1px solid rgba(201,162,39,0.25); }
+.theme-luxury-light .login-section h2 { color: #8b6f1a; letter-spacing: 2px; font-weight: 400; }
+.theme-luxury-light .player-btn { background: transparent; border-color: rgba(201,162,39,0.3); color: #2a2520; }
+.theme-luxury-light .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.12); background: rgba(201,162,39,0.05); }
+.theme-luxury-light .player-btn.admin-btn { border-color: #c9a227; color: #8b6f1a; }
+.theme-luxury-light .section-card { background: rgba(255,255,255,0.6); border: 1px solid rgba(201,162,39,0.2); }
+.theme-luxury-light .section-card h2 { color: #8b6f1a; border-bottom: 1px solid rgba(201,162,39,0.25); letter-spacing: 1px; }
+.theme-luxury-light .event-link { background: rgba(255,255,255,0.5); border-color: rgba(201,162,39,0.25); color: #2a2520; }
+.theme-luxury-light .event-link:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.08); background: rgba(255,255,255,0.8); }
+.theme-luxury-light .event-link h3 { color: #8b6f1a; }
+.theme-luxury-light .schedule-item { background: rgba(255,255,255,0.5); border-left-color: #c9a227; }
+.theme-luxury-light .schedule-item h4 { color: #8b6f1a; }
+.theme-luxury-light .schedule-item .time { color: #a08020; }
+.theme-luxury-light footer { border-top-color: rgba(201,162,39,0.2); color: rgba(42,37,32,0.4); }
+
+/* ================================================================
+   THEME 3: CHAMPIONSHIP GREEN (Augusta vibes) — DARK
+   ================================================================ */
+.theme-green-dark {
+    background: linear-gradient(180deg, #0a120a 0%, #0d1a10 100%);
+    color: #d4dcc8;
+}
+.theme-green-dark nav { background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(34,120,50,0.5); }
+.theme-green-dark nav a { color: rgba(212,220,200,0.6); letter-spacing: 1px; }
+.theme-green-dark nav a:hover { background: rgba(34,120,50,0.3); color: #fff; }
+.theme-green-dark .hero { background: linear-gradient(135deg, #1a5c28 0%, #227832 50%, #1a5c28 100%); border: 1px solid rgba(201,162,39,0.3); box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.theme-green-dark .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.theme-green-dark .hero p { color: rgba(255,255,255,0.8); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-dark .notes-section { background: rgba(34,120,50,0.1); border-left-color: #ffd700; border: 1px solid rgba(34,120,50,0.2); border-left: 4px solid #ffd700; }
+.theme-green-dark .login-section { background: rgba(255,255,255,0.04); border: 1px solid rgba(34,120,50,0.25); }
+.theme-green-dark .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-dark .player-btn { background: rgba(34,120,50,0.15); border-color: rgba(34,120,50,0.4); color: #d4dcc8; }
+.theme-green-dark .player-btn:hover { border-color: #ffd700; background: rgba(34,120,50,0.3); box-shadow: 0 0 15px rgba(34,120,50,0.3); }
+.theme-green-dark .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-dark .section-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(34,120,50,0.2); }
+.theme-green-dark .section-card h2 { color: #ffd700; border-bottom: 1px solid rgba(34,120,50,0.3); letter-spacing: 1px; }
+.theme-green-dark .event-link { background: rgba(34,120,50,0.1); border-color: rgba(34,120,50,0.3); color: #d4dcc8; }
+.theme-green-dark .event-link:hover { border-color: #ffd700; box-shadow: 0 0 20px rgba(34,120,50,0.2); background: rgba(34,120,50,0.2); }
+.theme-green-dark .event-link h3 { color: #ffd700; }
+.theme-green-dark .schedule-item { background: rgba(34,120,50,0.08); border-left-color: #ffd700; }
+.theme-green-dark .schedule-item h4 { color: #4caf50; }
+.theme-green-dark .schedule-item .time { color: #ffd700; }
+.theme-green-dark footer { border-top-color: rgba(34,120,50,0.25); color: rgba(212,220,200,0.4); }
+
+/* ================================================================
+   THEME 3: CHAMPIONSHIP GREEN — LIGHT
+   ================================================================ */
+.theme-green-light {
+    background: linear-gradient(180deg, #f0f5ec 0%, #e6ede0 100%);
+    color: #1a2e1a;
+}
+.theme-green-light nav { background: rgba(255,255,255,0.92); border-bottom: 2px solid #227832; backdrop-filter: blur(10px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.theme-green-light nav a { color: #446644; letter-spacing: 1px; }
+.theme-green-light nav a:hover { background: #227832; color: #fff; }
+.theme-green-light .hero { background: linear-gradient(135deg, #227832 0%, #2d8c3e 50%, #227832 100%); border: 1px solid rgba(201,162,39,0.4); box-shadow: 0 4px 20px rgba(34,120,50,0.2); }
+.theme-green-light .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.theme-green-light .hero p { color: rgba(255,255,255,0.9); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-light .notes-section { background: rgba(255,255,255,0.7); border-left-color: #c9a227; border: 1px solid rgba(34,120,50,0.15); border-left: 4px solid #c9a227; }
+.theme-green-light .login-section { background: rgba(255,255,255,0.7); border: 1px solid rgba(34,120,50,0.2); }
+.theme-green-light .login-section h2 { color: #1a5c28; letter-spacing: 2px; }
+.theme-green-light .player-btn { background: rgba(255,255,255,0.6); border-color: rgba(34,120,50,0.3); color: #1a2e1a; }
+.theme-green-light .player-btn:hover { border-color: #227832; background: rgba(34,120,50,0.08); box-shadow: 0 0 12px rgba(34,120,50,0.15); }
+.theme-green-light .player-btn.admin-btn { border-color: #c9a227; color: #8b6f1a; }
+.theme-green-light .section-card { background: rgba(255,255,255,0.7); border: 1px solid rgba(34,120,50,0.15); }
+.theme-green-light .section-card h2 { color: #1a5c28; border-bottom: 1px solid rgba(34,120,50,0.2); letter-spacing: 1px; }
+.theme-green-light .event-link { background: rgba(255,255,255,0.6); border-color: rgba(34,120,50,0.2); color: #1a2e1a; }
+.theme-green-light .event-link:hover { border-color: #227832; background: rgba(255,255,255,0.9); box-shadow: 0 4px 16px rgba(34,120,50,0.1); }
+.theme-green-light .event-link h3 { color: #1a5c28; }
+.theme-green-light .schedule-item { background: rgba(255,255,255,0.6); border-left-color: #c9a227; }
+.theme-green-light .schedule-item h4 { color: #227832; }
+.theme-green-light .schedule-item .time { color: #8b6f1a; }
+.theme-green-light footer { border-top-color: rgba(34,120,50,0.15); color: rgba(26,46,26,0.4); }
+
+/* ================================================================
+   THEME 4: CARBON STEALTH (matte black + red accents) — DARK
+   ================================================================ */
+.theme-carbon-dark {
+    background: #0e0e0e;
+    color: #e0e0e0;
+}
+.theme-carbon-dark nav { background: #080808; border-bottom: 2px solid #c8102e; }
+.theme-carbon-dark nav a { color: #888; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.8em; }
+.theme-carbon-dark nav a:hover { color: #c8102e; background: rgba(200,16,46,0.1); }
+.theme-carbon-dark .hero { background: repeating-linear-gradient(45deg, #141414, #141414 10px, #181818 10px, #181818 20px); border: 1px solid #2a2a2a; border-bottom: 3px solid #c8102e; }
+.theme-carbon-dark .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 3px; }
+.theme-carbon-dark .hero p { color: #c8102e; text-transform: uppercase; letter-spacing: 4px; font-size: 0.85em; }
+.theme-carbon-dark .notes-section { background: #141414; border-left-color: #c8102e; border-radius: 0; }
+.theme-carbon-dark .login-section { background: #141414; border: 1px solid #222; border-top: 2px solid #c8102e; }
+.theme-carbon-dark .login-section h2 { color: #c8102e; text-transform: uppercase; letter-spacing: 3px; }
+.theme-carbon-dark .player-btn { background: #1a1a1a; border-color: #2a2a2a; color: #ccc; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
+.theme-carbon-dark .player-btn:hover { border-color: #c8102e; color: #fff; box-shadow: 0 0 10px rgba(200,16,46,0.3); }
+.theme-carbon-dark .player-btn.admin-btn { border-color: #c8102e; color: #c8102e; }
+.theme-carbon-dark .section-card { background: #141414; border: 1px solid #222; border-radius: 4px; }
+.theme-carbon-dark .section-card h2 { color: #c8102e; border-bottom: 1px solid #222; text-transform: uppercase; letter-spacing: 2px; }
+.theme-carbon-dark .event-link { background: #1a1a1a; border-color: #2a2a2a; color: #ccc; border-radius: 4px; }
+.theme-carbon-dark .event-link:hover { border-color: #c8102e; box-shadow: 0 0 15px rgba(200,16,46,0.15); }
+.theme-carbon-dark .event-link h3 { color: #c8102e; text-transform: uppercase; letter-spacing: 1px; }
+.theme-carbon-dark .schedule-item { background: #161616; border-left-color: #c8102e; border-radius: 0; }
+.theme-carbon-dark .schedule-item h4 { color: #fff; text-transform: uppercase; }
+.theme-carbon-dark .schedule-item .time { color: #c8102e; }
+.theme-carbon-dark footer { border-top-color: #222; color: #555; }
+
+/* ================================================================
+   THEME 4: CARBON STEALTH — LIGHT
+   ================================================================ */
+.theme-carbon-light {
+    background: #f0f0f0;
+    color: #1a1a1a;
+}
+.theme-carbon-light nav { background: #fff; border-bottom: 2px solid #c8102e; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.theme-carbon-light nav a { color: #666; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.8em; }
+.theme-carbon-light nav a:hover { color: #c8102e; background: rgba(200,16,46,0.06); }
+.theme-carbon-light .hero { background: repeating-linear-gradient(45deg, #e8e8e8, #e8e8e8 10px, #ededed 10px, #ededed 20px); border: 1px solid #ddd; border-bottom: 3px solid #c8102e; }
+.theme-carbon-light .hero h1 { color: #1a1a1a; text-transform: uppercase; letter-spacing: 3px; }
+.theme-carbon-light .hero p { color: #c8102e; text-transform: uppercase; letter-spacing: 4px; font-size: 0.85em; }
+.theme-carbon-light .notes-section { background: #fff; border-left-color: #c8102e; border-radius: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.theme-carbon-light .login-section { background: #fff; border: 1px solid #e0e0e0; border-top: 2px solid #c8102e; }
+.theme-carbon-light .login-section h2 { color: #c8102e; text-transform: uppercase; letter-spacing: 3px; }
+.theme-carbon-light .player-btn { background: #fafafa; border-color: #ddd; color: #333; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
+.theme-carbon-light .player-btn:hover { border-color: #c8102e; color: #c8102e; box-shadow: 0 0 10px rgba(200,16,46,0.15); }
+.theme-carbon-light .player-btn.admin-btn { border-color: #c8102e; color: #c8102e; }
+.theme-carbon-light .section-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.theme-carbon-light .section-card h2 { color: #c8102e; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: 2px; }
+.theme-carbon-light .event-link { background: #fff; border-color: #e0e0e0; color: #333; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.theme-carbon-light .event-link:hover { border-color: #c8102e; box-shadow: 0 0 12px rgba(200,16,46,0.1); }
+.theme-carbon-light .event-link h3 { color: #c8102e; text-transform: uppercase; letter-spacing: 1px; }
+.theme-carbon-light .schedule-item { background: #fff; border-left-color: #c8102e; border-radius: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+.theme-carbon-light .schedule-item h4 { color: #1a1a1a; text-transform: uppercase; }
+.theme-carbon-light .schedule-item .time { color: #c8102e; }
+.theme-carbon-light footer { border-top-color: #e0e0e0; color: #999; }
 
 /* ===== FONT PAIRINGS ===== */
-.fonts-inter .hero h1, .fonts-inter .section-card h2, .fonts-inter .login-section h2, .fonts-inter .event-link h3, .fonts-inter .schedule-item h4 { font-family: 'Inter', sans-serif; }
-.fonts-inter { font-family: 'Inter', sans-serif; }
-
-.fonts-tourney-inter .hero h1, .fonts-tourney-inter .section-card h2, .fonts-tourney-inter .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
-.fonts-tourney-inter .event-link h3, .fonts-tourney-inter .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
-.fonts-tourney-inter { font-family: 'Inter', sans-serif; }
-
-.fonts-tourney-space .hero h1, .fonts-tourney-space .section-card h2, .fonts-tourney-space .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
-.fonts-tourney-space .event-link h3, .fonts-tourney-space .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
-.fonts-tourney-space { font-family: 'Space Grotesk', sans-serif; }
-
-.fonts-tourney-outfit .hero h1, .fonts-tourney-outfit .section-card h2, .fonts-tourney-outfit .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
-.fonts-tourney-outfit .event-link h3, .fonts-tourney-outfit .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
-.fonts-tourney-outfit { font-family: 'Outfit', sans-serif; }
-
-.fonts-tourney-sora .hero h1, .fonts-tourney-sora .section-card h2, .fonts-tourney-sora .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
-.fonts-tourney-sora .event-link h3, .fonts-tourney-sora .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
-.fonts-tourney-sora { font-family: 'Sora', sans-serif; }
-
-.fonts-tourney-dm .hero h1, .fonts-tourney-dm .section-card h2, .fonts-tourney-dm .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
-.fonts-tourney-dm .event-link h3, .fonts-tourney-dm .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
-.fonts-tourney-dm { font-family: 'DM Sans', sans-serif; }
-
-.fonts-tourney300-inter .hero h1, .fonts-tourney300-inter .section-card h2, .fonts-tourney300-inter .login-section h2 { font-family: 'Tourney', cursive; font-weight: 300; font-style: normal; }
-.fonts-tourney300-inter .event-link h3, .fonts-tourney300-inter .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 300; }
-.fonts-tourney300-inter { font-family: 'Inter', sans-serif; }
-
-.fonts-bebas-inter .hero h1, .fonts-bebas-inter .section-card h2, .fonts-bebas-inter .login-section h2 { font-family: 'Bebas Neue', cursive; letter-spacing: 3px; }
-.fonts-bebas-inter .event-link h3, .fonts-bebas-inter .schedule-item h4 { font-family: 'Bebas Neue', cursive; letter-spacing: 2px; }
-.fonts-bebas-inter { font-family: 'Inter', sans-serif; }
-
-.fonts-oswald-dm .hero h1, .fonts-oswald-dm .section-card h2, .fonts-oswald-dm .login-section h2 { font-family: 'Oswald', sans-serif; font-weight: 500; text-transform: uppercase; }
-.fonts-oswald-dm .event-link h3, .fonts-oswald-dm .schedule-item h4 { font-family: 'Oswald', sans-serif; font-weight: 400; text-transform: uppercase; }
-.fonts-oswald-dm { font-family: 'DM Sans', sans-serif; }
-
-.fonts-rajdhani-outfit .hero h1, .fonts-rajdhani-outfit .section-card h2, .fonts-rajdhani-outfit .login-section h2 { font-family: 'Rajdhani', sans-serif; font-weight: 600; }
-.fonts-rajdhani-outfit .event-link h3, .fonts-rajdhani-outfit .schedule-item h4 { font-family: 'Rajdhani', sans-serif; font-weight: 500; }
-.fonts-rajdhani-outfit { font-family: 'Outfit', sans-serif; }
-
-.fonts-barlow-space .hero h1, .fonts-barlow-space .section-card h2, .fonts-barlow-space .login-section h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
-.fonts-barlow-space .event-link h3, .fonts-barlow-space .schedule-item h4 { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-.fonts-barlow-space { font-family: 'Space Grotesk', sans-serif; }
+.fonts-russo-chakra .hero h1, .fonts-russo-chakra .section-card h2, .fonts-russo-chakra .login-section h2 { font-family: 'Russo One', sans-serif; letter-spacing: 1px; }
+.fonts-russo-chakra .event-link h3, .fonts-russo-chakra .schedule-item h4 { font-family: 'Russo One', sans-serif; }
+.fonts-russo-chakra { font-family: 'Chakra Petch', sans-serif; }
 
 .fonts-orbitron-sora .hero h1, .fonts-orbitron-sora .section-card h2, .fonts-orbitron-sora .login-section h2 { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.5em; letter-spacing: 2px; }
 .fonts-orbitron-sora .event-link h3, .fonts-orbitron-sora .schedule-item h4 { font-family: 'Orbitron', sans-serif; font-weight: 500; font-size: 0.95em; }
 .fonts-orbitron-sora { font-family: 'Sora', sans-serif; }
 
-.fonts-teko-chakra .hero h1, .fonts-teko-chakra .section-card h2, .fonts-teko-chakra .login-section h2 { font-family: 'Teko', sans-serif; font-weight: 500; font-size: 2.2em; letter-spacing: 2px; text-transform: uppercase; }
-.fonts-teko-chakra .event-link h3, .fonts-teko-chakra .schedule-item h4 { font-family: 'Teko', sans-serif; font-weight: 400; font-size: 1.2em; text-transform: uppercase; }
-.fonts-teko-chakra { font-family: 'Chakra Petch', sans-serif; }
+.fonts-tourney900-chakra .hero h1, .fonts-tourney900-chakra .section-card h2, .fonts-tourney900-chakra .login-section h2 { font-family: 'Tourney', cursive; font-weight: 900; font-style: normal; letter-spacing: 2px; }
+.fonts-tourney900-chakra .event-link h3, .fonts-tourney900-chakra .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 900; font-size: 1.05em; }
+.fonts-tourney900-chakra { font-family: 'Chakra Petch', sans-serif; }
 
-.fonts-russo-chakra .hero h1, .fonts-russo-chakra .section-card h2, .fonts-russo-chakra .login-section h2 { font-family: 'Russo One', sans-serif; letter-spacing: 1px; }
-.fonts-russo-chakra .event-link h3, .fonts-russo-chakra .schedule-item h4 { font-family: 'Russo One', sans-serif; }
-.fonts-russo-chakra { font-family: 'Chakra Petch', sans-serif; }
-
-.fonts-space-space .hero h1, .fonts-space-space .section-card h2, .fonts-space-space .login-section h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
-.fonts-space-space .event-link h3, .fonts-space-space .schedule-item h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
-.fonts-space-space { font-family: 'Space Grotesk', sans-serif; }
+.fonts-tourney900-sora .hero h1, .fonts-tourney900-sora .section-card h2, .fonts-tourney900-sora .login-section h2 { font-family: 'Tourney', cursive; font-weight: 900; font-style: normal; letter-spacing: 2px; }
+.fonts-tourney900-sora .event-link h3, .fonts-tourney900-sora .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 900; font-size: 1.05em; }
+.fonts-tourney900-sora { font-family: 'Sora', sans-serif; }
 
 /* ===== ANIMATIONS SECTION ===== */
 .anim-section {
     margin-top: 40px;
     padding: 30px 20px;
     border-radius: 15px;
-    border: 2px dashed rgba(255,255,255,0.2);
+    border: 2px dashed rgba(128,128,128,0.3);
 }
 .anim-section h2 {
     text-align: center;
@@ -359,16 +440,16 @@ footer {
     padding: 20px;
     border-radius: 12px;
     text-align: center;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(128,128,128,0.08);
+    border: 1px solid rgba(128,128,128,0.15);
 }
 .anim-card h4 { margin-bottom: 8px; opacity: 0.9; }
 .anim-card p { font-size: 0.8em; opacity: 0.6; margin-bottom: 15px; }
 .anim-demo { padding: 15px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
 .anim-card button {
     margin-top: 10px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(128,128,128,0.15);
+    border: 1px solid rgba(128,128,128,0.25);
     color: inherit;
     padding: 6px 14px;
     border-radius: 6px;
@@ -425,38 +506,12 @@ footer {
 }
 .slide-in-left { animation: slideInLeft 0.5s ease-out forwards; }
 
-/* Count Up */
-@keyframes countHighlight {
-    0% { color: inherit; transform: scale(1); }
-    50% { color: #ffd700; transform: scale(1.3); }
-    100% { color: inherit; transform: scale(1); }
-}
-.count-up { animation: countHighlight 0.6s ease-out; display: inline-block; }
-
-/* Gradient border spin */
-@keyframes borderSpin {
-    0% { border-image-source: linear-gradient(0deg, #c9a227, #c8102e, #c9a227); }
-    33% { border-image-source: linear-gradient(120deg, #c9a227, #c8102e, #c9a227); }
-    66% { border-image-source: linear-gradient(240deg, #c9a227, #c8102e, #c9a227); }
-    100% { border-image-source: linear-gradient(360deg, #c9a227, #c8102e, #c9a227); }
-}
-
-/* Typing effect */
-@keyframes blink { 50% { border-color: transparent; } }
-.typing-cursor { border-right: 2px solid; animation: blink 0.7s step-end infinite; padding-right: 3px; }
-
-/* Subtle float */
+/* Gentle float */
 @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
 }
 .float { animation: float 3s ease-in-out infinite; }
-
-/* Confetti-like sparkle */
-@keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0); }
-    50% { opacity: 1; transform: scale(1); }
-}
 
 .font-label {
     text-align: center;
@@ -464,53 +519,60 @@ footer {
     margin-bottom: 10px;
     font-size: 0.85em;
     opacity: 0.6;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(128,128,128,0.2);
+}
+
+/* Mode indicator badge */
+.mode-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 10px;
+    vertical-align: middle;
+    background: rgba(128,128,128,0.2);
+    border: 1px solid rgba(128,128,128,0.3);
 }
 </style>
 </head>
-<body class="theme-current fonts-inter">
+<body class="theme-broadcast-dark fonts-russo-chakra">
 
 <!-- CONTROL BAR -->
 <div class="controls">
     <div class="control-group">
         <label>Theme</label>
         <select id="themeSelect" onchange="switchTheme(this.value)">
-            <option value="current">Current (Red + Navy)</option>
-            <option value="glass">Glassmorphism</option>
-            <option value="broadcast">Sports Broadcast</option>
-            <option value="luxury">Luxury / Premium</option>
+            <optgroup label="Sports Broadcast">
+                <option value="broadcast-dark" selected>Sports Broadcast — Dark</option>
+                <option value="broadcast-light">Sports Broadcast — Light</option>
+            </optgroup>
+            <optgroup label="Luxury Premium">
+                <option value="luxury-dark">Luxury Premium — Dark</option>
+                <option value="luxury-light">Luxury Premium — Light</option>
+            </optgroup>
+            <optgroup label="Championship Green">
+                <option value="green-dark">Championship Green — Dark</option>
+                <option value="green-light">Championship Green — Light</option>
+            </optgroup>
+            <optgroup label="Carbon Stealth">
+                <option value="carbon-dark">Carbon Stealth — Dark</option>
+                <option value="carbon-light">Carbon Stealth — Light</option>
+            </optgroup>
         </select>
     </div>
     <div class="divider"></div>
     <div class="control-group">
         <label>Fonts</label>
         <select id="fontSelect" onchange="switchFont(this.value)">
-            <optgroup label="Current">
-                <option value="inter">Inter (current)</option>
-            </optgroup>
-            <optgroup label="Tourney Headers (Thin 100 Italic)">
-                <option value="tourney-inter">Tourney 100i + Inter</option>
-                <option value="tourney-space">Tourney 100i + Space Grotesk</option>
-                <option value="tourney-outfit">Tourney 100i + Outfit</option>
-                <option value="tourney-sora">Tourney 100i + Sora</option>
-                <option value="tourney-dm">Tourney 100i + DM Sans</option>
-            </optgroup>
-            <optgroup label="Tourney Headers (300 Normal)">
-                <option value="tourney300-inter">Tourney 300 + Inter</option>
-            </optgroup>
-            <optgroup label="Bold Display Headers">
-                <option value="bebas-inter">Bebas Neue + Inter</option>
-                <option value="oswald-dm">Oswald + DM Sans</option>
-                <option value="barlow-space">Barlow Condensed + Space Grotesk</option>
-                <option value="teko-chakra">Teko + Chakra Petch</option>
-                <option value="russo-chakra">Russo One + Chakra Petch</option>
-            </optgroup>
-            <optgroup label="Tech / Futuristic Headers">
+            <optgroup label="Your Favorites">
+                <option value="russo-chakra" selected>Russo One + Chakra Petch</option>
                 <option value="orbitron-sora">Orbitron + Sora</option>
-                <option value="rajdhani-outfit">Rajdhani + Outfit</option>
             </optgroup>
-            <optgroup label="Clean Modern (Same Family)">
-                <option value="space-space">Space Grotesk (all)</option>
+            <optgroup label="Tourney 900 (Full Black)">
+                <option value="tourney900-chakra">Tourney 900 + Chakra Petch</option>
+                <option value="tourney900-sora">Tourney 900 + Sora</option>
             </optgroup>
         </select>
     </div>
@@ -529,7 +591,7 @@ footer {
 </nav>
 
 <div class="container">
-    <div class="font-label" id="fontLabel">Headers: Inter | Body: Inter</div>
+    <div class="font-label" id="fontLabel">Headers: Russo One | Body: Chakra Petch</div>
 
     <div class="hero">
         <h1>Dird Plesk Memorial Open Invitational of Champions</h1>
@@ -564,7 +626,7 @@ footer {
         <div class="schedule-item">
             <span class="time">Sat 9:00 AM</span>
             <h4>Golf</h4>
-            <p>Scramble - Stableford scoring</p>
+            <p>Scramble - Team scoring</p>
         </div>
         <div class="schedule-item">
             <span class="time">Sat 3:00 PM</span>
@@ -583,7 +645,7 @@ footer {
         <div class="event-links">
             <a href="#" class="event-link">
                 <h3>Golf</h3>
-                <p>Scramble - Stableford</p>
+                <p>Scramble - Team Play</p>
             </a>
             <a href="#" class="event-link">
                 <h3>Events</h3>
@@ -616,10 +678,10 @@ footer {
                 <h4>Staggered Fade-In</h4>
                 <p>For player buttons, event cards, schedule items loading in</p>
                 <div class="anim-demo" id="fadeDemo" style="gap: 8px; flex-wrap: wrap;">
-                    <span class="fade-in-up d1" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 1</span>
-                    <span class="fade-in-up d2" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 2</span>
-                    <span class="fade-in-up d3" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 3</span>
-                    <span class="fade-in-up d4" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 4</span>
+                    <span class="fade-in-up d1" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 1</span>
+                    <span class="fade-in-up d2" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 2</span>
+                    <span class="fade-in-up d3" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 3</span>
+                    <span class="fade-in-up d4" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 4</span>
                 </div>
                 <button onclick="replayFade()">Replay</button>
             </div>
@@ -645,7 +707,7 @@ footer {
                 <h4>Slide In</h4>
                 <p>For schedule items, leaderboard rows, trivia questions</p>
                 <div class="anim-demo" id="slideDemo" style="flex-direction: column; gap: 6px;">
-                    <div class="slide-in-left" style="background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 6px; width: 100%; text-align: left;">1. Stephen - 145 pts</div>
+                    <div class="slide-in-left" style="background: rgba(128,128,128,0.12); padding: 8px 16px; border-radius: 6px; width: 100%; text-align: left;">1. Stephen - 145 pts</div>
                 </div>
                 <button onclick="replaySlide()">Replay</button>
             </div>
@@ -667,21 +729,10 @@ footer {
 
 <script>
 const fontLabels = {
-    'inter': 'Headers: Inter | Body: Inter',
-    'tourney-inter': 'Headers: Tourney 100 Italic | Body: Inter',
-    'tourney-space': 'Headers: Tourney 100 Italic | Body: Space Grotesk',
-    'tourney-outfit': 'Headers: Tourney 100 Italic | Body: Outfit',
-    'tourney-sora': 'Headers: Tourney 100 Italic | Body: Sora',
-    'tourney-dm': 'Headers: Tourney 100 Italic | Body: DM Sans',
-    'tourney300-inter': 'Headers: Tourney 300 | Body: Inter',
-    'bebas-inter': 'Headers: Bebas Neue | Body: Inter',
-    'oswald-dm': 'Headers: Oswald | Body: DM Sans',
-    'rajdhani-outfit': 'Headers: Rajdhani | Body: Outfit',
-    'barlow-space': 'Headers: Barlow Condensed | Body: Space Grotesk',
-    'orbitron-sora': 'Headers: Orbitron | Body: Sora',
-    'teko-chakra': 'Headers: Teko | Body: Chakra Petch',
     'russo-chakra': 'Headers: Russo One | Body: Chakra Petch',
-    'space-space': 'Headers: Space Grotesk | Body: Space Grotesk',
+    'orbitron-sora': 'Headers: Orbitron | Body: Sora',
+    'tourney900-chakra': 'Headers: Tourney 900 (Full Black) | Body: Chakra Petch',
+    'tourney900-sora': 'Headers: Tourney 900 (Full Black) | Body: Sora',
 };
 
 function switchTheme(theme) {
