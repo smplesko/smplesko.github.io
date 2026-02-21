@@ -211,8 +211,8 @@ function renderGolfScorecard() {
     const settings = getSiteSettings();
     const golf = settings.golfSettings || {};
     const subtitle = document.getElementById('golfSubtitle');
-    if (subtitle && golf.format) {
-        subtitle.textContent = `${golf.format} - ${golf.scoringType || 'Stableford'} Scoring`;
+    if (subtitle) {
+        subtitle.textContent = `${golf.format || 'Scramble'} - ${golf.scoringType || 'Stableford'} Scoring`;
     }
     const descEl = document.getElementById('golfDescription');
     if (descEl) {

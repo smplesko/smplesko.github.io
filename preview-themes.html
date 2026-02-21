@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Championship Green Dark Mode Variants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Sora:wght@300;400;500;600;700&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== CONTROL BAR ===== */
+.controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #111;
+    border-bottom: 2px solid #333;
+    padding: 12px 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: 'Sora', sans-serif;
+    color: #fff;
+}
+.controls label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.controls select {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+.controls .divider { width: 1px; height: 30px; background: #333; }
+.control-group { display: flex; flex-direction: column; gap: 4px; }
+.variant-desc {
+    font-size: 0.75em;
+    color: #aaa;
+    max-width: 350px;
+    line-height: 1.4;
+}
+
+/* ===== BASE LAYOUT ===== */
+body {
+    padding-top: 90px;
+    min-height: 100vh;
+    transition: background 0.5s, color 0.4s;
+    font-family: 'Sora', sans-serif;
+}
+.container { max-width: 900px; margin: 0 auto; padding: 15px; }
+
+/* ===== SHARED STRUCTURAL STYLES ===== */
+nav {
+    padding: 12px 0;
+    position: sticky;
+    top: 90px;
+    z-index: 100;
+    transition: all 0.4s;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 15px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+nav ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 14px;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+.hero {
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    transition: all 0.5s;
+}
+.hero h1 { font-family: 'Russo One', sans-serif; font-size: 1.8em; margin-bottom: 8px; font-weight: 700; transition: all 0.3s; letter-spacing: 1px; }
+.hero p { font-size: 1.1em; opacity: 0.9; transition: all 0.3s; }
+
+.notes-section {
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+    transition: all 0.5s;
+}
+
+.section-card {
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.5s;
+}
+.section-card h2 {
+    font-family: 'Russo One', sans-serif;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    font-size: 1.3em;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+}
+
+.login-section {
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.5s;
+}
+.login-section h2 { font-family: 'Russo One', sans-serif; text-align: center; margin-bottom: 20px; transition: all 0.3s; letter-spacing: 1px; }
+
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 15px;
+}
+.player-btn {
+    border: 2px solid;
+    padding: 14px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s;
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+}
+.player-btn:hover { transform: translateY(-2px); }
+.player-btn.admin-btn { font-style: italic; }
+
+.event-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+.event-link {
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 2px solid;
+}
+.event-link:hover { transform: translateY(-3px); }
+.event-link h3 { font-family: 'Russo One', sans-serif; margin-bottom: 8px; transition: all 0.3s; }
+.event-link p { font-size: 0.85em; opacity: 0.8; }
+
+.schedule-item {
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 0 8px 8px 0;
+    border-left: 4px solid;
+    transition: all 0.5s;
+}
+.schedule-item h4 { font-family: 'Russo One', sans-serif; margin-bottom: 5px; transition: all 0.3s; }
+.schedule-item p { font-size: 0.9em; opacity: 0.85; }
+.schedule-item .time { font-weight: bold; font-size: 0.85em; }
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    border-top: 1px solid;
+    font-size: 0.85em;
+    transition: all 0.5s;
+}
+
+.font-label {
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+    opacity: 0.6;
+    border-bottom: 1px solid rgba(128,128,128,0.2);
+}
+
+/* ================================================================
+   VARIANT A: "TRUE BLACK" — Pure black bg, green only in hero/accents
+   Maximum contrast. Clean and sharp. Green is an accent, not the bg.
+   ================================================================ */
+.theme-green-a {
+    background: #0a0a0a;
+    color: #e8e8e8;
+}
+.theme-green-a nav { background: #050505; border-bottom: 2px solid #1a6b2a; }
+.theme-green-a nav a { color: #aaa; letter-spacing: 1px; }
+.theme-green-a nav a:hover { background: #1a6b2a; color: #fff; }
+.theme-green-a .hero { background: linear-gradient(135deg, #145520 0%, #1a6b2a 50%, #145520 100%); border: 1px solid rgba(201,162,39,0.4); box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.theme-green-a .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.theme-green-a .hero p { color: rgba(255,255,255,0.85); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-a .notes-section { background: #141414; border-left-color: #ffd700; }
+.theme-green-a .login-section { background: #141414; border: 1px solid #222; }
+.theme-green-a .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-a .player-btn { background: #1a1a1a; border-color: #333; color: #ddd; }
+.theme-green-a .player-btn:hover { border-color: #ffd700; background: rgba(26,107,42,0.2); box-shadow: 0 0 12px rgba(26,107,42,0.3); }
+.theme-green-a .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-a .section-card { background: #141414; border: 1px solid #222; }
+.theme-green-a .section-card h2 { color: #ffd700; border-bottom: 1px solid #2a2a2a; letter-spacing: 1px; }
+.theme-green-a .event-link { background: #1a1a1a; border-color: #2a2a2a; color: #ddd; }
+.theme-green-a .event-link:hover { border-color: #1a6b2a; box-shadow: 0 0 15px rgba(26,107,42,0.2); background: #1a1a1a; }
+.theme-green-a .event-link h3 { color: #4caf50; }
+.theme-green-a .schedule-item { background: #161616; border-left-color: #1a6b2a; }
+.theme-green-a .schedule-item h4 { color: #4caf50; }
+.theme-green-a .schedule-item .time { color: #ffd700; }
+.theme-green-a footer { border-top-color: #222; color: #555; }
+
+/* ================================================================
+   VARIANT B: "DARK FOREST" — Very dark with faint green tint
+   Cards slightly lifted off background. Green present but subtle.
+   ================================================================ */
+.theme-green-b {
+    background: #0b0f0b;
+    color: #e4e8e2;
+}
+.theme-green-b nav { background: rgba(5,8,5,0.95); border-bottom: 2px solid #227832; }
+.theme-green-b nav a { color: #a8b0a4; letter-spacing: 1px; }
+.theme-green-b nav a:hover { background: #227832; color: #fff; }
+.theme-green-b .hero { background: linear-gradient(135deg, #16522a 0%, #1c6e34 50%, #16522a 100%); border: 1px solid rgba(201,162,39,0.35); box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.theme-green-b .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.theme-green-b .hero p { color: rgba(255,255,255,0.85); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-b .notes-section { background: #131813; border-left-color: #ffd700; border: 1px solid rgba(34,120,50,0.15); border-left: 4px solid #ffd700; }
+.theme-green-b .login-section { background: #131813; border: 1px solid rgba(34,120,50,0.18); }
+.theme-green-b .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-b .player-btn { background: #171c17; border-color: rgba(34,120,50,0.25); color: #dde0da; }
+.theme-green-b .player-btn:hover { border-color: #ffd700; background: rgba(34,120,50,0.15); box-shadow: 0 0 12px rgba(34,120,50,0.25); }
+.theme-green-b .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-b .section-card { background: #131813; border: 1px solid rgba(34,120,50,0.18); }
+.theme-green-b .section-card h2 { color: #ffd700; border-bottom: 1px solid rgba(34,120,50,0.2); letter-spacing: 1px; }
+.theme-green-b .event-link { background: #161b16; border-color: rgba(34,120,50,0.22); color: #dde0da; }
+.theme-green-b .event-link:hover { border-color: #227832; box-shadow: 0 0 15px rgba(34,120,50,0.15); background: rgba(34,120,50,0.08); }
+.theme-green-b .event-link h3 { color: #4caf50; }
+.theme-green-b .schedule-item { background: #141914; border-left-color: #227832; }
+.theme-green-b .schedule-item h4 { color: #66bb6a; }
+.theme-green-b .schedule-item .time { color: #ffd700; }
+.theme-green-b footer { border-top-color: rgba(34,120,50,0.2); color: #5a6458; }
+
+/* ================================================================
+   VARIANT C: "MASTERS NIGHT" — Rich dark green, bolder green accents
+   The most "green" version while still being very readable.
+   Green glow on hero, green tinted cards with good text contrast.
+   ================================================================ */
+.theme-green-c {
+    background: #080e09;
+    color: #eaeee8;
+}
+.theme-green-c nav { background: rgba(4,8,5,0.95); border-bottom: 2px solid #2a8c3e; }
+.theme-green-c nav a { color: #98a894; letter-spacing: 1px; }
+.theme-green-c nav a:hover { background: #2a8c3e; color: #fff; }
+.theme-green-c .hero { background: linear-gradient(135deg, #1a6630 0%, #228b3a 50%, #1a6630 100%); border: 1px solid rgba(201,162,39,0.4); box-shadow: 0 4px 40px rgba(34,139,58,0.15), 0 0 80px rgba(34,139,58,0.06); }
+.theme-green-c .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.theme-green-c .hero p { color: rgba(255,255,255,0.9); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-c .notes-section { background: rgba(34,139,58,0.06); border-left-color: #ffd700; border: 1px solid rgba(34,139,58,0.12); border-left: 4px solid #ffd700; }
+.theme-green-c .login-section { background: rgba(34,139,58,0.05); border: 1px solid rgba(34,139,58,0.14); }
+.theme-green-c .login-section h2 { color: #ffd700; letter-spacing: 2px; }
+.theme-green-c .player-btn { background: rgba(34,139,58,0.07); border-color: rgba(34,139,58,0.22); color: #e0e4de; }
+.theme-green-c .player-btn:hover { border-color: #ffd700; background: rgba(34,139,58,0.15); box-shadow: 0 0 15px rgba(34,139,58,0.2); }
+.theme-green-c .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-green-c .section-card { background: rgba(34,139,58,0.05); border: 1px solid rgba(34,139,58,0.14); }
+.theme-green-c .section-card h2 { color: #ffd700; border-bottom: 1px solid rgba(34,139,58,0.18); letter-spacing: 1px; }
+.theme-green-c .event-link { background: rgba(34,139,58,0.06); border-color: rgba(34,139,58,0.18); color: #e0e4de; }
+.theme-green-c .event-link:hover { border-color: #2a8c3e; box-shadow: 0 0 20px rgba(34,139,58,0.12); background: rgba(34,139,58,0.1); }
+.theme-green-c .event-link h3 { color: #66bb6a; }
+.theme-green-c .schedule-item { background: rgba(34,139,58,0.05); border-left-color: #2a8c3e; }
+.theme-green-c .schedule-item h4 { color: #66bb6a; }
+.theme-green-c .schedule-item .time { color: #ffd700; }
+.theme-green-c footer { border-top-color: rgba(34,139,58,0.15); color: #4e5c4a; }
+
+/* ================================================================
+   VARIANT D: "CLUBHOUSE" — Black with green & gold pinstripe feel
+   Slightly elevated cards, warm gold touches, green as borders only.
+   Premium club aesthetic — think private clubhouse scoreboard.
+   ================================================================ */
+.theme-green-d {
+    background: #0c0c0c;
+    color: #e6e2dc;
+}
+.theme-green-d nav { background: #080808; border-bottom: 1px solid rgba(201,162,39,0.35); }
+.theme-green-d nav a { color: rgba(230,226,220,0.55); letter-spacing: 1.5px; }
+.theme-green-d nav a:hover { color: #c9a227; background: transparent; }
+.theme-green-d .hero { background: linear-gradient(135deg, #145520 0%, #1a6b2a 50%, #145520 100%); border: 2px solid rgba(201,162,39,0.5); box-shadow: 0 0 50px rgba(201,162,39,0.06), 0 4px 30px rgba(0,0,0,0.5); }
+.theme-green-d .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.theme-green-d .hero p { color: rgba(255,255,255,0.8); letter-spacing: 4px; font-size: 0.9em; }
+.theme-green-d .notes-section { background: #141414; border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.12); border-left: 4px solid #c9a227; }
+.theme-green-d .login-section { background: #141414; border: 1px solid rgba(201,162,39,0.15); }
+.theme-green-d .login-section h2 { color: #c9a227; letter-spacing: 2px; }
+.theme-green-d .player-btn { background: #181818; border-color: rgba(201,162,39,0.18); color: #d8d4cc; }
+.theme-green-d .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 15px rgba(201,162,39,0.12); }
+.theme-green-d .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
+.theme-green-d .section-card { background: #141414; border: 1px solid rgba(201,162,39,0.12); }
+.theme-green-d .section-card h2 { color: #c9a227; border-bottom: 1px solid rgba(201,162,39,0.15); letter-spacing: 1px; }
+.theme-green-d .event-link { background: #181818; border-color: rgba(201,162,39,0.15); color: #d8d4cc; }
+.theme-green-d .event-link:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.08); }
+.theme-green-d .event-link h3 { color: #4caf50; }
+.theme-green-d .schedule-item { background: #161616; border-left-color: #1a6b2a; }
+.theme-green-d .schedule-item h4 { color: #4caf50; }
+.theme-green-d .schedule-item .time { color: #c9a227; }
+.theme-green-d footer { border-top-color: rgba(201,162,39,0.12); color: rgba(230,226,220,0.35); }
+
+/* ================================================================
+   LIGHT MODE (keeping the one you already like)
+   ================================================================ */
+.theme-green-light {
+    background: linear-gradient(180deg, #f0f5ec 0%, #e6ede0 100%);
+    color: #1a2e1a;
+}
+.theme-green-light nav { background: rgba(255,255,255,0.92); border-bottom: 2px solid #227832; backdrop-filter: blur(10px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.theme-green-light nav a { color: #446644; letter-spacing: 1px; }
+.theme-green-light nav a:hover { background: #227832; color: #fff; }
+.theme-green-light .hero { background: linear-gradient(135deg, #227832 0%, #2d8c3e 50%, #227832 100%); border: 1px solid rgba(201,162,39,0.4); box-shadow: 0 4px 20px rgba(34,120,50,0.2); }
+.theme-green-light .hero h1 { color: #ffd700; letter-spacing: 2px; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.theme-green-light .hero p { color: rgba(255,255,255,0.9); letter-spacing: 3px; font-size: 0.9em; }
+.theme-green-light .notes-section { background: rgba(255,255,255,0.7); border-left-color: #c9a227; border: 1px solid rgba(34,120,50,0.15); border-left: 4px solid #c9a227; }
+.theme-green-light .login-section { background: rgba(255,255,255,0.7); border: 1px solid rgba(34,120,50,0.2); }
+.theme-green-light .login-section h2 { color: #1a5c28; letter-spacing: 2px; }
+.theme-green-light .player-btn { background: rgba(255,255,255,0.6); border-color: rgba(34,120,50,0.3); color: #1a2e1a; }
+.theme-green-light .player-btn:hover { border-color: #227832; background: rgba(34,120,50,0.08); box-shadow: 0 0 12px rgba(34,120,50,0.15); }
+.theme-green-light .player-btn.admin-btn { border-color: #c9a227; color: #8b6f1a; }
+.theme-green-light .section-card { background: rgba(255,255,255,0.7); border: 1px solid rgba(34,120,50,0.15); }
+.theme-green-light .section-card h2 { color: #1a5c28; border-bottom: 1px solid rgba(34,120,50,0.2); letter-spacing: 1px; }
+.theme-green-light .event-link { background: rgba(255,255,255,0.6); border-color: rgba(34,120,50,0.2); color: #1a2e1a; }
+.theme-green-light .event-link:hover { border-color: #227832; background: rgba(255,255,255,0.9); box-shadow: 0 4px 16px rgba(34,120,50,0.1); }
+.theme-green-light .event-link h3 { color: #1a5c28; }
+.theme-green-light .schedule-item { background: rgba(255,255,255,0.6); border-left-color: #c9a227; }
+.theme-green-light .schedule-item h4 { color: #227832; }
+.theme-green-light .schedule-item .time { color: #8b6f1a; }
+.theme-green-light footer { border-top-color: rgba(34,120,50,0.15); color: rgba(26,46,26,0.4); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+.shimmer-text {
+    background: linear-gradient(90deg, currentColor 0%, rgba(255,215,0,0.8) 25%, currentColor 50%, rgba(255,215,0,0.8) 75%, currentColor 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+.fade-in-up.d1 { animation-delay: 0.1s; opacity: 0; }
+.fade-in-up.d2 { animation-delay: 0.2s; opacity: 0; }
+.fade-in-up.d3 { animation-delay: 0.3s; opacity: 0; }
+.fade-in-up.d4 { animation-delay: 0.4s; opacity: 0; }
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(201,162,39,0.3); }
+    50% { box-shadow: 0 0 20px rgba(201,162,39,0.6), 0 0 40px rgba(201,162,39,0.2); }
+}
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+@keyframes scalePop {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.scale-pop { animation: scalePop 0.5s ease-out forwards; }
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.slide-in-left { animation: slideInLeft 0.5s ease-out forwards; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+.float { animation: float 3s ease-in-out infinite; }
+
+.anim-section {
+    margin-top: 40px;
+    padding: 30px 20px;
+    border-radius: 15px;
+    border: 2px dashed rgba(128,128,128,0.3);
+}
+.anim-section h2 {
+    font-family: 'Russo One', sans-serif;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.3em;
+}
+.anim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+.anim-card {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    background: rgba(128,128,128,0.08);
+    border: 1px solid rgba(128,128,128,0.15);
+}
+.anim-card h4 { font-family: 'Russo One', sans-serif; margin-bottom: 8px; opacity: 0.9; }
+.anim-card p { font-size: 0.8em; opacity: 0.6; margin-bottom: 15px; }
+.anim-demo { padding: 15px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+.anim-card button {
+    margin-top: 10px;
+    background: rgba(128,128,128,0.15);
+    border: 1px solid rgba(128,128,128,0.25);
+    color: inherit;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-family: 'Sora', sans-serif;
+}
+</style>
+</head>
+<body class="theme-green-a">
+
+<!-- CONTROL BAR -->
+<div class="controls">
+    <div class="control-group">
+        <label>Dark Mode Variant</label>
+        <select id="themeSelect" onchange="switchTheme(this.value)">
+            <optgroup label="Dark Mode Variants">
+                <option value="green-a" selected>A: True Black — green as accent only</option>
+                <option value="green-b">B: Dark Forest — faint green tint</option>
+                <option value="green-c">C: Masters Night — richer green, green glow</option>
+                <option value="green-d">D: Clubhouse — black + gold & green borders</option>
+            </optgroup>
+            <optgroup label="Light Mode">
+                <option value="green-light">Light Mode (for reference)</option>
+            </optgroup>
+        </select>
+    </div>
+    <div class="divider"></div>
+    <div class="variant-desc" id="variantDesc">Pure black background. Green lives only in the hero banner and accent colors. Maximum contrast and readability.</div>
+</div>
+
+<!-- PAGE CONTENT -->
+<nav>
+    <ul>
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Golf</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Trivia</a></li>
+        <li><a href="#">Leaderboard</a></li>
+        <li><a href="#">Predictions</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <div class="font-label">Font: Russo One (headers) + Sora (body)</div>
+
+    <div class="hero">
+        <h1>Dird Plesk Memorial Open Invitational of Champions</h1>
+        <p>May the best man win!</p>
+    </div>
+
+    <div class="notes-section">
+        <div>Welcome everyone! Check the schedule below and don't forget to submit your predictions before Saturday.</div>
+    </div>
+
+    <div class="login-section">
+        <h2>Select Your Profile</h2>
+        <div class="player-grid">
+            <button class="player-btn admin-btn">Stephen</button>
+            <button class="player-btn">Alex</button>
+            <button class="player-btn">Brad</button>
+            <button class="player-btn">Bryant</button>
+            <button class="player-btn">Cody</button>
+            <button class="player-btn">Evan</button>
+            <button class="player-btn">Jack</button>
+            <button class="player-btn">Joe</button>
+            <button class="player-btn">Kevin</button>
+            <button class="player-btn">Matt</button>
+            <button class="player-btn">Pete</button>
+            <button class="player-btn">Will</button>
+        </div>
+        <p style="text-align: center; opacity: 0.5; font-size: 0.85em;">Stephen's login requires password</p>
+    </div>
+
+    <div class="section-card">
+        <h2>Weekend Schedule</h2>
+        <div class="schedule-item">
+            <span class="time">Sat 9:00 AM</span>
+            <h4>Golf</h4>
+            <p>Scramble - Team scoring</p>
+        </div>
+        <div class="schedule-item">
+            <span class="time">Sat 3:00 PM</span>
+            <h4>Beer Olympics</h4>
+            <p>Team competition - 4 rounds</p>
+        </div>
+        <div class="schedule-item">
+            <span class="time">Sat 7:00 PM</span>
+            <h4>Trivia</h4>
+            <p>Individual competition - test your knowledge!</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Events & Scoring</h2>
+        <div class="event-links">
+            <a href="#" class="event-link">
+                <h3>Golf</h3>
+                <p>Scramble - Team Play</p>
+            </a>
+            <a href="#" class="event-link">
+                <h3>Events</h3>
+                <p>Competition Events</p>
+            </a>
+            <a href="#" class="event-link">
+                <h3>Trivia</h3>
+                <p>Individual Competition</p>
+            </a>
+            <a href="#" class="event-link">
+                <h3>Predictions</h3>
+                <p>Bonus Points</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- ANIMATION EXAMPLES -->
+    <div class="anim-section">
+        <h2>Animation Examples</h2>
+        <div class="anim-grid">
+            <div class="anim-card">
+                <h4>Gold Shimmer</h4>
+                <p>For hero titles, section headers, or winner names</p>
+                <div class="anim-demo">
+                    <span class="shimmer-text">Champion Title</span>
+                </div>
+            </div>
+
+            <div class="anim-card">
+                <h4>Staggered Fade-In</h4>
+                <p>For player buttons, event cards, schedule items loading in</p>
+                <div class="anim-demo" id="fadeDemo" style="gap: 8px; flex-wrap: wrap;">
+                    <span class="fade-in-up d1" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 1</span>
+                    <span class="fade-in-up d2" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 2</span>
+                    <span class="fade-in-up d3" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 3</span>
+                    <span class="fade-in-up d4" style="background: rgba(128,128,128,0.15); padding: 8px 12px; border-radius: 6px;">Card 4</span>
+                </div>
+                <button onclick="replayFade()">Replay</button>
+            </div>
+
+            <div class="anim-card">
+                <h4>Pulse Glow</h4>
+                <p>For active trivia question, live scoring, or call-to-action buttons</p>
+                <div class="anim-demo">
+                    <span class="pulse-glow" style="padding: 12px 24px; border-radius: 8px; border: 2px solid rgba(201,162,39,0.5);">Answer Now!</span>
+                </div>
+            </div>
+
+            <div class="anim-card">
+                <h4>Scale Pop</h4>
+                <p>For podium reveal, correct answer feedback, new scores</p>
+                <div class="anim-demo" id="popDemo">
+                    <span class="scale-pop" style="font-size: 2em; font-weight: bold;">1st</span>
+                </div>
+                <button onclick="replayPop()">Replay</button>
+            </div>
+
+            <div class="anim-card">
+                <h4>Slide In</h4>
+                <p>For schedule items, leaderboard rows, trivia questions</p>
+                <div class="anim-demo" id="slideDemo" style="flex-direction: column; gap: 6px;">
+                    <div class="slide-in-left" style="background: rgba(128,128,128,0.12); padding: 8px 16px; border-radius: 6px; width: 100%; text-align: left;">1. Stephen - 145 pts</div>
+                </div>
+                <button onclick="replaySlide()">Replay</button>
+            </div>
+
+            <div class="anim-card">
+                <h4>Gentle Float</h4>
+                <p>For trophy icons, winner badges, or decorative elements</p>
+                <div class="anim-demo">
+                    <span class="float" style="font-size: 2.5em;">&#127942;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Dird Plesk Memorial Open Invitational of Champions
+    </footer>
+</div>
+
+<script>
+const variantDescs = {
+    'green-a': 'Pure black background. Green lives only in the hero banner and accent colors. Maximum contrast and readability.',
+    'green-b': 'Very dark with a faint green tint. Cards slightly lifted off background. Green is present but subtle — like looking at a course at dusk.',
+    'green-c': 'The richest green option. Subtle green glow on the hero, green-tinted cards. Most "Masters" feel while keeping white text sharp.',
+    'green-d': 'Black base with gold borders and green accents. Private clubhouse scoreboard vibe. Luxury meets Augusta — elegant restraint.',
+    'green-light': 'Light mode — soft sage/cream background with green hero and gold accents.'
+};
+
+function switchTheme(theme) {
+    document.body.className = `theme-${theme}`;
+    document.getElementById('variantDesc').textContent = variantDescs[theme] || '';
+}
+
+function replayFade() {
+    const demo = document.getElementById('fadeDemo');
+    const spans = demo.querySelectorAll('span');
+    spans.forEach(s => { s.style.animation = 'none'; s.offsetHeight; s.style.animation = ''; });
+}
+
+function replayPop() {
+    const demo = document.getElementById('popDemo');
+    const span = demo.querySelector('span');
+    span.style.animation = 'none'; span.offsetHeight; span.style.animation = '';
+}
+
+function replaySlide() {
+    const demo = document.getElementById('slideDemo');
+    const div = demo.querySelector('div');
+    div.style.animation = 'none'; div.offsetHeight; div.style.animation = '';
+}
+</script>
+
+</body>
+</html>
