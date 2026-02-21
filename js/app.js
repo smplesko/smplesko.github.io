@@ -124,6 +124,13 @@ document.addEventListener('DOMContentLoaded', function() {
         renderPlayerGrid();
         renderWeekendSchedule();
         renderPodium();
+
+        // Update golf subtitle from settings
+        const golfSub = document.getElementById('homeGolfSubtitle');
+        if (golfSub) {
+            const gs = getSiteSettings().golfSettings || {};
+            golfSub.textContent = `${gs.format || 'Scramble'} - ${gs.scoringType || 'Stableford'}`;
+        }
     }
 
     if (isPage('admin')) {

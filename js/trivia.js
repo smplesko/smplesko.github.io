@@ -39,21 +39,6 @@ function calculateTriviaPlayerPoints() {
     return playerPoints;
 }
 
-// Get total possible trivia points through current question
-function getTotalPossibleTriviaPoints() {
-    const game = getTriviaGame();
-    let total = 0;
-    const questionsAnswered = game.currentQuestion;
-
-    for (let i = 0; i < questionsAnswered; i++) {
-        if (game.questions[i]) {
-            total += game.questions[i].pointValue;
-        }
-    }
-
-    return total;
-}
-
 // Admin: Render question management
 function renderTriviaQuestionAdmin() {
     const container = document.getElementById('triviaQuestionAdmin');
@@ -194,18 +179,6 @@ function changeQuestionType(questionIndex) {
             game.questions[questionIndex].correctAnswer = 1;
         }
     }
-    saveTriviaGame(game);
-    renderTriviaQuestionAdmin();
-}
-
-function addOptionsToQuestion(questionIndex) {
-    const game = getTriviaGame();
-    if (!game.questions[questionIndex]) {
-        game.questions[questionIndex] = { text: '', pointValue: 1, type: 'multiple_choice', options: [], correctAnswer: 1, category: '' };
-    }
-    game.questions[questionIndex].type = 'multiple_choice';
-    game.questions[questionIndex].options = ['', '', '', ''];
-    game.questions[questionIndex].correctAnswer = 1;
     saveTriviaGame(game);
     renderTriviaQuestionAdmin();
 }
@@ -1046,6 +1019,14 @@ function submitTriviaAnswer() {
             showToast('Please type an answer before submitting.', 'warning');
         }
         return;
+    }
+
+    // Auto-add late joiners to joinedPlayers so admin tracking is accurate
+    if (!game.joinedPlayers) {
+        game.joinedPlayers = {};
+    }
+    if (!game.joinedPlayers[user]) {
+        game.joinedPlayers[user] = { joinedAt: Date.now() };
     }
 
     if (!game.responses[qNum]) {
