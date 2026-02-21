@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theme Preview - Dird Plesk Memorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Russo+One&family=Teko:wght@300;400;500;600;700&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== CONTROL BAR ===== */
+.controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #111;
+    border-bottom: 2px solid #333;
+    padding: 12px 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+}
+.controls label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.controls select {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+.controls .divider { width: 1px; height: 30px; background: #333; }
+.control-group { display: flex; flex-direction: column; gap: 4px; }
+
+/* ===== BASE LAYOUT ===== */
+body {
+    padding-top: 80px;
+    min-height: 100vh;
+    transition: background 0.5s, color 0.4s;
+}
+.container { max-width: 900px; margin: 0 auto; padding: 15px; }
+
+/* ===== SHARED STRUCTURAL STYLES ===== */
+nav {
+    padding: 12px 0;
+    position: sticky;
+    top: 80px;
+    z-index: 100;
+    transition: all 0.4s;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 15px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+nav ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 14px;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+.hero {
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    transition: all 0.5s;
+}
+.hero h1 { font-size: 1.8em; margin-bottom: 8px; font-weight: 700; transition: all 0.3s; }
+.hero p { font-size: 1.1em; opacity: 0.9; transition: all 0.3s; }
+
+.notes-section {
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+    transition: all 0.5s;
+}
+
+.section-card {
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.5s;
+}
+.section-card h2 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    font-size: 1.3em;
+    transition: all 0.3s;
+}
+
+.login-section {
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.5s;
+}
+.login-section h2 { text-align: center; margin-bottom: 20px; transition: all 0.3s; }
+
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 15px;
+}
+.player-btn {
+    border: 2px solid;
+    padding: 14px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s;
+    text-align: center;
+}
+.player-btn:hover { transform: translateY(-2px); }
+.player-btn.admin-btn { font-style: italic; }
+
+.event-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+.event-link {
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 2px solid;
+}
+.event-link:hover { transform: translateY(-3px); }
+.event-link h3 { margin-bottom: 8px; transition: all 0.3s; }
+.event-link p { font-size: 0.85em; opacity: 0.8; }
+
+.schedule-item {
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 0 8px 8px 0;
+    border-left: 4px solid;
+    transition: all 0.5s;
+}
+.schedule-item h4 { margin-bottom: 5px; transition: all 0.3s; }
+.schedule-item p { font-size: 0.9em; opacity: 0.85; }
+.schedule-item .time { font-weight: bold; font-size: 0.85em; }
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    border-top: 1px solid;
+    font-size: 0.85em;
+    transition: all 0.5s;
+}
+
+/* ===== THEME 1: CURRENT (Red + Navy) ===== */
+.theme-current {
+    background: linear-gradient(135deg, #0a1628 0%, #0d2137 100%);
+    color: #ffffff;
+}
+.theme-current nav { background: rgba(0,0,0,0.4); border-bottom: 2px solid #c8102e; }
+.theme-current nav a { color: #d4dce4; }
+.theme-current nav a:hover { background: #c8102e; color: #fff; }
+.theme-current .hero { background: #c8102e; box-shadow: 0 4px 20px rgba(200,16,46,0.3); }
+.theme-current .hero h1 { color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.theme-current .hero p { color: rgba(255,255,255,0.85); }
+.theme-current .notes-section { background: rgba(255,255,255,0.08); border-left-color: #c9a227; }
+.theme-current .login-section { background: rgba(255,255,255,0.08); border: 1px solid #1a3a5c; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+.theme-current .login-section h2 { color: #c8102e; }
+.theme-current .player-btn { background: linear-gradient(135deg, #1a3a5c, #0d2137); border-color: #c8102e; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.theme-current .player-btn:hover { background: #c8102e; box-shadow: 0 4px 15px rgba(200,16,46,0.4); }
+.theme-current .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
+.theme-current .section-card { background: rgba(255,255,255,0.08); border: 1px solid #1a3a5c; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+.theme-current .section-card h2 { color: #c8102e; border-bottom: 2px solid #c8102e; }
+.theme-current .event-link { background: linear-gradient(135deg, #1a3a5c, #0d2137); border-color: #c8102e; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+.theme-current .event-link:hover { border-color: #c9a227; }
+.theme-current .event-link h3 { color: #c8102e; }
+.theme-current .schedule-item { background: rgba(0,0,0,0.3); border-left-color: #c8102e; }
+.theme-current .schedule-item h4 { color: #c9a227; }
+.theme-current .schedule-item .time { color: #c8102e; }
+.theme-current footer { border-top-color: rgba(255,255,255,0.1); color: #a8b8c8; }
+
+/* ===== THEME 2: GLASSMORPHISM ===== */
+.theme-glass {
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    color: #e8e8f0;
+}
+.theme-glass nav { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+.theme-glass nav a { color: rgba(255,255,255,0.7); }
+.theme-glass nav a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.theme-glass .hero { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.theme-glass .hero h1 { color: #fff; background: linear-gradient(135deg, #fff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.theme-glass .hero p { color: rgba(255,255,255,0.7); }
+.theme-glass .notes-section { background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border-left-color: #a78bfa; border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid #a78bfa; }
+.theme-glass .login-section { background: rgba(255,255,255,0.06); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.12); }
+.theme-glass .login-section h2 { color: #a78bfa; }
+.theme-glass .player-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #e8e8f0; backdrop-filter: blur(5px); }
+.theme-glass .player-btn:hover { background: rgba(167,139,250,0.3); border-color: #a78bfa; box-shadow: 0 0 20px rgba(167,139,250,0.2); }
+.theme-glass .player-btn.admin-btn { border-color: #fbbf24; color: #fbbf24; }
+.theme-glass .section-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.12); }
+.theme-glass .section-card h2 { color: #a78bfa; border-bottom: 1px solid rgba(167,139,250,0.3); }
+.theme-glass .event-link { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: #e8e8f0; backdrop-filter: blur(10px); }
+.theme-glass .event-link:hover { border-color: #a78bfa; box-shadow: 0 8px 32px rgba(167,139,250,0.15); background: rgba(167,139,250,0.1); }
+.theme-glass .event-link h3 { color: #a78bfa; }
+.theme-glass .schedule-item { background: rgba(255,255,255,0.04); border-left-color: #a78bfa; }
+.theme-glass .schedule-item h4 { color: #fbbf24; }
+.theme-glass .schedule-item .time { color: #a78bfa; }
+.theme-glass footer { border-top-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+/* ===== THEME 3: SPORTS BROADCAST ===== */
+.theme-broadcast {
+    background: #111111;
+    color: #f0f0f0;
+}
+.theme-broadcast nav { background: #000; border-bottom: 3px solid #ff3c00; }
+.theme-broadcast nav a { color: #ccc; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
+.theme-broadcast nav a:hover { background: #ff3c00; color: #fff; }
+.theme-broadcast .hero { background: linear-gradient(135deg, #ff3c00 0%, #ff6b35 100%); border-radius: 0; margin-left: -15px; margin-right: -15px; border-bottom: 4px solid #ffd700; }
+.theme-broadcast .hero h1 { color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); }
+.theme-broadcast .hero p { color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 3px; font-size: 0.9em; }
+.theme-broadcast .notes-section { background: #1a1a1a; border-left-color: #ffd700; border-radius: 0; }
+.theme-broadcast .login-section { background: #1a1a1a; border: none; border-top: 3px solid #ff3c00; border-radius: 0; }
+.theme-broadcast .login-section h2 { color: #ff3c00; text-transform: uppercase; letter-spacing: 2px; }
+.theme-broadcast .player-btn { background: #222; border-color: #444; color: #fff; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8em; }
+.theme-broadcast .player-btn:hover { background: #ff3c00; border-color: #ff3c00; box-shadow: 0 0 15px rgba(255,60,0,0.4); }
+.theme-broadcast .player-btn.admin-btn { border-color: #ffd700; color: #ffd700; }
+.theme-broadcast .section-card { background: #1a1a1a; border: none; border-left: 4px solid #ff3c00; border-radius: 0; }
+.theme-broadcast .section-card h2 { color: #ffd700; border-bottom: 2px solid #333; text-transform: uppercase; letter-spacing: 1px; }
+.theme-broadcast .event-link { background: #222; border-color: #333; color: #fff; border-radius: 4px; }
+.theme-broadcast .event-link:hover { border-color: #ff3c00; background: #2a1a1a; }
+.theme-broadcast .event-link h3 { color: #ff3c00; text-transform: uppercase; letter-spacing: 1px; }
+.theme-broadcast .schedule-item { background: #1e1e1e; border-left-color: #ffd700; border-radius: 0; }
+.theme-broadcast .schedule-item h4 { color: #ff3c00; text-transform: uppercase; }
+.theme-broadcast .schedule-item .time { color: #ffd700; }
+.theme-broadcast footer { border-top-color: #333; color: #666; }
+
+/* ===== THEME 4: LUXURY ===== */
+.theme-luxury {
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1510 100%);
+    color: #e8dcc8;
+}
+.theme-luxury nav { background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(201,162,39,0.3); }
+.theme-luxury nav a { color: rgba(232,220,200,0.6); letter-spacing: 1px; }
+.theme-luxury nav a:hover { background: transparent; color: #c9a227; }
+.theme-luxury .hero { background: transparent; border: 2px solid rgba(201,162,39,0.4); box-shadow: 0 0 40px rgba(201,162,39,0.08); }
+.theme-luxury .hero h1 { color: #c9a227; letter-spacing: 3px; font-weight: 300; }
+.theme-luxury .hero p { color: rgba(232,220,200,0.6); letter-spacing: 4px; font-size: 0.9em; }
+.theme-luxury .notes-section { background: rgba(201,162,39,0.05); border-left-color: #c9a227; border: 1px solid rgba(201,162,39,0.15); border-left: 4px solid #c9a227; }
+.theme-luxury .login-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.2); }
+.theme-luxury .login-section h2 { color: #c9a227; letter-spacing: 2px; font-weight: 400; }
+.theme-luxury .player-btn { background: transparent; border-color: rgba(201,162,39,0.25); color: #e8dcc8; }
+.theme-luxury .player-btn:hover { border-color: #c9a227; box-shadow: 0 0 20px rgba(201,162,39,0.15); }
+.theme-luxury .player-btn.admin-btn { border-color: #c9a227; color: #c9a227; }
+.theme-luxury .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,162,39,0.15); }
+.theme-luxury .section-card h2 { color: #c9a227; border-bottom: 1px solid rgba(201,162,39,0.2); letter-spacing: 1px; }
+.theme-luxury .event-link { background: rgba(201,162,39,0.04); border-color: rgba(201,162,39,0.2); color: #e8dcc8; }
+.theme-luxury .event-link:hover { border-color: #c9a227; box-shadow: 0 0 30px rgba(201,162,39,0.1); }
+.theme-luxury .event-link h3 { color: #c9a227; }
+.theme-luxury .schedule-item { background: rgba(201,162,39,0.04); border-left-color: #c9a227; }
+.theme-luxury .schedule-item h4 { color: #c9a227; }
+.theme-luxury .schedule-item .time { color: rgba(201,162,39,0.8); }
+.theme-luxury footer { border-top-color: rgba(201,162,39,0.15); color: rgba(232,220,200,0.4); }
+
+/* ===== FONT PAIRINGS ===== */
+.fonts-inter .hero h1, .fonts-inter .section-card h2, .fonts-inter .login-section h2, .fonts-inter .event-link h3, .fonts-inter .schedule-item h4 { font-family: 'Inter', sans-serif; }
+.fonts-inter { font-family: 'Inter', sans-serif; }
+
+.fonts-tourney-inter .hero h1, .fonts-tourney-inter .section-card h2, .fonts-tourney-inter .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
+.fonts-tourney-inter .event-link h3, .fonts-tourney-inter .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
+.fonts-tourney-inter { font-family: 'Inter', sans-serif; }
+
+.fonts-tourney-space .hero h1, .fonts-tourney-space .section-card h2, .fonts-tourney-space .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
+.fonts-tourney-space .event-link h3, .fonts-tourney-space .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
+.fonts-tourney-space { font-family: 'Space Grotesk', sans-serif; }
+
+.fonts-tourney-outfit .hero h1, .fonts-tourney-outfit .section-card h2, .fonts-tourney-outfit .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
+.fonts-tourney-outfit .event-link h3, .fonts-tourney-outfit .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
+.fonts-tourney-outfit { font-family: 'Outfit', sans-serif; }
+
+.fonts-tourney-sora .hero h1, .fonts-tourney-sora .section-card h2, .fonts-tourney-sora .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
+.fonts-tourney-sora .event-link h3, .fonts-tourney-sora .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
+.fonts-tourney-sora { font-family: 'Sora', sans-serif; }
+
+.fonts-tourney-dm .hero h1, .fonts-tourney-dm .section-card h2, .fonts-tourney-dm .login-section h2 { font-family: 'Tourney', cursive; font-weight: 100; font-style: italic; }
+.fonts-tourney-dm .event-link h3, .fonts-tourney-dm .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 200; }
+.fonts-tourney-dm { font-family: 'DM Sans', sans-serif; }
+
+.fonts-tourney300-inter .hero h1, .fonts-tourney300-inter .section-card h2, .fonts-tourney300-inter .login-section h2 { font-family: 'Tourney', cursive; font-weight: 300; font-style: normal; }
+.fonts-tourney300-inter .event-link h3, .fonts-tourney300-inter .schedule-item h4 { font-family: 'Tourney', cursive; font-weight: 300; }
+.fonts-tourney300-inter { font-family: 'Inter', sans-serif; }
+
+.fonts-bebas-inter .hero h1, .fonts-bebas-inter .section-card h2, .fonts-bebas-inter .login-section h2 { font-family: 'Bebas Neue', cursive; letter-spacing: 3px; }
+.fonts-bebas-inter .event-link h3, .fonts-bebas-inter .schedule-item h4 { font-family: 'Bebas Neue', cursive; letter-spacing: 2px; }
+.fonts-bebas-inter { font-family: 'Inter', sans-serif; }
+
+.fonts-oswald-dm .hero h1, .fonts-oswald-dm .section-card h2, .fonts-oswald-dm .login-section h2 { font-family: 'Oswald', sans-serif; font-weight: 500; text-transform: uppercase; }
+.fonts-oswald-dm .event-link h3, .fonts-oswald-dm .schedule-item h4 { font-family: 'Oswald', sans-serif; font-weight: 400; text-transform: uppercase; }
+.fonts-oswald-dm { font-family: 'DM Sans', sans-serif; }
+
+.fonts-rajdhani-outfit .hero h1, .fonts-rajdhani-outfit .section-card h2, .fonts-rajdhani-outfit .login-section h2 { font-family: 'Rajdhani', sans-serif; font-weight: 600; }
+.fonts-rajdhani-outfit .event-link h3, .fonts-rajdhani-outfit .schedule-item h4 { font-family: 'Rajdhani', sans-serif; font-weight: 500; }
+.fonts-rajdhani-outfit { font-family: 'Outfit', sans-serif; }
+
+.fonts-barlow-space .hero h1, .fonts-barlow-space .section-card h2, .fonts-barlow-space .login-section h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.fonts-barlow-space .event-link h3, .fonts-barlow-space .schedule-item h4 { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.fonts-barlow-space { font-family: 'Space Grotesk', sans-serif; }
+
+.fonts-orbitron-sora .hero h1, .fonts-orbitron-sora .section-card h2, .fonts-orbitron-sora .login-section h2 { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.5em; letter-spacing: 2px; }
+.fonts-orbitron-sora .event-link h3, .fonts-orbitron-sora .schedule-item h4 { font-family: 'Orbitron', sans-serif; font-weight: 500; font-size: 0.95em; }
+.fonts-orbitron-sora { font-family: 'Sora', sans-serif; }
+
+.fonts-teko-chakra .hero h1, .fonts-teko-chakra .section-card h2, .fonts-teko-chakra .login-section h2 { font-family: 'Teko', sans-serif; font-weight: 500; font-size: 2.2em; letter-spacing: 2px; text-transform: uppercase; }
+.fonts-teko-chakra .event-link h3, .fonts-teko-chakra .schedule-item h4 { font-family: 'Teko', sans-serif; font-weight: 400; font-size: 1.2em; text-transform: uppercase; }
+.fonts-teko-chakra { font-family: 'Chakra Petch', sans-serif; }
+
+.fonts-russo-chakra .hero h1, .fonts-russo-chakra .section-card h2, .fonts-russo-chakra .login-section h2 { font-family: 'Russo One', sans-serif; letter-spacing: 1px; }
+.fonts-russo-chakra .event-link h3, .fonts-russo-chakra .schedule-item h4 { font-family: 'Russo One', sans-serif; }
+.fonts-russo-chakra { font-family: 'Chakra Petch', sans-serif; }
+
+.fonts-space-space .hero h1, .fonts-space-space .section-card h2, .fonts-space-space .login-section h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+.fonts-space-space .event-link h3, .fonts-space-space .schedule-item h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+.fonts-space-space { font-family: 'Space Grotesk', sans-serif; }
+
+/* ===== ANIMATIONS SECTION ===== */
+.anim-section {
+    margin-top: 40px;
+    padding: 30px 20px;
+    border-radius: 15px;
+    border: 2px dashed rgba(255,255,255,0.2);
+}
+.anim-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.3em;
+}
+.anim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+.anim-card {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.anim-card h4 { margin-bottom: 8px; opacity: 0.9; }
+.anim-card p { font-size: 0.8em; opacity: 0.6; margin-bottom: 15px; }
+.anim-demo { padding: 15px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+.anim-card button {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: inherit;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+/* Shimmer */
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+.shimmer-text {
+    background: linear-gradient(90deg, currentColor 0%, rgba(255,215,0,0.8) 25%, currentColor 50%, rgba(255,215,0,0.8) 75%, currentColor 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+/* Fade In Up */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+.fade-in-up.d1 { animation-delay: 0.1s; opacity: 0; }
+.fade-in-up.d2 { animation-delay: 0.2s; opacity: 0; }
+.fade-in-up.d3 { animation-delay: 0.3s; opacity: 0; }
+.fade-in-up.d4 { animation-delay: 0.4s; opacity: 0; }
+
+/* Pulse Glow */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(201,162,39,0.3); }
+    50% { box-shadow: 0 0 20px rgba(201,162,39,0.6), 0 0 40px rgba(201,162,39,0.2); }
+}
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+/* Scale Pop */
+@keyframes scalePop {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.scale-pop { animation: scalePop 0.5s ease-out forwards; }
+
+/* Slide In Left */
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.slide-in-left { animation: slideInLeft 0.5s ease-out forwards; }
+
+/* Count Up */
+@keyframes countHighlight {
+    0% { color: inherit; transform: scale(1); }
+    50% { color: #ffd700; transform: scale(1.3); }
+    100% { color: inherit; transform: scale(1); }
+}
+.count-up { animation: countHighlight 0.6s ease-out; display: inline-block; }
+
+/* Gradient border spin */
+@keyframes borderSpin {
+    0% { border-image-source: linear-gradient(0deg, #c9a227, #c8102e, #c9a227); }
+    33% { border-image-source: linear-gradient(120deg, #c9a227, #c8102e, #c9a227); }
+    66% { border-image-source: linear-gradient(240deg, #c9a227, #c8102e, #c9a227); }
+    100% { border-image-source: linear-gradient(360deg, #c9a227, #c8102e, #c9a227); }
+}
+
+/* Typing effect */
+@keyframes blink { 50% { border-color: transparent; } }
+.typing-cursor { border-right: 2px solid; animation: blink 0.7s step-end infinite; padding-right: 3px; }
+
+/* Subtle float */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+.float { animation: float 3s ease-in-out infinite; }
+
+/* Confetti-like sparkle */
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+.font-label {
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+    opacity: 0.6;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+</style>
+</head>
+<body class="theme-current fonts-inter">
+
+<!-- CONTROL BAR -->
+<div class="controls">
+    <div class="control-group">
+        <label>Theme</label>
+        <select id="themeSelect" onchange="switchTheme(this.value)">
+            <option value="current">Current (Red + Navy)</option>
+            <option value="glass">Glassmorphism</option>
+            <option value="broadcast">Sports Broadcast</option>
+            <option value="luxury">Luxury / Premium</option>
+        </select>
+    </div>
+    <div class="divider"></div>
+    <div class="control-group">
+        <label>Fonts</label>
+        <select id="fontSelect" onchange="switchFont(this.value)">
+            <optgroup label="Current">
+                <option value="inter">Inter (current)</option>
+            </optgroup>
+            <optgroup label="Tourney Headers (Thin 100 Italic)">
+                <option value="tourney-inter">Tourney 100i + Inter</option>
+                <option value="tourney-space">Tourney 100i + Space Grotesk</option>
+                <option value="tourney-outfit">Tourney 100i + Outfit</option>
+                <option value="tourney-sora">Tourney 100i + Sora</option>
+                <option value="tourney-dm">Tourney 100i + DM Sans</option>
+            </optgroup>
+            <optgroup label="Tourney Headers (300 Normal)">
+                <option value="tourney300-inter">Tourney 300 + Inter</option>
+            </optgroup>
+            <optgroup label="Bold Display Headers">
+                <option value="bebas-inter">Bebas Neue + Inter</option>
+                <option value="oswald-dm">Oswald + DM Sans</option>
+                <option value="barlow-space">Barlow Condensed + Space Grotesk</option>
+                <option value="teko-chakra">Teko + Chakra Petch</option>
+                <option value="russo-chakra">Russo One + Chakra Petch</option>
+            </optgroup>
+            <optgroup label="Tech / Futuristic Headers">
+                <option value="orbitron-sora">Orbitron + Sora</option>
+                <option value="rajdhani-outfit">Rajdhani + Outfit</option>
+            </optgroup>
+            <optgroup label="Clean Modern (Same Family)">
+                <option value="space-space">Space Grotesk (all)</option>
+            </optgroup>
+        </select>
+    </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<nav>
+    <ul>
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Golf</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Trivia</a></li>
+        <li><a href="#">Leaderboard</a></li>
+        <li><a href="#">Predictions</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <div class="font-label" id="fontLabel">Headers: Inter | Body: Inter</div>
+
+    <div class="hero">
+        <h1>Dird Plesk Memorial Open Invitational of Champions</h1>
+        <p>May the best man win!</p>
+    </div>
+
+    <div class="notes-section">
+        <div>Welcome everyone! Check the schedule below and don't forget to submit your predictions before Saturday.</div>
+    </div>
+
+    <div class="login-section">
+        <h2>Select Your Profile</h2>
+        <div class="player-grid">
+            <button class="player-btn admin-btn">Stephen</button>
+            <button class="player-btn">Alex</button>
+            <button class="player-btn">Brad</button>
+            <button class="player-btn">Bryant</button>
+            <button class="player-btn">Cody</button>
+            <button class="player-btn">Evan</button>
+            <button class="player-btn">Jack</button>
+            <button class="player-btn">Joe</button>
+            <button class="player-btn">Kevin</button>
+            <button class="player-btn">Matt</button>
+            <button class="player-btn">Pete</button>
+            <button class="player-btn">Will</button>
+        </div>
+        <p style="text-align: center; opacity: 0.5; font-size: 0.85em;">Stephen's login requires password</p>
+    </div>
+
+    <div class="section-card">
+        <h2>Weekend Schedule</h2>
+        <div class="schedule-item">
+            <span class="time">Sat 9:00 AM</span>
+            <h4>Golf</h4>
+            <p>Scramble - Stableford scoring</p>
+        </div>
+        <div class="schedule-item">
+            <span class="time">Sat 3:00 PM</span>
+            <h4>Beer Olympics</h4>
+            <p>Team competition - 4 rounds</p>
+        </div>
+        <div class="schedule-item">
+            <span class="time">Sat 7:00 PM</span>
+            <h4>Trivia</h4>
+            <p>Individual competition - test your knowledge!</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Events & Scoring</h2>
+        <div class="event-links">
+            <a href="#" class="event-link">
+                <h3>Golf</h3>
+                <p>Scramble - Stableford</p>
+            </a>
+            <a href="#" class="event-link">
+                <h3>Events</h3>
+                <p>Competition Events</p>
+            </a>
+            <a href="#" class="event-link">
+                <h3>Trivia</h3>
+                <p>Individual Competition</p>
+            </a>
+            <a href="#" class="event-link">
+                <h3>Predictions</h3>
+                <p>Bonus Points</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- ANIMATION EXAMPLES -->
+    <div class="anim-section">
+        <h2>Animation Examples</h2>
+        <div class="anim-grid">
+            <div class="anim-card">
+                <h4>Gold Shimmer</h4>
+                <p>For hero titles, section headers, or winner names</p>
+                <div class="anim-demo">
+                    <span class="shimmer-text">Champion Title</span>
+                </div>
+            </div>
+
+            <div class="anim-card">
+                <h4>Staggered Fade-In</h4>
+                <p>For player buttons, event cards, schedule items loading in</p>
+                <div class="anim-demo" id="fadeDemo" style="gap: 8px; flex-wrap: wrap;">
+                    <span class="fade-in-up d1" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 1</span>
+                    <span class="fade-in-up d2" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 2</span>
+                    <span class="fade-in-up d3" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 3</span>
+                    <span class="fade-in-up d4" style="background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 6px;">Card 4</span>
+                </div>
+                <button onclick="replayFade()">Replay</button>
+            </div>
+
+            <div class="anim-card">
+                <h4>Pulse Glow</h4>
+                <p>For active trivia question, live scoring, or call-to-action buttons</p>
+                <div class="anim-demo">
+                    <span class="pulse-glow" style="padding: 12px 24px; border-radius: 8px; border: 2px solid rgba(201,162,39,0.5);">Answer Now!</span>
+                </div>
+            </div>
+
+            <div class="anim-card">
+                <h4>Scale Pop</h4>
+                <p>For podium reveal, correct answer feedback, new scores</p>
+                <div class="anim-demo" id="popDemo">
+                    <span class="scale-pop" style="font-size: 2em; font-weight: bold;">1st</span>
+                </div>
+                <button onclick="replayPop()">Replay</button>
+            </div>
+
+            <div class="anim-card">
+                <h4>Slide In</h4>
+                <p>For schedule items, leaderboard rows, trivia questions</p>
+                <div class="anim-demo" id="slideDemo" style="flex-direction: column; gap: 6px;">
+                    <div class="slide-in-left" style="background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 6px; width: 100%; text-align: left;">1. Stephen - 145 pts</div>
+                </div>
+                <button onclick="replaySlide()">Replay</button>
+            </div>
+
+            <div class="anim-card">
+                <h4>Gentle Float</h4>
+                <p>For trophy icons, winner badges, or decorative elements</p>
+                <div class="anim-demo">
+                    <span class="float" style="font-size: 2.5em;">&#127942;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Dird Plesk Memorial Open Invitational of Champions
+    </footer>
+</div>
+
+<script>
+const fontLabels = {
+    'inter': 'Headers: Inter | Body: Inter',
+    'tourney-inter': 'Headers: Tourney 100 Italic | Body: Inter',
+    'tourney-space': 'Headers: Tourney 100 Italic | Body: Space Grotesk',
+    'tourney-outfit': 'Headers: Tourney 100 Italic | Body: Outfit',
+    'tourney-sora': 'Headers: Tourney 100 Italic | Body: Sora',
+    'tourney-dm': 'Headers: Tourney 100 Italic | Body: DM Sans',
+    'tourney300-inter': 'Headers: Tourney 300 | Body: Inter',
+    'bebas-inter': 'Headers: Bebas Neue | Body: Inter',
+    'oswald-dm': 'Headers: Oswald | Body: DM Sans',
+    'rajdhani-outfit': 'Headers: Rajdhani | Body: Outfit',
+    'barlow-space': 'Headers: Barlow Condensed | Body: Space Grotesk',
+    'orbitron-sora': 'Headers: Orbitron | Body: Sora',
+    'teko-chakra': 'Headers: Teko | Body: Chakra Petch',
+    'russo-chakra': 'Headers: Russo One | Body: Chakra Petch',
+    'space-space': 'Headers: Space Grotesk | Body: Space Grotesk',
+};
+
+function switchTheme(theme) {
+    document.body.className = document.body.className.replace(/theme-\S+/, `theme-${theme}`);
+}
+
+function switchFont(font) {
+    document.body.className = document.body.className.replace(/fonts-\S+/, `fonts-${font}`);
+    document.getElementById('fontLabel').textContent = fontLabels[font] || '';
+}
+
+function replayFade() {
+    const demo = document.getElementById('fadeDemo');
+    const spans = demo.querySelectorAll('span');
+    spans.forEach(s => { s.style.animation = 'none'; s.offsetHeight; s.style.animation = ''; });
+}
+
+function replayPop() {
+    const demo = document.getElementById('popDemo');
+    const span = demo.querySelector('span');
+    span.style.animation = 'none'; span.offsetHeight; span.style.animation = '';
+}
+
+function replaySlide() {
+    const demo = document.getElementById('slideDemo');
+    const div = demo.querySelector('div');
+    div.style.animation = 'none'; div.offsetHeight; div.style.animation = '';
+}
+</script>
+
+</body>
+</html>
