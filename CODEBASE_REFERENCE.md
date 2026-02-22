@@ -1,155 +1,160 @@
-# Dird Plesk Memorial — Codebase Reference Cheat Sheet
+# Dird Plesk Memorial — Codebase Reference
 
 ## Quick Stats
-- **Total lines:** ~6,500
-- **JS:** ~3,874 lines — `js/app.js`
-- **CSS:** ~1,393 lines — `css/main.css`
+- **JS:** ~7,600 lines across 12 modules in `js/`
+- **CSS:** ~2,150 lines — `css/main.css`
 - **HTML pages:** 10 files
 - **Firebase paths:** 12 real-time listeners
+- **Layout:** `_layouts/default.html` (shared template with nav, footer, password gate, script loading)
+- **Deployment:** GitHub Pages (Jekyll) at www.stephenplesko.com
 
 ---
 
-## js/app.js Segments (in order)
+## Architecture
 
-| Segment | Description |
-|---------|-------------|
-| Firebase Config | API keys, initialization |
-| Data Cache | Local mirror of all Firebase data |
-| Constants/Defaults | Player names, scoring tables, default settings, golf settings |
-| Firebase Sync | Listeners, cleanup, `writeToFirebase`, error handling, `initData` |
-| Data Helpers | Getters/setters: `getPlayers()`, `getSiteSettings()`, `getCustomEvents()`, etc. |
-| Completed Events | `getCompletedEvents()` — checks golf, custom events, trivia for data |
-| Auth & Login | Password modal, player login, admin detection |
-| Player Management | Admin player name editing |
-| Site Settings | Hero text, notes, event locks, competition close |
-| Golf System | Teams, scorecards, hole-by-hole scoring, bonuses, format settings |
-| **Custom Events System** | CRUD operations, round management, 3 scoring modes, admin UI, player-facing Events page |
-| Trivia System | Questions, CSV upload, live game, response review, description field |
-| Points Calculation | `calculatePlayerPoints()` — aggregates golf + custom events + trivia + predictions |
-| Leaderboard Columns | `getLeaderboardColumns()` — dynamic columns based on created events |
-| Leaderboard | Podium, dynamic overall table, cumulative chart, per-event breakdowns |
-| Profile System | Player profiles with dynamic event stat cards |
-| Predictions System | Predictions CRUD, voting, banner |
-| Data Management | Export/reset |
-| UI Bootstrap | `DOMContentLoaded`, theme toggle, password gate |
+- **Static site** — No build step. Plain HTML, CSS, vanilla JS served via Jekyll/GitHub Pages
+- **Client-side rendering** — HTML pages are shells; JavaScript renders all content dynamically
+- **Firebase Realtime Database** — All data synced in real-time via listeners
+- **localStorage auth** — No Firebase Auth; password gate + player slot selection
+- **Theme** — Dark/light toggle stored in localStorage (device-specific)
+- **Admin** — Detected via player slot's `isAdmin: true` flag
+
+---
+
+## JS Module Map (`js/` directory)
+
+Files are loaded in this order in `_layouts/default.html`:
+
+| # | File | Lines | Depends On | Responsibility |
+|---|------|-------|------------|----------------|
+| 1 | `config.js` | ~20 | — | Firebase credentials, site/admin passwords |
+| 2 | `utils.js` | ~343 | config.js | Validation (bounds constants), password gate, theme, page routing, UI helpers (toast, confirm, checkbox groups, table builders), date formatting |
+| 3 | `firebase.js` | ~527 | config.js, utils.js | Firebase init, data cache, default data constants, real-time listeners, `writeToFirebase()`, all data accessors (getPlayers, getGolfData, getSiteSettings, etc.), golf scoring calculations |
+| 4 | `auth.js` | ~115 | firebase.js | Login/logout, admin check, password modal, UI state |
+| 5 | `golf.js` | ~425 | utils.js, firebase.js, auth.js | Golf admin UI, scorecard rendering, score entry, bonus inputs |
+| 6 | `events.js` | ~777 | utils.js, firebase.js, auth.js | Custom events CRUD, 3 scoring modes, round management, admin config UI, player-facing events page |
+| 7 | `trivia.js` | ~1,044 | utils.js, firebase.js, auth.js | Trivia game engine, CSV import, admin controls (question mgmt, game flow, response review), player view (lobby, answering, results) |
+| 8 | `predictions.js` | ~449 | utils.js, firebase.js, auth.js | Predictions CRUD, voting UI, banner notifications, admin management |
+| 9 | `leaderboard.js` | ~433 | firebase.js, golf.js, events.js, trivia.js, predictions.js | `calculatePlayerPoints()` (aggregates all scoring), overall/per-event leaderboards, cumulative SVG chart, podium |
+| 10 | `admin.js` | ~1,008 | firebase.js, auth.js | Player name mgmt, site settings, golf settings, event locks, competition close, data export/reset, onboarding wizard (7 steps) |
+| 11 | `profile.js` | ~105 | firebase.js, auth.js, leaderboard.js | Player profile page with dynamic stat cards and team assignments |
+| 12 | `app.js` | ~188 | all above | Entry point: `DOMContentLoaded` handler, page routing (`isPage()` checks), initial render calls, weekend schedule |
 
 ---
 
 ## HTML Pages
 
-| File | Purpose |
-|------|---------|
-| `index.html` | Homepage — login, events grid, notes |
-| `leaderboard.html` | Overall standings, dynamic per-event tables |
-| `golf.html` | Golf scorecard |
-| `events.html` | Custom events — rounds, teams, results |
-| `trivia.html` | Live trivia player view |
-| `predictions.html` | Predictions voting |
-| `admin.html` | Admin panel (site settings, players, custom events, trivia, predictions) |
-| `guide.html` | User guide |
-| `profile.html` | Player profile |
-| `_layouts/default.html` | Shared template (nav, footer, scripts) |
+| File | Purpose | Key Containers |
+|------|---------|---------------|
+| `index.html` | Homepage — player login grid, weekend schedule, notes | `playerGrid`, `weekendSchedule`, `notesSection` |
+| `leaderboard.html` | Overall standings, per-event tables, chart | `overallLeaderboardContainer`, `cumulativeChart` |
+| `golf.html` | Golf scorecard and scoring guide | `golfScorecard`, `scoringGuide` |
+| `events.html` | Custom events results (player-facing) | `eventsContainer` |
+| `trivia.html` | Live trivia player/admin view | `triviaPlayerView`, `triviaGameControls` |
+| `predictions.html` | Predictions voting interface | `predictionsContainer` |
+| `admin.html` | Admin panel (all management) | `adminContent`, `playerList`, `siteSettingsContainer`, etc. |
+| `profile.html` | Player profile and name editing | `profileContent` |
+| `guide.html` | User guide (static help content) | — |
+| `preview-themes.html` | Theme preview utility (dev tool) | — |
 
 ---
 
-## CSS Organization (css/main.css)
+## CSS Organization (`css/main.css` — ~2,150 lines)
 
 | Section | What It Styles |
 |---------|---------------|
-| Variables (`:root`) | Color tokens for dark/light themes |
+| `:root` variables | Color tokens for dark/light themes |
 | Layout | Nav, container, footer, footer-links |
-| Components | Cards, buttons, tables, modals, toggles |
-| Event-Specific | Scorecards, hole grids, team cards |
+| Components | Cards, buttons, tables, modals, toggles, toasts, confirms |
+| Event-Specific | Scorecards, team cards, scoring grids |
+| Trivia | Question display, option buttons, reviewing states |
 | Predictions | Banner, cards, options, responses |
-| Responsive | 3 breakpoints (768px, 480px) |
-| Light Mode | `[data-theme="light"]` overrides at end |
+| Onboarding | Wizard modal, progress bar, form fields |
+| Responsive | Breakpoints at 768px and 480px |
+| Light Mode | `[data-theme="light"]` overrides (end of file) |
 
----
-
-## Key Vocabulary
-
-| Term | Meaning |
-|------|---------|
-| **custom event** | Admin-created competition event with rounds and scoring mode |
-| **scoring mode** | How points are calculated: `individual`, `team_shared`, `individual_to_team` |
-| **round** | A sub-unit of a custom event with its own teams and results |
-| **render function** | JS function that generates HTML (e.g., `renderEventsPage()`) |
-| **data helper** | Getter/setter for Firebase data (e.g., `getCustomEvents()`) |
-| **admin section** | Gold-bordered UI block only visible to admin |
-| **event lock** | Toggle that freezes an event's data |
-| **banner** | Notification bar (e.g., predictions banner) |
-| **section card** | Main content container (`.section-card`) |
-| **data path** | Firebase key (e.g., `customEvents`, `siteSettings`) |
-| **player view** | What non-admin users see |
-| **segment** | Logical section of `app.js` by feature |
+**Fonts:** Russo One (headings), Sora (body — weights 300-700)
 
 ---
 
 ## Firebase Data Paths
 
-| Path | Type | Description |
-|------|------|-------------|
-| `players` | Object | 12 player slots with names and admin flag |
-| `triviaPoints` | Object | Point values by finishing position (legacy) |
-| `bonusPoints` | Object | Golf bonus point values |
-| `golfTeams` | Object | Team assignments |
-| `golfHoleScores` | Object | Hole-by-hole scores per team |
-| `golfShotguns` | Object | Shotgun bonus data |
-| `golfBonuses` | Object | Best front/back/overall winners |
-| `golfScoringEnabled` | Object | Which teams have scoring open |
-| `customEvents` | Object | All custom events with rounds, teams, results |
-| `triviaGame` | Object | Questions, responses, game state, description |
-| `siteSettings` | Object | Hero text, notes, locks, competition status, golf settings |
-| `predictions` | Object | Prediction items, responses |
+| Path | Description |
+|------|-------------|
+| `players` | 12 player slots: `{ name, isAdmin }` |
+| `triviaPoints` | Legacy — position-based point values |
+| `bonusPoints` | Golf bonus values: bestFront, bestBack, overallWinner, shotgun |
+| `golfTeams` | Team assignments: `{ teamNum: [playerNames] }` |
+| `golfScores` | Per-team scores: `{ teamNum: { front9, back9 } }` |
+| `golfShotguns` | Per-team shotgun counts |
+| `golfScoringEnabled` | Per-team scoring toggle |
+| `golfIndividualBonuses` | Long drive + closest pin: `{ player, points }` |
+| `customEvents` | All events with rounds, teams, results (see structure below) |
+| `triviaGame` | Questions, responses, game state, joinedPlayers |
+| `siteSettings` | Hero text, notes, event locks, golf settings, competition status |
+| `predictions` | Prediction items with responses |
 
 ---
 
 ## Custom Events Data Structure
 
 ```
-customEvents/
-  [eventId]/
-    id, name, description, order
-    scoringMode: "individual" | "team_shared" | "individual_to_team"
-    roundCount, locked
-    rounds/
-      [roundNum]/
-        name, teamCount
-        pointValues: { 1: N, 2: N, ... }  (position → points)
-        teams: { 1: [players], 2: [players], ... }
-        results: { ... }  (format depends on scoring mode)
+customEvents/[eventId]/
+  id, name, description, order, locked
+  scoringMode: "individual" | "team_shared" | "individual_to_team"
+  scheduledDate, scheduledTime, roundCount
+  rounds/[roundNum]/
+    name, teamCount
+    pointValues: { position: points }
+    teams: { teamNum: [playerNames] }
+    results: { ... }  // format depends on scoringMode
 ```
 
 **Results format by scoring mode:**
-- `individual`: `{ playerName: position }` (e.g., `{ "Alex": 1, "Brad": 2 }`)
-- `team_shared`: `{ teamNum: score }` (e.g., `{ "1": 10, "2": 8 }`)
-- `individual_to_team`: `{ playerName: score }` — pooled per team, ranked, shared points
+- `individual`: `{ playerName: position }` — player gets points from `pointValues[position]`
+- `team_shared`: `{ teamNum: score }` — each team member gets this score directly
+- `individual_to_team`: `{ playerName: score }` — pooled per team, teams ranked, shared points by rank
+
+---
+
+## Key Function Reference
+
+### Data Layer (`firebase.js`)
+- `initData()` — Sets up Firebase listeners + theme
+- `writeToFirebase(path, data)` — Write with error handling
+- `getPlayers()`, `getGolfData()`, `getSiteSettings()`, `getCustomEvents()`, `getTriviaGame()`, `getPredictions()` — Data accessors with defaults
+- `calculateGolfTeamTotal(teamNum)` — Full golf scoring breakdown
+- `onDataChange(path)` — Routes Firebase updates to relevant render functions
+
+### Scoring (`leaderboard.js`)
+- `calculatePlayerPoints()` — Aggregates golf + custom events + trivia + predictions → `{ player: { golf, trivia, predictions, [eventId], total } }`
+
+### UI Helpers (`utils.js`)
+- `showToast(message, type, duration)` — Non-blocking notifications
+- `showConfirm(message, options)` — Promise-based confirmation modal
+- `validateNumber(value, min, max, default)` — Generic input validation
+- `formatDateTime(date, time, options)` — Unified date/time formatting
 
 ---
 
 ## How to Describe Changes
 
 **Template:**
-> In the **[Segment Name]**, [add/update/fix] **[specific thing]**.
+> In **[file.js]**, [add/update/fix] **[specific thing]**.
 > It should [behavior description].
 > This affects [admin/players/both] on the [page name] page.
 
 **Examples:**
-- "In the **Custom Events System**, add a **round description** field so the admin can name each round."
-- "In the **Points Calculation** segment, update `calculatePlayerPoints()` to weight certain events differently."
-- "In the **Site Settings** segment, add a toggle for **dark mode default** so the admin can set the default theme."
+- "In **events.js**, add a **round description** field so the admin can name each round."
+- "In **leaderboard.js**, update `calculatePlayerPoints()` to weight certain events differently."
+- "In **admin.js**, add a toggle for **dark mode default** so the admin can set the default theme."
 - "On the **events page**, add a **standings summary** below each event showing top 3 players."
 
 ---
 
-## Architecture Notes
+## Developer Tooling
 
-- Single-page dynamic rendering: HTML pages are shells, JS renders content
-- All data synced via Firebase Realtime Database
-- No build step — plain JS, CSS, HTML served via Jekyll/GitHub Pages
-- Theme stored in localStorage (device-specific, not synced)
-- Auth is localStorage-based (not Firebase Auth)
-- Admin detection via player slot 1 `isAdmin: true`
-- Custom events are fully dynamic — leaderboard columns, profile stats, and charts adapt automatically
-- Golf and Trivia are standalone systems with their own dedicated logic
-- Predictions are always the last column in the leaderboard
+- **Linter:** ESLint 8 (config in `.eslintrc.json`). Run: `npx eslint js/*.js`
+- **Session Hook:** `.claude/hooks/session-start.sh` — Installs ESLint on Claude Code web sessions
+- **No test framework** — Manual QA only
+- **No CI/CD** — Deploy on push to master via GitHub Pages

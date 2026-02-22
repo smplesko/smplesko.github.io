@@ -24,8 +24,6 @@ let dataCache = {
     predictions: null
 };
 
-let firebaseReady = false;
-
 // ===== CONFIGURATION CONSTANTS =====
 const MAX_PLAYERS = 12;
 const MAX_TRIVIA_QUESTIONS = 16;
@@ -154,8 +152,6 @@ function setupFirebaseListeners() {
             onDataChange(path);
         });
     });
-
-    firebaseReady = true;
 }
 
 // Clean up Firebase listeners on page unload to prevent memory leaks
@@ -367,7 +363,7 @@ function getCompletedEvents() {
     if (Object.keys(golfScores).length > 0) {
         for (const teamNum of Object.keys(golfScores)) {
             const ts = golfScores[teamNum] || {};
-            if (ts.front9 != null && ts.front9 !== '' || ts.back9 != null && ts.back9 !== '') {
+            if ((ts.front9 != null && ts.front9 !== '') || (ts.back9 != null && ts.back9 !== '')) {
                 completed.golf = true;
                 break;
             }

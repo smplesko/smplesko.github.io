@@ -678,6 +678,7 @@ function renderEventsPage() {
 
     const events = getCustomEvents();
     const eventList = Object.values(events).sort((a, b) => (a.order || 0) - (b.order || 0));
+    // Player-facing labels (longer form than admin SCORING_LABELS)
     const scoringLabels = {
         'individual': 'Individual Scoring',
         'team_shared': 'Team Scoring',
