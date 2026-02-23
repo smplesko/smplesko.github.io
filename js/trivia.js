@@ -405,7 +405,7 @@ function renderTriviaGameControls() {
         }
         html += `</div>`;
 
-        html += `<button class="btn btn-gold" onclick="triviaShowQuestion(1)" ${joinedPlayers.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>Start Trivia - Show Q1</button>`;
+        html += `<button class="btn btn-gold btn-glow" onclick="triviaShowQuestion(1)" ${joinedPlayers.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>Start Trivia - Show Q1</button>`;
         if (joinedPlayers.length === 0) {
             html += `<p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">At least one player must join to start</p>`;
         }
@@ -735,7 +735,7 @@ function renderTriviaPage() {
         } else {
             html += `
                 <p style="margin-top: 15px; opacity: 0.8;">Join the game to participate!</p>
-                <button class="btn btn-gold" onclick="joinTriviaLobby()" style="margin-top: 15px; font-size: 1.1em; padding: 15px 40px;">Join Trivia</button>
+                <button class="btn btn-gold btn-glow" onclick="joinTriviaLobby()" style="margin-top: 15px; font-size: 1.1em; padding: 15px 40px;">Join Trivia</button>
             `;
         }
 
@@ -798,7 +798,7 @@ function renderTriviaPage() {
                 <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px;">
                     ${hasSubmitted
                         ? '<span style="color: var(--gold);">Answer submitted!</span>'
-                        : '<button class="btn btn-gold" onclick="submitTriviaAnswer()">Submit Answer</button>'}
+                        : '<button class="btn btn-gold btn-glow" onclick="submitTriviaAnswer()">Submit Answer</button>'}
                 </div>
             `;
         } else {
@@ -812,7 +812,7 @@ function renderTriviaPage() {
                         <small style="opacity: 0.6;">Max 255 characters</small>
                         ${hasSubmitted
                             ? '<span style="color: var(--gold);">Answer submitted!</span>'
-                            : '<button class="btn btn-gold" onclick="submitTriviaAnswer()">Submit Answer</button>'}
+                            : '<button class="btn btn-gold btn-glow" onclick="submitTriviaAnswer()">Submit Answer</button>'}
                     </div>
                 </div>
             `;
