@@ -1556,12 +1556,13 @@ body.is-admin nav .admin-only {
 }
 
 [data-theme="light"] .hero h1 {
-    color: #ffffff;
-    background: linear-gradient(105deg, #ffffff 0%, #ffffff 35%, #fff8dc 42%, var(--gold) 50%, #fff8dc 58%, #ffffff 65%, #ffffff 100%);
+    color: var(--gold);
+    background: linear-gradient(105deg, var(--gold) 0%, var(--gold) 35%, #fff8dc 42%, #ffffff 50%, #fff8dc 58%, var(--gold) 65%, var(--gold) 100%);
     background-size: 300% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
 }
 
 [data-theme="light"] .notes-section {
@@ -1572,8 +1573,8 @@ body.is-admin nav .admin-only {
 }
 
 [data-theme="light"] .login-section h2 {
-    color: #1a5c28;
-    background: linear-gradient(105deg, #1a5c28 0%, #1a5c28 35%, #fff8dc 42%, var(--gold) 50%, #fff8dc 58%, #1a5c28 65%, #1a5c28 100%);
+    color: var(--gold);
+    background: linear-gradient(105deg, var(--gold) 0%, var(--gold) 35%, #fff8dc 42%, #ffffff 50%, #fff8dc 58%, var(--gold) 65%, var(--gold) 100%);
     background-size: 300% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
