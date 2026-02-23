@@ -140,7 +140,7 @@ nav ul li a:hover, nav ul li a.active {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmer 3s linear infinite;
+    animation: shimmer 8s ease-in-out infinite;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
 }
 
@@ -196,7 +196,7 @@ nav ul li a:hover, nav ul li a.active {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmer 3s linear infinite;
+    animation: shimmer 8s ease-in-out infinite;
 }
 
 @keyframes shimmer {
@@ -399,7 +399,7 @@ nav ul li a:hover, nav ul li a.active {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmer 3s linear infinite;
+    animation: shimmer 8s ease-in-out infinite;
 }
 .rank-2 { color: var(--silver-light); font-weight: bold; }
 .rank-3 { color: #cd7f32; font-weight: bold; }
