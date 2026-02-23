@@ -14,3 +14,5 @@ Thumbs.db
 # Build artifacts
 node_modules/
 .sass-cache/
+package.json
+package-lock.json
