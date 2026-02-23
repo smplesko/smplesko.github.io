@@ -113,6 +113,7 @@ function updateEventRound(eventId, roundNum, updates) {
 }
 
 function addEventRound(eventId) {
+    collectUnsavedEventData(eventId);
     const events = getCustomEvents();
     const event = events[eventId];
     if (!event) return;
@@ -134,6 +135,7 @@ function addEventRound(eventId) {
 }
 
 function removeEventRound(eventId, roundNum) {
+    collectUnsavedEventData(eventId);
     const events = getCustomEvents();
     const event = events[eventId];
     if (!event || !event.rounds) return;
@@ -145,6 +147,7 @@ function removeEventRound(eventId, roundNum) {
 }
 
 function copyPreviousRoundTeams(eventId, roundNum) {
+    collectUnsavedEventData(eventId);
     const events = getCustomEvents();
     const event = events[eventId];
     if (!event) return;
@@ -264,6 +267,7 @@ function saveEventRoundPoints(eventId, roundNum) {
 
 // Update round team count
 function updateEventRoundTeamCount(eventId, roundNum, count) {
+    collectUnsavedEventData(eventId);
     const events = getCustomEvents();
     const event = events[eventId];
     if (!event || !event.rounds[roundNum]) return;
@@ -340,6 +344,59 @@ function calculateCustomEventPlayerPoints(event) {
 
 // Track which event configs are expanded to prevent collapse on Firebase sync
 const expandedEventConfigs = new Set();
+
+// Persist unsaved DOM input values to cache before any re-render
+function collectUnsavedEventData(eventId) {
+    const events = getCustomEvents();
+    const event = events[eventId];
+    if (!event || !event.rounds) return;
+
+    let changed = false;
+
+    // Collect round names from DOM inputs
+    Object.keys(event.rounds).forEach(roundNum => {
+        const input = document.getElementById(`ceRoundName_${eventId}_r${roundNum}`);
+        if (input) {
+            const newName = input.value.trim() || `Round ${roundNum}`;
+            if (event.rounds[roundNum].name !== newName) {
+                event.rounds[roundNum].name = newName;
+                changed = true;
+            }
+        }
+    });
+
+    // Collect scheduled date/time
+    const dateInput = document.getElementById(`eventDate_${eventId}`);
+    const timeInput = document.getElementById(`eventTime_${eventId}`);
+    if (dateInput && (event.scheduledDate || '') !== dateInput.value) {
+        event.scheduledDate = dateInput.value;
+        changed = true;
+    }
+    if (timeInput && (event.scheduledTime || '') !== timeInput.value) {
+        event.scheduledTime = timeInput.value;
+        changed = true;
+    }
+
+    if (changed) saveCustomEvents(events);
+}
+
+// Track which <details> sections are open so we can restore after re-render
+function collectOpenDetailIds(eventId) {
+    const configDiv = document.getElementById(`eventConfig_${eventId}`);
+    if (!configDiv) return [];
+    const openIds = [];
+    configDiv.querySelectorAll('details[id]').forEach(detail => {
+        if (detail.open) openIds.push(detail.id);
+    });
+    return openIds;
+}
+
+function restoreOpenDetails(openIds) {
+    openIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.open = true;
+    });
+}
 
 function renderCustomEventsAdmin() {
     const container = document.getElementById('customEventsAdminContainer');
@@ -484,6 +541,10 @@ function renderEventRoundConfigs(eventId) {
     const configDiv = document.getElementById(`eventConfig_${eventId}`);
     if (!configDiv) return;
 
+    // Preserve unsaved form values and open details before rebuilding
+    collectUnsavedEventData(eventId);
+    const openDetails = collectOpenDetailIds(eventId);
+
     const event = getCustomEvent(eventId);
     if (!event) return;
 
@@ -536,6 +597,7 @@ function renderEventRoundConfigs(eventId) {
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;">
                         <input type="text" id="ceRoundName_${eventId}_r${roundNum}" value="${roundName}"
+                               onchange="saveEventRoundName('${eventId}', ${roundNum})"
                                style="padding: 8px; border: none; border-radius: 5px; font-size: 0.95em; flex: 1;">
                     </div>
                     <button class="btn btn-small" onclick="removeEventRound('${eventId}', ${roundNum})" style="background: var(--accent-red); font-size: 0.8em;">Remove Round</button>
@@ -545,7 +607,7 @@ function renderEventRoundConfigs(eventId) {
         // Point values (for individual or individual_to_team)
         if (needsPositionPoints) {
             const pointLabel = event.scoringMode === 'individual_to_team' ? 'Point Values (per team rank)' : 'Point Values (per position)';
-            html += `<details style="margin-bottom: 10px;"><summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">${pointLabel}</summary>`;
+            html += `<details id="detailPts_${eventId}_r${roundNum}" style="margin-bottom: 10px;"><summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">${pointLabel}</summary>`;
             html += '<div class="point-config" style="margin-top: 8px;">';
             for (let i = 1; i <= MAX_PLAYERS; i++) {
                 html += `
@@ -563,7 +625,7 @@ function renderEventRoundConfigs(eventId) {
         // Team assignment (for team modes)
         if (needsTeams) {
             html += `
-                <details style="margin-bottom: 10px;">
+                <details id="detailTeams_${eventId}_r${roundNum}" style="margin-bottom: 10px;">
                     <summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Team Assignment</summary>
                     <div style="margin-top: 8px;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
@@ -592,7 +654,7 @@ function renderEventRoundConfigs(eventId) {
 
         // Results entry
         html += `
-            <details style="margin-bottom: 10px;">
+            <details id="detailRes_${eventId}_r${roundNum}" style="margin-bottom: 10px;">
                 <summary style="cursor: pointer; color: var(--gold); font-size: 0.9em;">Enter Results</summary>
                 <div style="margin-top: 8px;">
         `;
@@ -668,6 +730,9 @@ function renderEventRoundConfigs(eventId) {
             }
         });
     }
+
+    // Restore previously open <details> sections
+    restoreOpenDetails(openDetails);
 }
 
 // ===== CUSTOM EVENTS PAGE (Player-Facing) =====
