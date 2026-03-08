@@ -46,28 +46,16 @@ Use these rules when you want to test the app functionality with realistic condi
     "golfTeams": {
       ".write": true
     },
-    "golfHoleScores": {
+    "golfScores": {
       ".write": true
     },
     "golfShotguns": {
       ".write": true
     },
-    "golfBonuses": {
-      ".write": true
-    },
     "golfScoringEnabled": {
       ".write": true
     },
-    "beerTeams": {
-      ".write": true
-    },
-    "beerScores": {
-      ".write": true
-    },
-    "gokartResults": {
-      ".write": true
-    },
-    "gokartPoints": {
+    "golfIndividualBonuses": {
       ".write": true
     },
     "triviaPoints": {
@@ -77,6 +65,12 @@ Use these rules when you want to test the app functionality with realistic condi
       ".write": true
     },
     "triviaGame": {
+      ".write": true
+    },
+    "customEvents": {
+      ".write": true
+    },
+    "predictions": {
       ".write": true
     },
     "siteSettings": {
@@ -106,28 +100,16 @@ Use these rules during the actual bachelor party weekend. This provides the same
     "golfTeams": {
       ".write": true
     },
-    "golfHoleScores": {
+    "golfScores": {
       ".write": true
     },
     "golfShotguns": {
       ".write": true
     },
-    "golfBonuses": {
-      ".write": true
-    },
     "golfScoringEnabled": {
       ".write": true
     },
-    "beerTeams": {
-      ".write": true
-    },
-    "beerScores": {
-      ".write": true
-    },
-    "gokartResults": {
-      ".write": true
-    },
-    "gokartPoints": {
+    "golfIndividualBonuses": {
       ".write": true
     },
     "triviaPoints": {
@@ -137,6 +119,12 @@ Use these rules during the actual bachelor party weekend. This provides the same
       ".write": true
     },
     "triviaGame": {
+      ".write": true
+    },
+    "customEvents": {
+      ".write": true
+    },
+    "predictions": {
       ".write": true
     },
     "siteSettings": {
@@ -196,7 +184,7 @@ Before the actual event, you may want to clear all test data. You can do this fr
 3. Click the **X** to delete all data
 4. The app will recreate default empty structures when first accessed
 
-Or selectively clear specific sections (triviaGame, golfHoleScores, etc.) while keeping players.
+Or selectively clear specific sections (triviaGame, golfScores, customEvents, predictions, etc.) while keeping players.
 
 ---
 

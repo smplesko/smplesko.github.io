@@ -56,8 +56,8 @@ function createCustomEvent(name, description, scoringMode, roundCount, scheduled
     return id;
 }
 
-function deleteCustomEvent(eventId) {
-    if (!confirm('Are you sure you want to delete this event and all its data?')) return;
+async function deleteCustomEvent(eventId) {
+    if (!await showConfirm('Are you sure you want to delete this event and all its data?', { confirmText: 'Delete' })) return;
     expandedEventConfigs.delete(eventId);
     const events = getCustomEvents();
     delete events[eventId];
@@ -134,12 +134,12 @@ function addEventRound(eventId) {
     saveCustomEvents(events);
 }
 
-function removeEventRound(eventId, roundNum) {
+async function removeEventRound(eventId, roundNum) {
     collectUnsavedEventData(eventId);
     const events = getCustomEvents();
     const event = events[eventId];
     if (!event || !event.rounds) return;
-    if (!confirm(`Delete Round ${roundNum}? This removes all teams and results for this round.`)) return;
+    if (!await showConfirm(`Delete Round ${roundNum}? This removes all teams and results for this round.`, { confirmText: 'Delete' })) return;
 
     delete event.rounds[roundNum];
     event.roundCount = Object.keys(event.rounds).length;

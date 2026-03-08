@@ -78,6 +78,18 @@ function validateAdminSlot(value, playerCount) {
     return validateNumber(value, 1, playerCount, 1);
 }
 
+// ===== HTML ESCAPING =====
+
+// Escape HTML special characters to prevent XSS when inserting user content
+function escapeHtml(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+}
+
 // ===== SITE PASSWORD GATE =====
 // Password validation (runs after config.js is loaded)
 function checkSitePassword() {
@@ -282,7 +294,7 @@ function showToast(message, type, duration) {
 
     toast.innerHTML = `
         <span class="toast-icon">${icons[type] || icons.info}</span>
-        <span class="toast-message">${message}</span>
+        <span class="toast-message">${escapeHtml(message)}</span>
         <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
     `;
 
@@ -309,7 +321,7 @@ function showConfirm(message, options) {
         modal.className = 'confirm-modal';
         modal.innerHTML = `
             <div class="confirm-content">
-                <p class="confirm-message">${message}</p>
+                <p class="confirm-message">${escapeHtml(message)}</p>
                 <div class="confirm-actions">
                     <button class="btn" onclick="this.closest('.confirm-modal').dataset.result='false'; this.closest('.confirm-modal').remove()">
                         ${options.cancelText || 'Cancel'}
