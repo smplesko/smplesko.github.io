@@ -35,7 +35,7 @@ function renderProfile() {
         <div class="section-card">
             <h2 style="color: var(--accent-red);">Edit Your Name</h2>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="profileNameInput" value="${user}"
+                <input type="text" id="profileNameInput" value="${escapeHtml(user)}"
                        style="flex: 1; min-width: 150px; padding: 12px; border: none; border-radius: 5px; font-size: 1em;">
                 <button class="btn" onclick="saveProfileName()">Save Name</button>
             </div>

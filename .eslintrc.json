@@ -27,6 +27,7 @@
     "onboardingData": "writable",
     "ONBOARDING_TOTAL_STEPS": "writable",
 
+    "escapeHtml": "writable",
     "showSiteContent": "writable",
     "checkSitePassword": "writable",
 

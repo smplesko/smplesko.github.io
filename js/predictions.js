@@ -40,7 +40,7 @@ function getUnansweredPredictions(userName) {
 }
 
 // Submit prediction answer
-function submitPredictionAnswer(predictionId, answer) {
+async function submitPredictionAnswer(predictionId, answer) {
     const user = getCurrentUser();
     if (!user) {
         showToast('Please log in first', 'warning');
@@ -64,10 +64,10 @@ function submitPredictionAnswer(predictionId, answer) {
     }
 
     // Double opt-in confirmation
-    if (!confirm(`Are you sure you want to select "${answer}"?\n\nThis cannot be changed!`)) {
+    if (!await showConfirm(`Are you sure you want to select "${escapeHtml(answer)}"? This cannot be changed!`, { confirmText: 'Select' })) {
         return;
     }
-    if (!confirm(`Final confirmation: Lock in "${answer}" as your answer?`)) {
+    if (!await showConfirm(`Final confirmation: Lock in "${escapeHtml(answer)}" as your answer?`, { confirmText: 'Lock In' })) {
         return;
     }
 
@@ -107,7 +107,7 @@ function createPrediction(question, type, options, pointValue) {
 }
 
 // Admin: Finalize prediction with correct answer
-function finalizePrediction(predictionId, correctAnswer) {
+async function finalizePrediction(predictionId, correctAnswer) {
     const predictions = getPredictions();
     const predictionIndex = predictions.items.findIndex(p => p.id === predictionId);
 
@@ -116,7 +116,7 @@ function finalizePrediction(predictionId, correctAnswer) {
         return;
     }
 
-    if (!confirm(`Set "${correctAnswer}" as the correct answer and finalize this prediction?`)) {
+    if (!await showConfirm(`Set "${escapeHtml(correctAnswer)}" as the correct answer and finalize this prediction?`, { confirmText: 'Finalize' })) {
         return;
     }
 
@@ -127,8 +127,8 @@ function finalizePrediction(predictionId, correctAnswer) {
 }
 
 // Admin: Delete prediction
-function deletePrediction(predictionId) {
-    if (!confirm('Are you sure you want to delete this prediction?')) {
+async function deletePrediction(predictionId) {
+    if (!await showConfirm('Are you sure you want to delete this prediction?', { confirmText: 'Delete' })) {
         return;
     }
 
@@ -260,7 +260,7 @@ function renderPredictionCard(prediction, user, playerList) {
         // Show voting options
         html += '<div class="prediction-options">';
         prediction.options.forEach(option => {
-            html += `<button class="prediction-option-btn" onclick="submitPredictionAnswer('${prediction.id}', '${option.replace(/'/g, "\\'")}')">${option}</button>`;
+            html += `<button class="prediction-option-btn" onclick="submitPredictionAnswer('${prediction.id}', ${escapeHtml(JSON.stringify(option))})">${escapeHtml(option)}</button>`;
         });
         html += '</div>';
     } else {
