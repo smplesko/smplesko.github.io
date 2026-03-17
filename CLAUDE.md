@@ -50,6 +50,45 @@ The reference doc should always reflect the current state of the codebase, not a
 
 ---
 
+## Task Tracking
+
+Use `tasks/todo.md` to track in-progress work across sessions. Use `tasks/lessons.md` to record mistakes and corrections — review it at the start of each session to avoid repeating past errors.
+
+**After any user correction:** add a concise entry to `tasks/lessons.md` describing what went wrong and the right approach. This is the highest-ROI habit for reducing repeated bugs on this project.
+
+---
+
+## Planning
+
+Use plan mode for architectural decisions, new features that touch multiple files, or anything with unclear requirements. Skip it for routine tasks (adding a field, fixing a known bug, tweaking styles) — the overhead isn't worth it on a small static site.
+
+If something goes sideways mid-task, stop and re-plan rather than patching forward.
+
+---
+
+## Verification Before Done
+
+Never mark a task complete without confirming it works:
+
+1. Run `npx eslint js/*.js` if any JS was changed
+2. Manually verify the behavior in a browser (no automated tests exist — manual QA is the only gate)
+3. Diff your changes against `master` behavior when the change touches scoring, Firebase paths, or auth logic
+4. Check that no unrelated files were modified
+
+---
+
+## Subagent Use
+
+Reserve subagents for deep codebase exploration or parallel analysis of multiple independent files. For routine lookups (find a function, read a file, search for a selector), use Glob/Grep/Read directly — it's faster and cheaper. This is a small codebase; subagents are rarely the right default.
+
+---
+
+## Autonomous Bug Fixing
+
+When a bug is clearly identified, fix it without asking for step-by-step guidance. Minimize context switching for the user. If the fix requires a decision with meaningful trade-offs, flag the options briefly rather than asking how to proceed on implementation details.
+
+---
+
 ## Code Conventions
 
 - All Firebase writes go through `writeToFirebase(path, data)` — never write directly to Firebase refs
