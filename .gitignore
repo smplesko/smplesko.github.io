@@ -1,5 +1,5 @@
 # Configuration with secrets (use config.example.js as template)
-# js/config.js
+js/config.js
 
 # OS files
 .DS_Store

@@ -163,22 +163,46 @@ function cleanupFirebaseListeners() {
 
 window.addEventListener('beforeunload', cleanupFirebaseListeners);
 
+// Debounced render scheduler - batches multiple Firebase updates into a single render
+let _pendingRender = null;
+function scheduleRender() {
+    if (_pendingRender) return;
+    _pendingRender = requestAnimationFrame(() => {
+        _pendingRender = null;
+        flushRender();
+    });
+}
+
+// Tracks which paths changed since last render
+const _changedPaths = new Set();
+
 // Called when Firebase data changes - refresh relevant UI
 // Note: render functions are defined in app.js (loaded after this file)
 function onDataChange(path) {
-    // Always update hero settings
-    if (path === 'siteSettings') {
+    _changedPaths.add(path);
+    scheduleRender();
+}
+
+function flushRender() {
+    const paths = new Set(_changedPaths);
+    _changedPaths.clear();
+
+    const hasPath = (p) => paths.has(p);
+    const hasAnyPath = (...ps) => ps.some(p => paths.has(p));
+
+    // Update hero settings on homepage
+    if (hasPath('siteSettings')) {
         applyHeroSettings();
     }
 
     // Update player grid and schedule on home
-    if (path === 'players' && isHomePage()) {
+    if (hasPath('players') && isHomePage()) {
         renderPlayerGrid();
     }
-    if ((path === 'siteSettings' || path === 'triviaGame' || path === 'customEvents') && isHomePage()) {
+    if (hasAnyPath('siteSettings', 'triviaGame', 'customEvents') && isHomePage()) {
         renderWeekendSchedule();
     }
-    if (path === 'siteSettings' && isHomePage()) {
+    if (hasPath('siteSettings') && isHomePage()) {
         renderPodium();
     }
 
@@ -188,18 +212,18 @@ function onDataChange(path) {
     }
 
     // Update golf scorecard (golf* paths for scores/teams, siteSettings for format/scoring config)
-    if ((path.startsWith('golf') || path === 'siteSettings') && isPage('golf')) {
-        renderScoringGuide();
+    const hasGolfPath = Array.from(paths).some(p => p.startsWith('golf'));
+    if ((hasGolfPath || hasPath('siteSettings')) && isPage('golf')) {
         renderGolfScorecard();
     }
 
     // Update events page
-    if (path === 'customEvents' && isPage('events')) {
+    if (hasPath('customEvents') && isPage('events')) {
         renderEventsPage();
     }
 
     // Update trivia page
-    if (path === 'triviaGame' && isPage('trivia')) {
+    if (hasPath('triviaGame') && isPage('trivia')) {
         renderTriviaPage();
         if (isAdmin()) {
             renderTriviaGameControls();
@@ -208,18 +232,18 @@ function onDataChange(path) {
 
     // Update admin page
     if (isPage('admin')) {
-        if (path === 'players') renderPlayerList();
-        if (path === 'siteSettings') renderSiteSettings();
-        if (path === 'customEvents' && typeof expandedEventConfigs !== 'undefined' && expandedEventConfigs.size === 0) renderCustomEventsAdmin();
-        if (path === 'triviaGame') {
+        if (hasPath('players')) renderPlayerList();
+        if (hasPath('siteSettings')) renderSiteSettings();
+        if (hasPath('customEvents') && typeof expandedEventConfigs !== 'undefined' && expandedEventConfigs.size === 0) renderCustomEventsAdmin();
+        if (hasPath('triviaGame')) {
             renderTriviaQuestionAdmin();
             renderTriviaGameControls();
         }
-        if (path === 'predictions') renderPredictionsAdmin();
+        if (hasPath('predictions')) renderPredictionsAdmin();
     }
 
     // Update predictions page
-    if (path === 'predictions' && isPage('predictions')) {
+    if (hasPath('predictions') && isPage('predictions')) {
         renderPredictionsPage();
     }
 
@@ -228,8 +252,8 @@ function onDataChange(path) {
         renderProfile();
     }
 
-    // Always check for unanswered predictions banner
-    if (path === 'predictions') {
+    // Check for unanswered predictions banner
+    if (hasPath('predictions')) {
         updatePredictionsBanner();
     }
 }

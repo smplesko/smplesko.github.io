@@ -281,6 +281,7 @@ function saveGolfSettings() {
 }
 
 function applyHeroSettings() {
+    if (!isHomePage()) return;
     const settings = getSiteSettings();
     const heroH1 = document.querySelector('.hero h1');
     const heroP = document.querySelector('.hero p');
@@ -296,7 +297,7 @@ function applyHeroSettings() {
 
         if (notesVisible) {
             notesSection.style.display = 'block';
-            notesSection.querySelector('.notes-content').innerHTML = notesContent;
+            notesSection.querySelector('.notes-content').textContent = notesContent;
         } else {
             notesSection.style.display = 'none';
         }

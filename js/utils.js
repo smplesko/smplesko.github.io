@@ -90,6 +90,31 @@ function escapeHtml(str) {
               .replace(/'/g, '&#39;');
 }
 
+// ===== FOCUS TRAP =====
+
+// Trap focus within a modal element for accessibility (WCAG 2.1)
+function trapFocus(modal) {
+    const focusable = modal.querySelectorAll('input, button, select, textarea, a[href], [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    modal.addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    });
+}
+
 // ===== SITE PASSWORD GATE =====
 // Password validation (runs after config.js is loaded)
 function checkSitePassword() {
@@ -317,39 +342,40 @@ function showToast(message, type, duration) {
 function showConfirm(message, options) {
     options = options || {};
     return new Promise((resolve) => {
+        let resolved = false;
+        function finish(result) {
+            if (resolved) return;
+            resolved = true;
+            modal.remove();
+            resolve(result);
+        }
+
         const modal = document.createElement('div');
         modal.className = 'confirm-modal';
         modal.innerHTML = `
             <div class="confirm-content">
                 <p class="confirm-message">${escapeHtml(message)}</p>
                 <div class="confirm-actions">
-                    <button class="btn" onclick="this.closest('.confirm-modal').dataset.result='false'; this.closest('.confirm-modal').remove()">
+                    <button class="btn confirm-cancel-btn">
                         ${options.cancelText || 'Cancel'}
                     </button>
-                    <button class="btn btn-gold" onclick="this.closest('.confirm-modal').dataset.result='true'; this.closest('.confirm-modal').remove()">
+                    <button class="btn btn-gold confirm-ok-btn">
                         ${options.confirmText || 'Confirm'}
                     </button>
                 </div>
             </div>
         `;
 
-        // Handle click outside to cancel
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.dataset.result = 'false';
-                modal.remove();
-            }
-        });
+        modal.querySelector('.confirm-cancel-btn').addEventListener('click', () => finish(false));
+        modal.querySelector('.confirm-ok-btn').addEventListener('click', () => finish(true));
 
-        // Observe removal to resolve promise
-        const observer = new MutationObserver(() => {
-            if (!document.contains(modal)) {
-                observer.disconnect();
-                resolve(modal.dataset.result === 'true');
-            }
+        // Click outside to cancel
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) finish(false);
         });
-        observer.observe(document.body, { childList: true, subtree: true });
 
         document.body.appendChild(modal);
+        trapFocus(modal);
+        modal.querySelector('.confirm-cancel-btn').focus();
     });
 }

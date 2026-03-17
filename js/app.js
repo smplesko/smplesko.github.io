@@ -76,7 +76,7 @@ function renderWeekendSchedule() {
                 <div class="schedule-item">
                     <span class="time">${timeDisplay || 'TBD'}</span>
                     <h4>${event.name}</h4>
-                    ${event.description ? `<p>${event.description}</p>` : ''}
+                    ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ''}
                 </div>
             </a>
         `;
@@ -117,8 +117,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initData();
     updateUI();
 
-    // Apply site settings to hero on all pages
-    applyHeroSettings();
+    // Apply site settings to hero on homepage only
+    if (isHomePage()) {
+        applyHeroSettings();
+    }
 
     if (isHomePage()) {
         renderPlayerGrid();
@@ -147,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (isPage('golf')) {
-        renderScoringGuide();
         renderGolfScorecard();
     }
 
@@ -183,6 +184,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Set up focus traps on modals for accessibility
+    var siteGate = document.getElementById('siteGate');
+    if (siteGate) trapFocus(siteGate);
+    var passwordModal = document.getElementById('passwordModal');
+    if (passwordModal) trapFocus(passwordModal);
 
     // Firebase handles real-time updates automatically via listeners
 });

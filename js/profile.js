@@ -89,17 +89,26 @@ function renderProfile() {
     container.innerHTML = html;
 }
 
-function saveProfileName() {
+async function saveProfileName() {
     const input = document.getElementById('profileNameInput');
     const slot = getCurrentUserSlot();
     if (input && slot) {
         const newName = input.value.trim();
-        if (newName) {
-            updatePlayerName(slot, newName);
-            localStorage.setItem('currentUser', newName);
-            updateUI();
-            showToast('Name updated!', 'success');
-            renderProfile();
+        if (!newName) return;
+
+        const oldName = getCurrentUser();
+        if (newName !== oldName) {
+            const confirmed = await showConfirm(
+                'Changing your name will not update your name in existing scores, trivia answers, or predictions. Previous data will remain under your old name. Continue?',
+                { confirmText: 'Change Name' }
+            );
+            if (!confirmed) return;
         }
+
+        updatePlayerName(slot, newName);
+        localStorage.setItem('currentUser', newName);
+        updateUI();
+        showToast('Name updated!', 'success');
+        renderProfile();
     }
 }

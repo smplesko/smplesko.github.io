@@ -218,7 +218,7 @@ function renderGolfScorecard() {
     if (descEl) {
         if (golf.description) {
             descEl.style.display = 'block';
-            descEl.innerHTML = `<p style="opacity: 0.85;">${golf.description}</p>`;
+            descEl.innerHTML = `<p style="opacity: 0.85;">${escapeHtml(golf.description)}</p>`;
         } else {
             descEl.style.display = 'none';
         }

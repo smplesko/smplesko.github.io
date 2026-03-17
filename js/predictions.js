@@ -90,7 +90,7 @@ function createPrediction(question, type, options, pointValue) {
     }
 
     const newPrediction = {
-        id: Date.now().toString(),
+        id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5),
         question: question,
         type: type, // 'whoDoneIt' or 'custom'
         options: options,
@@ -245,27 +245,27 @@ function renderPredictionCard(prediction, user, playerList) {
     let html = `
         <div class="prediction-card ${statusClass}">
             <div class="prediction-header">
-                <h4>${prediction.question}</h4>
+                <h4>${escapeHtml(prediction.question)}</h4>
                 <span class="prediction-points">${prediction.pointValue} pt${prediction.pointValue > 1 ? 's' : ''}</span>
             </div>
     `;
 
     if (isFinalized) {
         // Show correct answer
-        html += `<p class="correct-answer-display">Correct Answer: <strong>${correctAnswer}</strong></p>`;
+        html += `<p class="correct-answer-display">Correct Answer: <strong>${escapeHtml(correctAnswer)}</strong></p>`;
         if (hasAnswered) {
-            html += `<p class="your-answer">Your answer: <strong>${userAnswer}</strong> ${isCorrect ? '✓' : '✗'}</p>`;
+            html += `<p class="your-answer">Your answer: <strong>${escapeHtml(userAnswer)}</strong> ${isCorrect ? '✓' : '✗'}</p>`;
         }
     } else if (!hasAnswered) {
         // Show voting options
         html += '<div class="prediction-options">';
         prediction.options.forEach(option => {
-            html += `<button class="prediction-option-btn" onclick="submitPredictionAnswer('${prediction.id}', ${escapeHtml(JSON.stringify(option))})">${escapeHtml(option)}</button>`;
+            html += `<button class="prediction-option-btn" data-prediction-id="${escapeHtml(prediction.id)}" data-option="${escapeHtml(option)}" onclick="submitPredictionAnswer(this.dataset.predictionId, this.dataset.option)">${escapeHtml(option)}</button>`;
         });
         html += '</div>';
     } else {
         // User has answered, show their answer
-        html += `<p class="your-answer">Your answer: <strong>${userAnswer}</strong></p>`;
+        html += `<p class="your-answer">Your answer: <strong>${escapeHtml(userAnswer)}</strong></p>`;
     }
 
     // Collapsible responses section (only show if user has answered or prediction is finalized)
@@ -293,7 +293,7 @@ function renderPredictionCard(prediction, user, playerList) {
             const isCorrectOption = isFinalized && option === correctAnswer;
             html += `
                 <div class="response-group ${isCorrectOption ? 'correct-option' : ''}">
-                    <span class="response-option">${option}${isCorrectOption ? ' ✓' : ''}</span>
+                    <span class="response-option">${escapeHtml(option)}${isCorrectOption ? ' ✓' : ''}</span>
                     <span class="response-voters">${voters.length > 0 ? voters.join(', ') : 'No votes'}</span>
                 </div>
             `;
@@ -362,7 +362,7 @@ function renderPredictionsAdmin() {
                 <div class="prediction-admin-card" style="background: var(--overlay-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px; ${isFinalized ? 'opacity: 0.7;' : ''}">
                     <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
                         <div style="flex: 1; min-width: 200px;">
-                            <h4 style="color: var(--gold); margin-bottom: 5px;">${prediction.question}</h4>
+                            <h4 style="color: var(--gold); margin-bottom: 5px;">${escapeHtml(prediction.question)}</h4>
                             <p style="font-size: 0.85em; opacity: 0.7;">
                                 Type: ${prediction.type === 'whoDoneIt' ? 'Who Done It' : 'Custom'} |
                                 Points: ${prediction.pointValue} |
@@ -377,13 +377,13 @@ function renderPredictionsAdmin() {
                 html += `
                     <select id="finalize_${prediction.id}" style="padding: 8px; border-radius: 5px; border: none;">
                         <option value="">Select correct answer...</option>
-                        ${prediction.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                        ${prediction.options.map(opt => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join('')}
                     </select>
                     <button class="btn btn-small btn-gold" onclick="handleFinalizePrediction('${prediction.id}')">Finalize</button>
                     <button class="btn btn-small" onclick="deletePrediction('${prediction.id}')" style="background: var(--accent-red);">Delete</button>
                 `;
             } else {
-                html += `<span style="padding: 8px; color: #2ecc71;">Answer: ${prediction.correctAnswer}</span>`;
+                html += `<span style="padding: 8px; color: #2ecc71;">Answer: ${escapeHtml(prediction.correctAnswer)}</span>`;
             }
 
             html += `

@@ -69,7 +69,7 @@ body {
 
 /* Navigation */
 nav {
-    background: rgba(4, 8, 5, 0.95);
+    background: var(--nav-bg, rgba(4, 8, 5, 0.95));
     padding: 12px 0;
     position: sticky;
     top: 0;
@@ -1282,7 +1282,6 @@ input:checked + .toggle-slider:before {
 /* Table horizontal scroll wrapper */
 .table-scroll-wrapper {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     margin: 0 -15px;
     padding: 0 15px;
 }
@@ -1547,10 +1546,17 @@ body.is-admin nav .admin-only {
 
 /* Light Mode Specific Overrides */
 [data-theme="light"] nav {
-    background: rgba(255, 255, 255, 0.92);
+    --nav-bg: rgba(255, 255, 255, 0.92);
+    background: var(--nav-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+@supports not (backdrop-filter: blur(10px)) {
+    [data-theme="light"] nav {
+        background: rgba(255, 255, 255, 1);
+    }
 }
 
 [data-theme="light"] .hero {
@@ -1659,6 +1665,7 @@ body.is-admin nav .admin-only {
 }
 
 [data-theme="light"] .placeholder-box {
+    background: rgba(0, 0, 0, 0.03);
     border-color: var(--card-border);
     color: var(--text-secondary);
 }
