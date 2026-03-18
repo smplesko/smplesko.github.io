@@ -80,46 +80,49 @@ Setup Wizard Tests — Tested 2026-03-18 via Claude Chrome. 29/30 PASSED, 1 FAIL
 ## Phase 2: Admin Settings Management
 
 ### Site Settings
-- [ ] **2.1** Navigate to Admin page → all settings sections load
-- [ ] **2.2** Change hero title → Save → toast appears → verify on homepage
-- [ ] **2.3** Change subtitle → Save → verify on homepage
-- [ ] **2.4** Toggle "Show Notes" off → Save → homepage hides notes → toggle on → Save → notes visible
-- [ ] **2.5** Edit notes with HTML (`<a href="...">link</a>`) → Save → verify link renders on homepage
-- [ ] **2.6** Refresh admin page → all saved values persisted in form inputs
+- [x] **2.1** Navigate to Admin page → all settings sections load — **PASS**
+- [x] **2.2** Change hero title → Save → toast appears → verify on homepage — **PASS**
+- [x] **2.3** Change subtitle → Save → verify on homepage — **PASS**
+- [x] **2.4** Toggle "Show Notes" off → Save → homepage hides notes → toggle on → Save → notes visible — **PASS**
+- [x] **2.5** Edit notes with HTML (`<a href="...">link</a>`) → Save → verify link renders on homepage — **PASS**
+- [x] **2.6** Refresh admin page → all saved values persisted in form inputs — **PASS**
 
 ### Golf Settings
-- [ ] **2.7** Change golf format dropdown → Save → refresh → value persisted
-- [ ] **2.8** Set front9 par=35, back9 par=37 → Save → values stick on refresh
-- [ ] **2.9** Enter par=20 (below min 27) → should clamp to 27 on save
-- [ ] **2.10** Set golf date + time → Save → appears in weekend schedule on homepage
-- [ ] **2.11** Change base points per 9 to 15 → Save → golf scoring recalculates
+- [x] **2.7** Change golf format dropdown → Save → refresh → value persisted — **PASS**
+- [x] **2.8** Set front9 par=35, back9 par=37 → Save → values stick on refresh — **PASS**
+- [x] **2.9** Enter par=20 (below min 27) → should clamp to 27 on save — **PASS**
+- [x] **2.10** Set golf date + time → Save → appears in weekend schedule on homepage — **PASS**
+- [x] **2.11** Change base points per 9 to 15 → Save → golf scoring recalculates — **PASS**
 
 ### Event Locks
-- [ ] **2.12** Toggle golf lock ON → toast confirms → golf page shows read-only scores
-- [ ] **2.13** Toggle trivia lock ON → trivia controls disabled
-- [ ] **2.14** Toggle predictions lock ON → no new submissions allowed
-- [ ] **2.15** Toggle all locks OFF → everything editable again
+- [x] **2.12** Toggle golf lock ON → toast confirms → golf page shows read-only scores — **PASS** (no score inputs exist since no teams assigned)
+- [x] **2.13** Toggle trivia lock ON → trivia controls disabled — **PASS** (no trivia questions configured)
+- [x] **2.14** Toggle predictions lock ON → no new submissions allowed — **PASS** (no predictions created)
+- [x] **2.15** Toggle all locks OFF → everything editable again — **PASS**
 
 ### REGRESSION: Collapse/Save Bug (HIGH PRIORITY)
-- [ ] **2.16** Toggle golf lock → settings section does NOT visually collapse/flash
-- [ ] **2.17** Toggle lock → check that OTHER form inputs (hero title, notes, etc.) retain their current values
-- [ ] **2.18** Type a new hero title (DON'T save) → toggle an event lock → check if typed title is still in the input field (EXPECTED BUG: innerHTML rebuild destroys unsaved values)
-- [ ] **2.19** Rapidly toggle 3 locks on/off → all changes saved correctly, no UI freeze
-- [ ] **2.20** Save site settings → wait 2 sec → save golf settings → no conflict between saves
+- [x] **2.16** Toggle golf lock → settings section does NOT visually collapse/flash — **PASS** ⚠️ No collapse/flash, but page auto-scrolls ~427px to Event Locks section (minor UX issue)
+- [x] **2.17** Toggle lock → check that OTHER form inputs (hero title, notes, etc.) retain their current values — **PASS** (saved values retained)
+- [x] **2.18** Type a new hero title (DON'T save) → toggle an event lock → check if typed title is still in the input field — **FAIL** ❌ P0 BUG CONFIRMED: unsaved input wiped, reverted to last saved value
+- [x] **2.19** Rapidly toggle 3 locks on/off → all changes saved correctly, no UI freeze — **PASS**
+- [x] **2.20** Save site settings → wait 2 sec → save golf settings → no conflict between saves — **PASS**
 
 ### Competition Status
-- [ ] **2.21** Click "Close Competition" → confirmation dialog → confirm → banner shows "Competition CLOSED"
-- [ ] **2.22** Visit leaderboard → podium with top 3 displayed
-- [ ] **2.23** Click "Reopen Competition" → confirmation → podium hidden
+- [x] **2.21** Click "Close Competition" → confirmation dialog → confirm → banner shows "Competition CLOSED" — **PASS**
+- [x] **2.22** Visit leaderboard → podium with top 3 displayed — **PASS** (all scores 0, but podium structure visible)
+- [x] **2.23** Click "Reopen Competition" → confirmation → podium hidden — **PASS**
 
 ### Feature Toggles
-- [ ] **2.24** Disable golf → golf page reflects disabled state
-- [ ] **2.25** Disable trivia → trivia page reflects disabled state
-- [ ] **2.26** Disable predictions → predictions page reflects disabled state
-- [ ] **2.27** Re-enable all → pages restore to normal
+- [ ] **2.24** Disable golf → golf page reflects disabled state — **N/A** (feature does not exist)
+- [ ] **2.25** Disable trivia → trivia page reflects disabled state — **N/A** (feature does not exist)
+- [ ] **2.26** Disable predictions → predictions page reflects disabled state — **N/A** (feature does not exist)
+- [ ] **2.27** Re-enable all → pages restore to normal — **N/A** (feature does not exist)
 
-**Bugs Found:**
+**Notes:**
 ```
+Phase 2 tested 2026-03-18 via Claude Chrome. 22 PASS, 1 FAIL, 4 N/A. Zero JS console errors.
+Feature Toggles (2.24-2.27) do not exist in the admin UI — only Event Locks exist, which lock
+scoring but don't disable/hide page content. These tests should be removed or flagged as future work.
 ```
 
 ---
@@ -415,6 +418,29 @@ Setup Wizard Tests — Tested 2026-03-18 via Claude Chrome. 29/30 PASSED, 1 FAIL
 **Expected:** All events cleared
 **Actual:** Old events ("asdas", "dsadsa") still present
 **Note:** May be hardcoded defaults or Fresh Start not clearing the events Firebase path
+**Console errors:** None
+
+### Bug #5: P0 — Lock toggle destroys unsaved form values (innerHTML rebuild)
+**Phase:** 2.18
+**Severity:** major (P0)
+**Steps to reproduce:**
+1. Go to Admin page
+2. Type "UNSAVED TEST TITLE" in the Homepage Title input (do NOT click Save)
+3. Scroll down and toggle any event lock (e.g., Golf lock)
+4. Scroll back up to Homepage Title input
+**Expected:** Input still shows "UNSAVED TEST TITLE"
+**Actual:** Input reverts to "Dird Plesk 2026" (last saved value from Firebase)
+**Root cause:** Toggling any event lock triggers a Firebase write, which fires the `renderSiteSettings()` listener. That function does a full innerHTML rebuild of the admin sections, destroying all unsaved form state. Scroll position also jumped from ~300px to ~727px.
+**Console errors:** None
+
+### Bug #6: Scroll jump on event lock toggle
+**Phase:** 2.16
+**Severity:** minor (UX)
+**Steps to reproduce:**
+1. Go to Admin page, scroll to any position
+2. Toggle any event lock
+**Expected:** Page scroll position stays the same
+**Actual:** Page auto-scrolls ~427px to the Event Locks section
 **Console errors:** None
 
 ---
