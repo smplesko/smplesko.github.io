@@ -27,19 +27,52 @@
 - [x] **1.8** Click slot 1 (admin) → password modal appears — **PASS** (Stephen's slot prompts for admin password)
 - [ ] **1.9** Enter wrong admin password → error toast, input cleared — **NOT TESTED**
 - [x] **1.10** Enter "1816" → logged in as admin, `is-admin` class on body (check DevTools) — **PASS**
-- [N/A] **1.11** ~~Onboarding wizard triggers on first admin login~~ — **N/A** (feature not implemented)
-- [N/A] **1.12** ~~Walk through all 7 onboarding steps~~ — **N/A**
-- [N/A] **1.13** ~~After completing onboarding, refresh → wizard does NOT reappear~~ — **N/A**
-- [N/A] **1.14** ~~Logout and re-login as admin → no onboarding~~ — **N/A**
+- [x] **1.11** Setup wizard auto-appears after Fresh Start with "Step 1 of 7" + progress bar — **PASS**
+
+### Setup Wizard — Main Flow (via Fresh Start)
+- [x] **1.8a** Title & subtitle inputs visible — **PASS**
+- [x] **1.8b** Enter title "Test Tournament 2026" + subtitle → click Next — **PASS**
+- [x] **1.8c** Wizard advances to Step 2 — **PASS**
+- [x] **1.9a** Player count dropdown + name inputs visible — **PASS**
+- [x] **1.9b** Change count to 6 → only 6 inputs shown — **PASS**
+- [x] **1.9c** Enter Alice/Bob/Charlie → click Next — **PASS**
+- [x] **1.10a** "Include Golf Event" toggle visible — **PASS** (defaulted to ON)
+- [x] **1.10b** Toggle ON → date/time/format/scoring/par fields appear — **PASS**
+- [x] **1.10c** Set date, "Best Ball", par 35/37 → click Next — **PASS**
+- [x] **1.11a** "Include Custom Events" toggle visible — **PASS** (defaulted to OFF)
+- [x] **1.11b** Toggle ON → Add "Cornhole" / Individual — **PASS**
+- [x] **1.11c** Add "Relay Race" / Team Shared → click Next — **PASS**
+- [x] **1.12a** "Include Trivia" toggle visible — **PASS** (defaulted to OFF)
+- [x] **1.12b** Toggle ON → date/time appear → set date → Next — **PASS**
+- [x] **1.13a** "Include Predictions" toggle visible — **PASS** (defaulted to OFF)
+- [x] **1.13b** Toggle ON → click Next — **PASS** ⚠️ Label click didn't toggle; had to click checkbox directly (accessibility bug)
+- [x] **1.14a** Summary shows correct data (title, players, admin, golf, 2 events, trivia, predictions) — **PASS**
+- [x] **1.14b** Click "Finish Setup" → wizard closes — **PASS**
+- [x] **1.14c** Toast "Setup complete!" appears — **SOFT PASS** ⚠️ Toast disappeared too quickly to visually confirm exact message
+- [x] **1.14d** Refresh → wizard does NOT reappear — **PASS**
+- [x] **1.14e** Homepage shows "Test Tournament 2026" / "May the best player win" — **PASS**
+- [x] **1.14f** Player grid shows Alice, Bob, Charlie + 3 unnamed slots — **PASS**
+- [x] **1.14g** Weekend schedule shows golf with "Best Ball" format + Cornhole + Relay Race — **PASS**
+
+### Setup Wizard — Back Button
+- [x] **1.Back1** Step 3 → Back → Step 2 values preserved (Alice/Bob/Charlie, 6 players) — **PASS**
+- [x] **1.Back2** Step 2 → Back → Step 1 values preserved (title/subtitle) — **PASS**
+
+### Setup Wizard — Skip Flow
+- [x] **1.15a** Wizard visible after Fresh Start — **PASS**
+- [ ] **1.15b** Click "Skip Setup" → confirmation dialog appears — **FAIL** ❌ No confirmation dialog; skip fires immediately
+- [x] **1.15c** Skip → wizard closes, site functional — **PASS** (despite no confirmation)
+- [x] **1.15d** Refresh → wizard does NOT reappear — **PASS**
+- [x] **1.15e** "Run Setup Wizard" button re-opens wizard — **PASS**
 
 **Notes:**
 ```
-Tested 2026-03-18. 6/6 applicable tests PASSED. Zero JS console errors.
-- Onboarding wizard (1.11-1.14) does not exist in the codebase — removed from test plan.
+Phase 1 Auth Tests — Tested 2026-03-18. 6/6 applicable tests PASSED. Zero JS console errors.
 - Stephen's slot has a yellow border and requires admin password (1816) before login.
 - localStorage after admin login: currentUser:"Stephen", isAdmin:"true", currentUserSlot:"1", siteAccessGranted:"true"
-- Observation: Two schedule entries have placeholder names ("asdas", "dsadsa") — likely test data to clean up.
 - Still need to test: 1.7 (logout flow), 1.9 (wrong admin password).
+
+Setup Wizard Tests — Tested 2026-03-18 via Claude Chrome. 29/30 PASSED, 1 FAIL. Zero JS console errors.
 ```
 
 ---
@@ -337,6 +370,52 @@ Tested 2026-03-18. 6/6 applicable tests PASSED. Zero JS console errors.
 **Actual:** ...
 **Console errors:** (paste any)
 ```
+
+---
+
+## Bugs Found During Regression Testing
+
+### Bug #1: Skip Setup has no confirmation dialog
+**Phase:** 1.15b
+**Severity:** minor
+**Steps to reproduce:**
+1. Admin does Fresh Start
+2. Wizard appears
+3. Click "Skip Setup"
+**Expected:** Confirmation dialog ("Are you sure?") before closing
+**Actual:** Wizard immediately closes with no confirmation
+**Console errors:** None
+
+### Bug #2: Predictions toggle label not wired to checkbox
+**Phase:** 1.13b
+**Severity:** minor (accessibility)
+**Steps to reproduce:**
+1. In setup wizard, reach Step 6 (Predictions)
+2. Click the "Include Predictions" text label
+**Expected:** Checkbox toggles
+**Actual:** Nothing happens; must click the checkbox input directly
+**Note:** Golf, Custom Events, and Trivia toggle labels all work correctly — only Predictions is broken. Likely missing `for` attribute or mismatched ID.
+**Console errors:** None
+
+### Bug #3: "Setup complete!" toast disappears too quickly
+**Phase:** 1.14c
+**Severity:** cosmetic
+**Steps to reproduce:**
+1. Complete full wizard → click "Finish Setup"
+**Expected:** Toast visible for 2-3 seconds
+**Actual:** Toast appeared and vanished in < 1 second
+**Console errors:** None
+
+### Bug #4: Stale events persist after Fresh Start
+**Phase:** Post-wizard observation
+**Severity:** minor
+**Steps to reproduce:**
+1. Create events, then do Fresh Start
+2. Check Manage Events on admin page
+**Expected:** All events cleared
+**Actual:** Old events ("asdas", "dsadsa") still present
+**Note:** May be hardcoded defaults or Fresh Start not clearing the events Firebase path
+**Console errors:** None
 
 ---
 
