@@ -52,9 +52,17 @@ The reference doc should always reflect the current state of the codebase, not a
 
 ## Task Tracking
 
-Use `tasks/todo.md` to track in-progress work across sessions. Use `tasks/lessons.md` to record mistakes and corrections — review it at the start of each session to avoid repeating past errors.
+Three files in `tasks/` persist across sessions:
 
-**After any user correction:** add a concise entry to `tasks/lessons.md` describing what went wrong and the right approach. This is the highest-ROI habit for reducing repeated bugs on this project.
+- **`tasks/todo.md`** — In Progress / Up Next / Recently Completed. Persistent across sessions — don't clear completed items, move them to Recently Completed.
+- **`tasks/lessons.md`** — Lessons learned + bug tracker. Review at the start of each session.
+- **`tasks/design-decisions.md`** — Open questions and resolved code decisions (CD-1, CD-2...).
+
+**After any user correction:** add a concise entry to `tasks/lessons.md` describing what went wrong and the right approach.
+
+**Before fixing any bug:** check `tasks/lessons.md` for prior attempts on the same issue. After every fix attempt (success or failure), log it. This prevents retrying failed approaches across sessions.
+
+**Design decisions:** When a design question comes up (especially during plan mode), log it in `tasks/design-decisions.md`. CD numbers are sequential — always check the current highest before assigning a new one. Include reasoning on resolved decisions.
 
 ---
 
