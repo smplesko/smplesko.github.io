@@ -158,3 +158,39 @@ customEvents/[eventId]/
 - **Session Hook:** `.claude/hooks/session-start.sh` — Installs ESLint on Claude Code web sessions
 - **No test framework** — Manual QA only
 - **No CI/CD** — Deploy on push to master via GitHub Pages
+
+---
+
+## Best Practices
+
+### Firebase & Data
+- All writes go through `writeToFirebase(path, data)` — never write directly to Firebase refs
+- Always supply a default value in data accessors (`getPlayers()`, `getSiteSettings()`, etc.) to avoid null checks throughout the app
+- Real-time listeners are set up once in `initData()` and route updates via `onDataChange(path)` — don't add ad-hoc listeners elsewhere
+
+### CSS & Theming
+- Use CSS variables exclusively — no hardcoded colors (`var(--color-name)` always)
+- Scope selectors tightly (e.g. `.scorecard .score-input` not `.score-input`) to avoid conflicts
+- No duplicate utility class definitions — search `main.css` before adding new ones
+- Light mode overrides live at the bottom of `main.css` under `[data-theme="light"]`
+- All animations must include a `prefers-reduced-motion` media query block (already established in `main.css`)
+- Shimmer/glow effects follow the established keyframe patterns in `main.css` — extend those, don't create new ones
+
+### HTML & Accessibility
+- All `<script>` tags in `_layouts/default.html` must use `defer`
+- New interactive elements (modals, dialogs, nav) need ARIA roles and labels
+- Form inputs need associated `<label>` elements (visually hidden is fine for password gate)
+- Visible focus indicators required on all interactive elements
+- Use semantic HTML: `<main>`, `<nav>`, `<section>`, `<header>`, `<footer>` over generic divs where appropriate
+
+### JavaScript
+- Page-specific logic is gated with `isPage('pagename')` in `app.js`
+- Use `showToast(message, type)` for non-blocking feedback; never use `alert()`
+- Use `showConfirm(message, options)` (Promise-based) for destructive actions
+- Use `validateNumber(value, min, max, default)` for any numeric input validation
+- Admin-only UI is hidden/shown via the `isAdmin` flag — check `auth.js` patterns before adding new admin controls
+
+### Performance
+- Scripts are loaded with `defer` to avoid blocking page render
+- Firebase listeners are shared and cached — don't duplicate data fetching
+- Avoid unnecessary re-renders; Firebase `onDataChange` already batches updates per path
