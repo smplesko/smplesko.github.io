@@ -114,6 +114,7 @@ function renderPlayerGrid() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    window._onboardingChecked = false;
     initData();
     updateUI();
 

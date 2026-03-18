@@ -169,6 +169,14 @@ function onDataChange(path) {
     // Always update hero settings
     if (path === 'siteSettings') {
         applyHeroSettings();
+
+        // One-time onboarding check on first siteSettings load
+        if (!window._onboardingChecked) {
+            window._onboardingChecked = true;
+            if (typeof checkOnboarding === 'function') {
+                checkOnboarding();
+            }
+        }
     }
 
     // Update player grid and schedule on home
