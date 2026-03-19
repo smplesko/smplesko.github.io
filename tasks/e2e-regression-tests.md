@@ -129,15 +129,17 @@ scoring but don't disable/hide page content. These tests should be removed or fl
 
 ## Phase 3: Player Management
 
-- [ ] **3.1** On admin page, edit a player name → saves to Firebase
-- [ ] **3.2** Check homepage → renamed player shows new name in grid
-- [ ] **3.3** Refresh → name persists
-- [ ] **3.4** Logout → login as renamed player → header shows correct name
-- [ ] **3.5** Try to save empty player name → should reject or use default
-- [ ] **3.6** Enter name with `<script>alert(1)</script>` → should be escaped, no XSS
+- [x] **3.1** On admin page, edit a player name → saves to Firebase — **PASS** (auto-saves on blur, no explicit Save button)
+- [x] **3.2** Check homepage → renamed player shows new name in grid — **PASS**
+- [x] **3.3** Refresh → name persists — **PASS**
+- [x] **3.4** Logout → login as renamed player → header shows correct name — **PASS**
+- [x] **3.5** Try to save empty player name → should reject or use default — **FAIL** ❌ Empty name accepted; renders as blank button on homepage
+- [x] **3.6** Enter name with `<script>alert(1)</script>` → should be escaped, no XSS — **PASS** (text node with HTML-entity encoding, no script execution)
 
-**Bugs Found:**
+**Notes:**
 ```
+Phase 3 tested 2026-03-19 via Claude Chrome. 5 PASS, 1 FAIL. Zero JS console errors.
+Player names auto-save on blur (no explicit Save button). XSS properly sanitized via text node rendering.
 ```
 
 ---
@@ -441,6 +443,17 @@ scoring but don't disable/hide page content. These tests should be removed or fl
 2. Toggle any event lock
 **Expected:** Page scroll position stays the same
 **Actual:** Page auto-scrolls ~427px to the Event Locks section
+**Console errors:** None
+
+### Bug #7: Empty player name accepted and saved
+**Phase:** 3.5
+**Severity:** minor
+**Steps to reproduce:**
+1. Go to Admin → Manage Players
+2. Clear the Player 2 name field completely
+3. Tab out (trigger blur/auto-save)
+**Expected:** Empty name rejected, or falls back to default "Player 2"
+**Actual:** Empty name saved to Firebase. Homepage renders a blank, unlabeled button in the player grid. Users can click the ghost button and log in as an unnamed player.
 **Console errors:** None
 
 ---
