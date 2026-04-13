@@ -23,7 +23,7 @@ function renderPlayerList() {
             </label>
             <input type="text"
                    id="playerName${slot}"
-                   value="${player.name}"
+                   value="${escapeHtml(player.name)}"
                    placeholder="Enter name"
                    onchange="savePlayerName(${slot})"
                    style="width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 1em;">
@@ -36,14 +36,20 @@ function renderPlayerList() {
 
 function savePlayerName(slot) {
     const input = document.getElementById(`playerName${slot}`);
-    if (input) {
-        updatePlayerName(slot, input.value.trim());
+    if (!input) return;
+    const newName = input.value.trim();
+    if (!newName) {
+        showToast('Player name cannot be empty', 'error');
+        const player = getPlayerBySlot(slot);
+        input.value = player.name;
+        return;
+    }
+    updatePlayerName(slot, newName);
 
-        // If this is the current user, update their display name
-        if (String(getCurrentUserSlot()) === String(slot)) {
-            localStorage.setItem('currentUser', input.value.trim());
-            updateUI();
-        }
+    // If this is the current user, update their display name
+    if (String(getCurrentUserSlot()) === String(slot)) {
+        localStorage.setItem('currentUser', newName);
+        updateUI();
     }
 }
 

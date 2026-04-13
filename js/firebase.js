@@ -314,8 +314,121 @@ function updatePlayerName(slot, newName) {
     if (!players[slot]) {
         players[slot] = { name: '', isAdmin: slot === 1 };
     }
+    const oldName = players[slot].name;
     players[slot].name = newName;
     writeToFirebase('players', players);
+
+    // Propagate name change through all data structures that reference player names
+    if (oldName && oldName !== newName) {
+        propagatePlayerNameChange(oldName, newName);
+    }
+}
+
+// Update all Firebase data structures that store player names as keys/values
+function propagatePlayerNameChange(oldName, newName) {
+    // 1. Golf teams: { teamNum: [playerNames] }
+    const golfTeams = getGolfTeams();
+    let golfTeamsChanged = false;
+    Object.keys(golfTeams).forEach(teamNum => {
+        const team = golfTeams[teamNum];
+        if (Array.isArray(team)) {
+            const idx = team.indexOf(oldName);
+            if (idx !== -1) {
+                team[idx] = newName;
+                golfTeamsChanged = true;
+            }
+        }
+    });
+    if (golfTeamsChanged) {
+        writeToFirebase('golfTeams', golfTeams);
+    }
+
+    // 2. Golf individual bonuses: { longDrive: { player }, closestPin: { player } }
+    const indBonuses = getGolfIndividualBonuses();
+    let bonusesChanged = false;
+    if (indBonuses.longDrive && indBonuses.longDrive.player === oldName) {
+        indBonuses.longDrive.player = newName;
+        bonusesChanged = true;
+    }
+    if (indBonuses.closestPin && indBonuses.closestPin.player === oldName) {
+        indBonuses.closestPin.player = newName;
+        bonusesChanged = true;
+    }
+    if (bonusesChanged) {
+        writeToFirebase('golfIndividualBonuses', indBonuses);
+    }
+
+    // 3. Custom events: teams and results use player names as keys
+    const customEvents = getCustomEvents();
+    let eventsChanged = false;
+    Object.values(customEvents).forEach(event => {
+        const rounds = event.rounds || {};
+        Object.values(rounds).forEach(round => {
+            // Teams: { teamNum: [playerNames] }
+            const teams = round.teams || {};
+            Object.keys(teams).forEach(teamNum => {
+                if (Array.isArray(teams[teamNum])) {
+                    const idx = teams[teamNum].indexOf(oldName);
+                    if (idx !== -1) {
+                        teams[teamNum][idx] = newName;
+                        eventsChanged = true;
+                    }
+                }
+            });
+            // Results: player names as keys for individual and individual_to_team modes
+            const results = round.results || {};
+            if (results[oldName] !== undefined) {
+                results[newName] = results[oldName];
+                delete results[oldName];
+                eventsChanged = true;
+            }
+        });
+    });
+    if (eventsChanged) {
+        writeToFirebase('customEvents', customEvents);
+    }
+
+    // 4. Trivia: joinedPlayers and responses use player names as keys
+    const triviaGame = dataCache.triviaGame;
+    if (triviaGame) {
+        let triviaChanged = false;
+        // joinedPlayers: { playerName: { joinedAt } }
+        if (triviaGame.joinedPlayers && triviaGame.joinedPlayers[oldName] !== undefined) {
+            triviaGame.joinedPlayers[newName] = triviaGame.joinedPlayers[oldName];
+            delete triviaGame.joinedPlayers[oldName];
+            triviaChanged = true;
+        }
+        // responses: { questionNum: { playerName: { answer, approved, bonus } } }
+        if (triviaGame.responses) {
+            Object.keys(triviaGame.responses).forEach(qNum => {
+                const qResponses = triviaGame.responses[qNum];
+                if (qResponses && qResponses[oldName] !== undefined) {
+                    qResponses[newName] = qResponses[oldName];
+                    delete qResponses[oldName];
+                    triviaChanged = true;
+                }
+            });
+        }
+        if (triviaChanged) {
+            writeToFirebase('triviaGame', triviaGame);
+        }
+    }
+
+    // 5. Predictions: responses use player names as keys
+    const predictions = dataCache.predictions;
+    if (predictions && predictions.items) {
+        let predsChanged = false;
+        predictions.items.forEach(prediction => {
+            if (prediction.responses && prediction.responses[oldName] !== undefined) {
+                prediction.responses[newName] = prediction.responses[oldName];
+                delete prediction.responses[oldName];
+                predsChanged = true;
+            }
+        });
+        if (predsChanged) {
+            writeToFirebase('predictions', predictions);
+        }
+    }
 }
 
 function getCustomEvents() {

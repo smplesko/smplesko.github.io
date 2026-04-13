@@ -92,14 +92,16 @@ function renderProfile() {
 function saveProfileName() {
     const input = document.getElementById('profileNameInput');
     const slot = getCurrentUserSlot();
-    if (input && slot) {
-        const newName = input.value.trim();
-        if (newName) {
-            updatePlayerName(slot, newName);
-            localStorage.setItem('currentUser', newName);
-            updateUI();
-            showToast('Name updated!', 'success');
-            renderProfile();
-        }
+    if (!input || !slot) return;
+    const newName = input.value.trim();
+    if (!newName) {
+        showToast('Name cannot be empty', 'error');
+        input.value = getCurrentUser();
+        return;
     }
+    updatePlayerName(slot, newName);
+    localStorage.setItem('currentUser', newName);
+    updateUI();
+    showToast('Name updated!', 'success');
+    renderProfile();
 }
