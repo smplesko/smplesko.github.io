@@ -40,10 +40,10 @@ function calculatePlayerPoints() {
 
     // Custom event points
     eventList.forEach(event => {
-        const eventPlayerPoints = calculateCustomEventPlayerPoints(event);
+        const eventPlayerPoints = calculateCustomEventPlayerPoints(event) || {};
         Object.keys(eventPlayerPoints).forEach(player => {
             if (playerPoints[player]) {
-                playerPoints[player][event.id] = eventPlayerPoints[player];
+                playerPoints[player][event.id] = parseInt(eventPlayerPoints[player]) || 0;
             }
         });
     });
@@ -60,13 +60,13 @@ function calculatePlayerPoints() {
         if (playerPoints[player]) playerPoints[player].predictions = predictionPlayerPoints[player];
     });
 
-    // Calculate totals
+    // Calculate totals (Math.round prevents float drift from accumulation)
     Object.keys(playerPoints).forEach(player => {
         let total = playerPoints[player].golf + playerPoints[player].trivia + playerPoints[player].predictions;
         eventList.forEach(event => {
             total += playerPoints[player][event.id] || 0;
         });
-        playerPoints[player].total = total;
+        playerPoints[player].total = Math.round(total);
     });
 
     return playerPoints;
