@@ -238,7 +238,15 @@ function onDataChange(path) {
                 renderSiteSettings();
             }
         }
-        if (path === 'customEvents' && typeof expandedEventConfigs !== 'undefined' && expandedEventConfigs.size === 0) renderCustomEventsAdmin();
+        if (path === 'customEvents' && typeof expandedEventConfigs !== 'undefined') {
+            if (expandedEventConfigs.size === 0) {
+                renderCustomEventsAdmin();
+            } else {
+                expandedEventConfigs.forEach(eventId => {
+                    renderEventRoundConfigs(eventId);
+                });
+            }
+        }
         if (path === 'triviaGame') {
             renderTriviaQuestionAdmin();
             renderTriviaGameControls();
