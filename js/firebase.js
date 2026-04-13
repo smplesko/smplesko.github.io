@@ -179,6 +179,19 @@ function onDataChange(path) {
         }
     }
 
+    // Sync localStorage if current user's name was changed in Firebase
+    if (path === 'players') {
+        const slot = getCurrentUserSlot();
+        if (slot) {
+            const player = getPlayerBySlot(slot);
+            const storedName = getCurrentUser();
+            if (player.name && player.name !== storedName) {
+                localStorage.setItem('currentUser', player.name);
+                updateUI();
+            }
+        }
+    }
+
     // Update player grid and schedule on home
     if (path === 'players' && isHomePage()) {
         renderPlayerGrid();
@@ -217,7 +230,14 @@ function onDataChange(path) {
     // Update admin page
     if (isPage('admin')) {
         if (path === 'players') renderPlayerList();
-        if (path === 'siteSettings') renderSiteSettings();
+        if (path === 'siteSettings') {
+            if (typeof _lockToggleInProgress !== 'undefined' && _lockToggleInProgress) {
+                _lockToggleInProgress = false;
+                updateEventLocksInPlace();
+            } else {
+                renderSiteSettings();
+            }
+        }
         if (path === 'customEvents' && typeof expandedEventConfigs !== 'undefined' && expandedEventConfigs.size === 0) renderCustomEventsAdmin();
         if (path === 'triviaGame') {
             renderTriviaQuestionAdmin();

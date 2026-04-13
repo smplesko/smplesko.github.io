@@ -192,6 +192,8 @@
     "savePlayerName": "writable",
     "renderSiteSettings": "writable",
     "toggleEventLock": "writable",
+    "updateEventLocksInPlace": "writable",
+    "_lockToggleInProgress": "writable",
     "isEventLocked": "writable",
     "closeCompetition": "writable",
     "reopenCompetition": "writable",

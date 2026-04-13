@@ -192,17 +192,40 @@ function renderSiteSettings() {
     `;
 }
 
+// Flag to skip full re-render when only event locks changed
+let _lockToggleInProgress = false;
+
 function toggleEventLock(eventName) {
     const settings = getSiteSettings();
     if (!settings.eventLocks) {
         settings.eventLocks = { golf: false, trivia: false, predictions: false };
     }
     settings.eventLocks[eventName] = !settings.eventLocks[eventName];
+    _lockToggleInProgress = true;
     saveSiteSettings(settings);
 
     const lockNames = { golf: 'Golf', trivia: 'Trivia', predictions: 'Predictions' };
     const action = settings.eventLocks[eventName] ? 'locked' : 'unlocked';
     showToast(`${lockNames[eventName]} is now ${action}.`, 'success');
+}
+
+// Update lock checkboxes and labels in-place without full re-render
+function updateEventLocksInPlace() {
+    const settings = getSiteSettings();
+    const eventLocks = settings.eventLocks || {};
+    const lockNames = { golf: 'Golf', trivia: 'Trivia', predictions: 'Predictions' };
+
+    Object.keys(lockNames).forEach(eventName => {
+        const lockId = 'lock' + eventName.charAt(0).toUpperCase() + eventName.slice(1);
+        const checkbox = document.getElementById(lockId);
+        if (checkbox) {
+            checkbox.checked = !!eventLocks[eventName];
+            const label = checkbox.closest('div[style]')?.querySelector('span');
+            if (label) {
+                label.textContent = `${lockNames[eventName]} ${eventLocks[eventName] ? '(Locked)' : ''}`;
+            }
+        }
+    });
 }
 
 function isEventLocked(eventName) {
