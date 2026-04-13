@@ -436,6 +436,8 @@ function getCustomEvents() {
 }
 
 function saveCustomEvents(events) {
+    // Update cache immediately to prevent race conditions when creating multiple events
+    dataCache.customEvents = events;
     writeToFirebase('customEvents', events);
 }
 
