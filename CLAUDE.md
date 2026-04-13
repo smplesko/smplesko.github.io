@@ -89,6 +89,23 @@ When a bug is clearly identified, fix it without asking for step-by-step guidanc
 
 ---
 
+## Superpowers Skills (Weekly Update Check)
+
+Skills are imported from [obra/superpowers](https://github.com/obra/superpowers) (v5.0.7) and live in `.claude/skills/`. The code-reviewer agent lives in `.claude/agents/`.
+
+**At the start of each session, check if it's been 7+ days since the last update.** The last update was: **2026-04-13**.
+
+To check for and apply updates:
+1. Clone `https://github.com/obra/superpowers.git` to `/tmp/superpowers`
+2. Compare the remote's latest commit date against our last update date above
+3. If newer: copy `skills/*` into `.claude/skills/` and `agents/code-reviewer.md` into `.claude/agents/`, commit, and push
+4. Update the "last update" date in this section
+5. Clean up `/tmp/superpowers`
+
+If the update check fails (network issues, repo unavailable), skip silently and try next session.
+
+---
+
 ## Code Conventions
 
 - All Firebase writes go through `writeToFirebase(path, data)` — never write directly to Firebase refs
