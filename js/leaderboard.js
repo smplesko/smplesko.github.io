@@ -336,6 +336,7 @@ function renderGolfLeaderboard() {
 
     if (Object.keys(teams).length === 0) {
         tbody.innerHTML = emptyTableRow(7, 'No golf results yet');
+        renderGolfLeaderboardAwards();
         return;
     }
 
@@ -356,18 +357,56 @@ function renderGolfLeaderboard() {
         const rank = idx + 1;
         const rankClass = rank <= 3 ? `rank-${rank}` : '';
         const b = team.breakdown;
+        const teamBonus = b.frontBonus + b.backBonus + b.overallBonus;
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="${rankClass}">${rank}</td>
-            <td>Team ${team.teamNum}</td>
-            <td>${team.players.join(', ')}</td>
+            <td>Team ${team.teamNum}<br><span class="text-silver" style="font-size: 0.8em;">${team.players.join(', ')}</span></td>
             <td>${b.totalScore || '--'}</td>
             <td>${b.totalPoints}</td>
-            <td>${b.frontBonus + b.backBonus + b.overallBonus + b.shotgunPoints}</td>
+            <td>${b.shotgunPoints}</td>
+            <td>${teamBonus}</td>
             <td style="font-weight: bold;">${b.grandTotal}</td>
         `;
         tbody.appendChild(tr);
     });
+
+    renderGolfLeaderboardAwards();
+}
+
+function renderGolfLeaderboardAwards() {
+    const container = document.getElementById('golfLeaderboardAwards');
+    if (!container) return;
+
+    const indBonuses = getGolfIndividualBonuses();
+    const hasLongDrive = indBonuses.longDrive.player && indBonuses.longDrive.player !== '';
+    const hasClosestPin = indBonuses.closestPin.player && indBonuses.closestPin.player !== '';
+
+    if (!hasLongDrive && !hasClosestPin) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '<div class="individual-bonus-list" style="margin-top: 15px;">';
+
+    if (hasLongDrive) {
+        html += `<div class="individual-bonus-item">
+            <span class="individual-bonus-label">Long Drive</span>
+            <span class="individual-bonus-winner">${indBonuses.longDrive.player}</span>
+            <span class="individual-bonus-pts">+${indBonuses.longDrive.points} pts</span>
+        </div>`;
+    }
+
+    if (hasClosestPin) {
+        html += `<div class="individual-bonus-item">
+            <span class="individual-bonus-label">Closest to Pin</span>
+            <span class="individual-bonus-winner">${indBonuses.closestPin.player}</span>
+            <span class="individual-bonus-pts">+${indBonuses.closestPin.points} pts</span>
+        </div>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 function renderCustomEventLeaderboards() {

@@ -294,15 +294,7 @@ function renderGolfScorecard() {
                 <td class="computed-value total-value">${front9Val !== '' || back9Val !== '' ? breakdown.totalPoints : '--'}</td>
             </tr>`;
 
-            // Row 3: Bonuses (front bonus, back bonus, overall winner bonus — NOT a sum)
-            html += `<tr>
-                <td class="row-label">Bonus</td>
-                <td class="computed-value ${breakdown.frontBonus > 0 ? 'bonus-highlight' : ''}">${breakdown.frontBonus}</td>
-                <td class="computed-value ${breakdown.backBonus > 0 ? 'bonus-highlight' : ''}">${breakdown.backBonus}</td>
-                <td class="computed-value ${breakdown.overallBonus > 0 ? 'bonus-highlight' : ''}">${breakdown.overallBonus}</td>
-            </tr>`;
-
-            // Row 4: Shotguns
+            // Row 3: Shotguns
             html += `<tr>
                 <td class="row-label">Shotguns</td>
                 <td colspan="2">
@@ -321,8 +313,8 @@ function renderGolfScorecard() {
         container.appendChild(scorecard);
     });
 
-    // Render individual bonuses section
-    renderGolfIndividualBonuses();
+    // Render results section (team bonus winners + individual awards)
+    renderGolfResults();
 }
 
 function saveGolfScore(teamNum) {
@@ -388,35 +380,77 @@ function renderScoringGuide() {
     `;
 }
 
-// Render individual bonus awards on golf page
-function renderGolfIndividualBonuses() {
-    const container = document.getElementById('golfIndividualBonuses');
+// Render results section: team bonus winners + individual awards
+function renderGolfResults() {
+    const container = document.getElementById('golfResults');
     if (!container) return;
 
-    const bonuses = getGolfIndividualBonuses();
-    const hasLongDrive = bonuses.longDrive.player && bonuses.longDrive.player !== '';
-    const hasClosestPin = bonuses.closestPin.player && bonuses.closestPin.player !== '';
+    const teams = getGolfTeams();
+    const bonusWinners = calculateGolfBonusWinners();
+    const bonusPoints = getBonusPoints();
+    const indBonuses = getGolfIndividualBonuses();
 
-    if (!hasLongDrive && !hasClosestPin) {
-        container.innerHTML = '<p class="text-muted">No individual awards assigned yet.</p>';
+    const hasTeams = Object.keys(teams).length > 0;
+    const hasScores = bonusWinners.bestFront.length > 0 || bonusWinners.bestBack.length > 0 || bonusWinners.overallWinner.length > 0;
+    const hasLongDrive = indBonuses.longDrive.player && indBonuses.longDrive.player !== '';
+    const hasClosestPin = indBonuses.closestPin.player && indBonuses.closestPin.player !== '';
+
+    if (!hasScores && !hasLongDrive && !hasClosestPin) {
+        container.innerHTML = '<p class="text-muted">No results yet.</p>';
         return;
+    }
+
+    // Helper to get team display name (team number + player names)
+    function teamLabel(teamNums) {
+        return teamNums.map(num => {
+            const players = teams[num] || [];
+            return `Team ${num} (${players.join(', ')})`;
+        }).join(', ');
     }
 
     let html = '<div class="individual-bonus-list">';
 
+    // Team bonus winners
+    if (hasScores) {
+        if (bonusWinners.bestFront.length > 0) {
+            html += `<div class="individual-bonus-item">
+                <span class="individual-bonus-label">Best Front 9</span>
+                <span class="individual-bonus-winner">${teamLabel(bonusWinners.bestFront)}</span>
+                <span class="individual-bonus-pts">+${bonusPoints.bestFront} pts</span>
+            </div>`;
+        }
+
+        if (bonusWinners.bestBack.length > 0) {
+            html += `<div class="individual-bonus-item">
+                <span class="individual-bonus-label">Best Back 9</span>
+                <span class="individual-bonus-winner">${teamLabel(bonusWinners.bestBack)}</span>
+                <span class="individual-bonus-pts">+${bonusPoints.bestBack} pts</span>
+            </div>`;
+        }
+
+        if (bonusWinners.overallWinner.length > 0) {
+            html += `<div class="individual-bonus-item">
+                <span class="individual-bonus-label">Overall Winner</span>
+                <span class="individual-bonus-winner">${teamLabel(bonusWinners.overallWinner)}</span>
+                <span class="individual-bonus-pts">+${bonusPoints.overallWinner} pts</span>
+            </div>`;
+        }
+    }
+
+    // Individual awards
     if (hasLongDrive) {
         html += `<div class="individual-bonus-item">
             <span class="individual-bonus-label">Long Drive</span>
-            <span class="individual-bonus-winner">${bonuses.longDrive.player}</span>
-            <span class="individual-bonus-pts">+${bonuses.longDrive.points} pts</span>
+            <span class="individual-bonus-winner">${indBonuses.longDrive.player}</span>
+            <span class="individual-bonus-pts">+${indBonuses.longDrive.points} pts</span>
         </div>`;
     }
 
     if (hasClosestPin) {
         html += `<div class="individual-bonus-item">
             <span class="individual-bonus-label">Closest to Pin</span>
-            <span class="individual-bonus-winner">${bonuses.closestPin.player}</span>
-            <span class="individual-bonus-pts">+${bonuses.closestPin.points} pts</span>
+            <span class="individual-bonus-winner">${indBonuses.closestPin.player}</span>
+            <span class="individual-bonus-pts">+${indBonuses.closestPin.points} pts</span>
         </div>`;
     }
 

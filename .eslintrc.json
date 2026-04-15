@@ -118,7 +118,8 @@
     "saveGolfScore": "writable",
     "saveGolfShotguns": "writable",
     "renderScoringGuide": "writable",
-    "renderGolfIndividualBonuses": "writable",
+    "renderGolfResults": "writable",
+    "renderGolfLeaderboardAwards": "writable",
 
     "getCustomEvent": "writable",
     "createCustomEvent": "writable",
