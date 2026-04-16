@@ -61,9 +61,9 @@ const DEFAULT_TRIVIA_POINTS = {
 
 // Default bonus point values
 const DEFAULT_BONUS_POINTS = {
-    bestFront: 5,
-    bestBack: 5,
-    overallWinner: 10,
+    bestFront: 1,
+    bestBack: 1,
+    overallWinner: 1,
     shotgun: 1
 };
 
