@@ -162,9 +162,9 @@ function loadGolfIndividualBonusInputs() {
 
     container.innerHTML = `
         <div class="bonus-section">
-            <h4>Individual Bonus Awards</h4>
+            <h4>Long Drive &amp; Closest to Pin</h4>
             <p style="font-size: 0.85em; color: var(--silver); margin-bottom: 10px;">
-                Assign individual bonus points to specific players.
+                Pick the player who won the hole &mdash; points are awarded to every player on that player's team.
             </p>
             <div class="bonus-grid">
                 <div class="bonus-input">
@@ -375,7 +375,7 @@ function renderScoringGuide() {
             <strong>Team Bonuses:</strong> Best Front 9 (+${bonusPoints.bestFront}), Best Back 9 (+${bonusPoints.bestBack}),
             Overall Winner (+${bonusPoints.overallWinner}) &mdash; awarded to lowest score.<br>
             <strong>Shotguns:</strong> Each full team shotgun = +${bonusPoints.shotgun} pt${bonusPoints.shotgun !== 1 ? 's' : ''}.<br>
-            <strong>Individual:</strong> Long Drive (+${indBonuses.longDrive.points}), Closest to Pin (+${indBonuses.closestPin.points}).
+            <strong>Long Drive / Closest to Pin:</strong> Long Drive (+${indBonuses.longDrive.points}), Closest to Pin (+${indBonuses.closestPin.points}) &mdash; awarded to every player on the winner's team.
         </p>
     `;
 }
@@ -437,20 +437,25 @@ function renderGolfResults() {
         }
     }
 
-    // Individual awards
+    // Long drive / closest to pin — awarded to the winner's team
+    function winnerLabel(player) {
+        const teamNum = Object.keys(teams).find(num => (teams[num] || []).includes(player));
+        return teamNum ? `${player} (Team ${teamNum})` : player;
+    }
+
     if (hasLongDrive) {
         html += `<div class="individual-bonus-item">
             <span class="individual-bonus-label">Long Drive</span>
-            <span class="individual-bonus-winner">${indBonuses.longDrive.player}</span>
-            <span class="individual-bonus-pts">+${indBonuses.longDrive.points} pts</span>
+            <span class="individual-bonus-winner">${winnerLabel(indBonuses.longDrive.player)}</span>
+            <span class="individual-bonus-pts">+${indBonuses.longDrive.points} pts to team</span>
         </div>`;
     }
 
     if (hasClosestPin) {
         html += `<div class="individual-bonus-item">
             <span class="individual-bonus-label">Closest to Pin</span>
-            <span class="individual-bonus-winner">${indBonuses.closestPin.player}</span>
-            <span class="individual-bonus-pts">+${indBonuses.closestPin.points} pts</span>
+            <span class="individual-bonus-winner">${winnerLabel(indBonuses.closestPin.player)}</span>
+            <span class="individual-bonus-pts">+${indBonuses.closestPin.points} pts to team</span>
         </div>`;
     }
 

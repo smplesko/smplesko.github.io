@@ -29,14 +29,19 @@ function calculatePlayerPoints() {
         });
     });
 
-    // Golf individual bonuses (long drive, closest to pin)
+    // Golf long drive / closest to pin — awarded to the winner's entire team.
+    // Fallback: if the winner isn't on a team, award to just the individual.
     const indBonuses = getGolfIndividualBonuses();
-    if (indBonuses.longDrive.player && playerPoints[indBonuses.longDrive.player]) {
-        playerPoints[indBonuses.longDrive.player].golf += indBonuses.longDrive.points || 0;
+    function awardTeamBonus(winner, points) {
+        if (!winner || !points) return;
+        const teamNum = Object.keys(golfTeams).find(num => (golfTeams[num] || []).includes(winner));
+        const recipients = teamNum ? golfTeams[teamNum] : [winner];
+        recipients.forEach(player => {
+            if (playerPoints[player]) playerPoints[player].golf += points;
+        });
     }
-    if (indBonuses.closestPin.player && playerPoints[indBonuses.closestPin.player]) {
-        playerPoints[indBonuses.closestPin.player].golf += indBonuses.closestPin.points || 0;
-    }
+    awardTeamBonus(indBonuses.longDrive.player, indBonuses.longDrive.points || 0);
+    awardTeamBonus(indBonuses.closestPin.player, indBonuses.closestPin.points || 0);
 
     // Custom event points
     eventList.forEach(event => {
@@ -379,6 +384,7 @@ function renderGolfLeaderboardAwards() {
     if (!container) return;
 
     const indBonuses = getGolfIndividualBonuses();
+    const teams = getGolfTeams();
     const hasLongDrive = indBonuses.longDrive.player && indBonuses.longDrive.player !== '';
     const hasClosestPin = indBonuses.closestPin.player && indBonuses.closestPin.player !== '';
 
@@ -387,21 +393,26 @@ function renderGolfLeaderboardAwards() {
         return;
     }
 
+    function winnerLabel(player) {
+        const teamNum = Object.keys(teams).find(num => (teams[num] || []).includes(player));
+        return teamNum ? `${player} (Team ${teamNum})` : player;
+    }
+
     let html = '<div class="individual-bonus-list" style="margin-top: 15px;">';
 
     if (hasLongDrive) {
         html += `<div class="individual-bonus-item">
             <span class="individual-bonus-label">Long Drive</span>
-            <span class="individual-bonus-winner">${indBonuses.longDrive.player}</span>
-            <span class="individual-bonus-pts">+${indBonuses.longDrive.points} pts</span>
+            <span class="individual-bonus-winner">${winnerLabel(indBonuses.longDrive.player)}</span>
+            <span class="individual-bonus-pts">+${indBonuses.longDrive.points} pts to team</span>
         </div>`;
     }
 
     if (hasClosestPin) {
         html += `<div class="individual-bonus-item">
             <span class="individual-bonus-label">Closest to Pin</span>
-            <span class="individual-bonus-winner">${indBonuses.closestPin.player}</span>
-            <span class="individual-bonus-pts">+${indBonuses.closestPin.points} pts</span>
+            <span class="individual-bonus-winner">${winnerLabel(indBonuses.closestPin.player)}</span>
+            <span class="individual-bonus-pts">+${indBonuses.closestPin.points} pts to team</span>
         </div>`;
     }
 
