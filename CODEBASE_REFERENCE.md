@@ -88,7 +88,7 @@ Files are loaded in this order in `_layouts/default.html`:
 | `golfScores` | Per-team scores: `{ teamNum: { front9, back9 } }` |
 | `golfShotguns` | Per-team shotgun counts |
 | `golfScoringEnabled` | Per-team scoring toggle |
-| `golfIndividualBonuses` | Long drive + closest pin: `{ player, points }` |
+| `golfIndividualBonuses` | Long drive + closest pin winners: `{ longDrive: { player, points }, closestPin: { player, points } }`. Points are awarded to every player on the winning player's golf team. |
 | `customEvents` | All events with rounds, teams, results (see structure below) |
 | `triviaGame` | Questions, responses, game state, joinedPlayers |
 | `siteSettings` | Hero text, notes, event locks, golf settings, competition status |
